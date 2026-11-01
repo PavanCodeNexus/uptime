@@ -23,6 +23,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDTO getMe(Long userId) {
+        if (userId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User ID is required");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User not found"));
         return toDTO(user);
@@ -30,8 +33,14 @@ public class UserService {
 
     @Transactional
     public UserDTO updateMe(Long userId, UserUpdateRequest req) {
+        if (userId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User ID is required");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User not found"));
+        if (user == null) {
+            throw new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User not found");
+        }
         if (req.getFullName() != null) user.setFullName(req.getFullName().trim());
         if (req.getEmail() != null) user.setEmail(req.getEmail().trim());
         if (req.getDateOfBirth() != null) user.setDateOfBirth(req.getDateOfBirth());
@@ -43,6 +52,9 @@ public class UserService {
     @Transactional
     public UserDTO uploadPhoto(Long userId, MultipartFile file) {
         FileUtils.verifyMagicBytes(file);
+        if (userId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User ID is required");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User not found"));
         user.setProfilePhotoUrl("https://res.cloudinary.com/uptime/image/upload/v1/users/" + userId + "_" + UUID.randomUUID() + ".jpg");
@@ -67,6 +79,9 @@ public class UserService {
                 .longitude(req.getLongitude())
                 .isDefault(Boolean.TRUE.equals(req.getIsDefault()))
                 .build();
+        if (addr == null) {
+            throw new IllegalStateException("Failed to build address");
+        }
         return addressRepository.save(addr);
     }
 

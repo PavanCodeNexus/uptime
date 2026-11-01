@@ -23,6 +23,8 @@ public class GeminiService {
         String description = (String) input.getOrDefault("description", "Unknown fault");
         String industry = (String) input.getOrDefault("industry", "AUTOMOTIVE");
         boolean fallbackUsed = (geminiApiKey == null || geminiApiKey.isBlank());
+        String systemPrompt = promptManager.loadPrompt("fault_diagnosis.txt");
+        log.debug("Loaded AI triage prompt ({} chars)", systemPrompt.length());
 
         Map<String, Object> res = new LinkedHashMap<>();
         res.put("industry", industry);

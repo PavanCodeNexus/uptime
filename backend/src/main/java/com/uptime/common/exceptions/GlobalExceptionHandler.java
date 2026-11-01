@@ -26,11 +26,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<ApiResponse<?>> handleBusinessRule(BusinessRuleException ex) {
-        HttpStatus status = ex.getHttpStatus() != null
-                ? ex.getHttpStatus()
-                : (ErrorCodes.AUTH_ACCOUNT_LOCKED.equals(ex.getErrorCode())
+        HttpStatus status = ex.getHttpStatus();
+        if (status == null) {
+            status = ErrorCodes.AUTH_ACCOUNT_LOCKED.equals(ex.getErrorCode())
                     ? HttpStatus.LOCKED
-                    : HttpStatus.UNPROCESSABLE_ENTITY);
+                    : HttpStatus.UNPROCESSABLE_ENTITY;
+        }
         return ResponseEntity
                 .status(status)
                 .body(ApiResponse.error(ex.getErrorCode(), ex.getMessage()));

@@ -22,6 +22,9 @@ public class MatchingService {
     private final ScoringEngine scoringEngine;
 
     public List<Map<String, Object>> findRankedCandidates(Long jobId) {
+        if (jobId == null) {
+            throw new IllegalArgumentException("Job ID is required");
+        }
         Job job = jobRepository.findById(jobId).orElseThrow();
         List<Technician> eligiblePool = technicianRepository.findAvailableEligibleTechnicians();
 

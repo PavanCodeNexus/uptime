@@ -40,6 +40,9 @@ public class TechnicianService {
     }
 
     public Technician getById(Long id) {
+        if (id == null) {
+            throw new ResourceNotFoundException(ErrorCodes.TECH_NOT_FOUND, "Technician ID is required");
+        }
         return technicianRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.TECH_NOT_FOUND, "Technician not found: " + id));
     }
@@ -47,6 +50,9 @@ public class TechnicianService {
     @Transactional
     public Technician updateProfile(Long userId, Map<String, Object> updates) {
         Technician tech = getByUserId(userId);
+        if (tech == null) {
+            throw new ResourceNotFoundException(ErrorCodes.TECH_NOT_FOUND, "Technician profile not found");
+        }
         if (updates.containsKey("bio")) tech.setBio((String) updates.get("bio"));
         if (updates.containsKey("experienceYears")) tech.setExperienceYears(((Number) updates.get("experienceYears")).intValue());
         if (updates.containsKey("serviceRadiusKm")) tech.setServiceRadiusKm(((Number) updates.get("serviceRadiusKm")).intValue());
@@ -93,11 +99,17 @@ public class TechnicianService {
                 .proficiency((String) payload.getOrDefault("proficiency", "INTERMEDIATE"))
                 .isCertified(Boolean.TRUE.equals(payload.get("isCertified")))
                 .build();
+        if (skill == null) {
+            throw new IllegalStateException("Failed to build skill");
+        }
         return skillRepository.save(skill);
     }
 
     @Transactional
     public void deleteSkill(Long userId, Long skillId) {
+        if (skillId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "Skill ID is required");
+        }
         Technician tech = getByUserId(userId);
         TechnicianSkill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "Skill not found"));
@@ -133,6 +145,9 @@ public class TechnicianService {
                 .fileSha256(sha256)
                 .verificationStatus("PENDING")
                 .build();
+        if (doc == null) {
+            throw new IllegalStateException("Failed to build document");
+        }
         TechnicianDocument saved = documentRepository.save(doc);
 
         logAudit(tech.getId(), userId, "TECHNICIAN", "DOCUMENT_UPLOADED",
@@ -321,6 +336,9 @@ public class TechnicianService {
                 .questionsJson(questionsJson)
                 .startedAt(Instant.now())
                 .build();
+        if (attempt == null) {
+            throw new IllegalStateException("Failed to build skill test attempt");
+        }
         TechnicianSkillTestAttempt saved = testAttemptRepository.save(attempt);
 
         return Map.of(
@@ -404,6 +422,9 @@ public class TechnicianService {
                 .otpVerified(true)
                 .verifiedAt(Instant.now())
                 .build();
+        if (ref == null) {
+            throw new IllegalStateException("Failed to build reference");
+        }
         TechnicianReference saved = referenceRepository.save(ref);
 
         tradeVerificationRepository.findByTechnicianIdAndTradeCode(tech.getId(), tradeCode).ifPresent(tv -> {
@@ -429,7 +450,7 @@ public class TechnicianService {
 
     private void logAudit(Long technicianId, Long actorId, String actorRole, String action,
                           String prevLevel, String newLevel, String notes) {
-        auditLogRepository.save(TechnicianKycAuditLog.builder()
+        TechnicianKycAuditLog entry = TechnicianKycAuditLog.builder()
                 .technicianId(technicianId)
                 .actorId(actorId)
                 .actorRole(actorRole)
@@ -438,6 +459,9 @@ public class TechnicianService {
                 .newLevel(newLevel)
                 .notes(notes)
                 .ipAddress("127.0.0.1")
-                .build());
+                .build();
+        if (entry != null) {
+            auditLogRepository.save(entry);
+        }
     }
 }

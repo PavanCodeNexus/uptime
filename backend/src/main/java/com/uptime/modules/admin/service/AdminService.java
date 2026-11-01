@@ -49,7 +49,7 @@ public class AdminService {
     @PostConstruct
     public void seedDefaultAdmin() {
         if (adminUserRepository.findByEmailIgnoreCase("admin@uptime.in").isEmpty()) {
-            adminUserRepository.save(AdminUser.builder()
+            AdminUser defaultAdmin = AdminUser.builder()
                     .email("admin@uptime.in")
                     .passwordHash(passwordEncoder.encode("UptimeAdmin@2026"))
                     .fullName("UPTIME Super Admin")
@@ -57,7 +57,10 @@ public class AdminService {
                     .totpSecret("JBSWY3DPEHPK3PXP")
                     .is2faEnabled(true)
                     .isActive(true)
-                    .build());
+                    .build();
+            if (defaultAdmin != null) {
+                adminUserRepository.save(defaultAdmin);
+            }
         }
     }
 
@@ -121,7 +124,8 @@ public class AdminService {
     }
 
     private RuntimeException recordFailureAndThrow(String emailKey) {
-        int attempts = failedAttempts.merge(emailKey, 1, Integer::sum);
+        int attempts = failedAttempts.getOrDefault(emailKey, 0) + 1;
+        failedAttempts.put(emailKey, attempts);
         if (attempts >= AppConstants.MAX_ADMIN_LOGIN_ATTEMPTS) {
             Instant until = Instant.now().plusSeconds(AppConstants.ACCOUNT_LOCKOUT_SECONDS);
             lockoutUntil.put(emailKey, until);
@@ -147,13 +151,16 @@ public class AdminService {
 
     @Transactional
     public Map<String, Object> generateSignedDocumentViewUrl(Long adminId, Long technicianId, Long docId) {
+        if (docId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "Document ID is required");
+        }
         TechnicianDocument doc = documentRepository.findById(docId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "Document not found"));
         Instant expiresAt = Instant.now().plus(5, ChronoUnit.MINUTES);
         String signedUrl = "https://vault.uptime.in/signed/" + doc.getId()
                 + "?token=" + UUID.randomUUID() + "&expires=" + expiresAt.getEpochSecond();
 
-        auditLogRepository.save(TechnicianKycAuditLog.builder()
+        saveAuditLog(TechnicianKycAuditLog.builder()
                 .technicianId(technicianId)
                 .actorId(adminId)
                 .actorRole("ADMIN")
@@ -173,6 +180,9 @@ public class AdminService {
 
     @Transactional
     public TechnicianDocument reviewDocument(Long adminId, Long technicianId, Long docId, String status, String rejectionReason) {
+        if (docId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "Document ID is required");
+        }
         TechnicianDocument doc = documentRepository.findById(docId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "Document not found"));
         doc.setVerificationStatus(status);
@@ -181,7 +191,7 @@ public class AdminService {
         doc.setRejectionReason(rejectionReason);
         TechnicianDocument saved = documentRepository.save(doc);
 
-        auditLogRepository.save(TechnicianKycAuditLog.builder()
+        saveAuditLog(TechnicianKycAuditLog.builder()
                 .technicianId(technicianId)
                 .actorId(adminId)
                 .actorRole("ADMIN")
@@ -194,6 +204,9 @@ public class AdminService {
 
     @Transactional
     public Technician verifyTechnicianLevel(Long adminId, Long technicianId, int level, String status, String reason) {
+        if (technicianId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.TECH_NOT_FOUND, "Technician ID is required");
+        }
         Technician tech = technicianRepository.findById(technicianId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.TECH_NOT_FOUND, "Technician not found"));
         String prev = "L" + tech.getVerificationLevel();
@@ -205,7 +218,7 @@ public class AdminService {
         }
         Technician saved = technicianRepository.save(tech);
 
-        auditLogRepository.save(TechnicianKycAuditLog.builder()
+        saveAuditLog(TechnicianKycAuditLog.builder()
                 .technicianId(technicianId)
                 .actorId(adminId)
                 .actorRole("ADMIN")
@@ -220,6 +233,9 @@ public class AdminService {
 
     @Transactional
     public Technician graduateProvisional(Long adminId, Long technicianId) {
+        if (technicianId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.TECH_NOT_FOUND, "Technician ID is required");
+        }
         Technician tech = technicianRepository.findById(technicianId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.TECH_NOT_FOUND, "Technician not found"));
         tech.setIsProvisional(false);
@@ -228,7 +244,7 @@ public class AdminService {
         tech.setVerifiedAt(Instant.now());
         Technician saved = technicianRepository.save(tech);
 
-        auditLogRepository.save(TechnicianKycAuditLog.builder()
+        saveAuditLog(TechnicianKycAuditLog.builder()
                 .technicianId(technicianId)
                 .actorId(adminId)
                 .actorRole("ADMIN")
@@ -239,5 +255,11 @@ public class AdminService {
                 .ipAddress("127.0.0.1")
                 .build());
         return saved;
+    }
+
+    private void saveAuditLog(TechnicianKycAuditLog entry) {
+        if (entry != null) {
+            auditLogRepository.save(entry);
+        }
     }
 }

@@ -56,6 +56,9 @@ public class AuthService {
                     .referralCode("UPT-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                     .lastLoginAt(Instant.now())
                     .build();
+            if (user == null) {
+                throw new IllegalStateException("Failed to construct user");
+            }
             user = userRepository.save(user);
 
             if ("TECHNICIAN".equals(role)) {
@@ -119,6 +122,9 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public UserDTO getMe(Long userId) {
+        if (userId == null) {
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN, "User not authenticated");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN, "User not found"));
         return UserService.toDTO(user);
@@ -138,7 +144,9 @@ public class AuthService {
                     .isAvailable(false)
                     .isFatigueRestricted(false)
                     .build();
-            technicianRepository.save(tech);
+            if (tech != null) {
+                technicianRepository.save(tech);
+            }
         }
     }
 

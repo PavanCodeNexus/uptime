@@ -36,6 +36,9 @@ public class PaymentService {
                 .currency("INR")
                 .status("CREATED")
                 .build();
+        if (payment == null) {
+            throw new IllegalStateException("Failed to build payment");
+        }
         return paymentRepository.save(payment);
     }
 
@@ -62,6 +65,9 @@ public class PaymentService {
                     .totalGst(gst.get("totalGst"))
                     .grandTotal(gst.get("grandTotal"))
                     .build();
+            if (inv == null) {
+                throw new IllegalStateException("Failed to build invoice");
+            }
             return invoiceRepository.save(inv);
         });
     }

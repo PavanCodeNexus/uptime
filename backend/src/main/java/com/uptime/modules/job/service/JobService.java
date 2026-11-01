@@ -60,6 +60,9 @@ public class JobService {
                 .aiEstimatedCostMax(new BigDecimal(req.getOrDefault("estimatedCostMax", "1500.00").toString()))
                 .build();
 
+        if (job == null) {
+            throw new IllegalStateException("Failed to construct job");
+        }
         Job saved = jobRepository.save(job);
         recordPathStep(saved.getId(), 1, resolutionPath, "STARTED", "Initial path chosen");
 
@@ -70,6 +73,9 @@ public class JobService {
     }
 
     public Job getJob(Long jobId) {
+        if (jobId == null) {
+            throw new ResourceNotFoundException(ErrorCodes.JOB_NOT_FOUND, "Job ID is required");
+        }
         return jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.JOB_NOT_FOUND, "Job not found: " + jobId));
     }
@@ -219,6 +225,9 @@ public class JobService {
                 .totalPrice(totalPrice)
                 .warrantyMonths(((Number) body.getOrDefault("warrantyMonths", 6)).intValue())
                 .build();
+        if (part == null) {
+            throw new IllegalStateException("Failed to build job part");
+        }
         JobPartsUsed saved = partsRepository.save(part);
         job.setPartsCharge(job.getPartsCharge().add(totalPrice));
         jobRepository.save(job);
@@ -256,8 +265,9 @@ public class JobService {
         job.setIsLocked(true);
         job.setLockedAt(completedAt);
 
-        if (job.getTechnicianId() != null) {
-            technicianRepository.findById(job.getTechnicianId()).ifPresent(tech -> {
+        Long assignedTechId = job.getTechnicianId();
+        if (assignedTechId != null) {
+            technicianRepository.findById(assignedTechId).ifPresent(tech -> {
                 tech.setIsOnJob(false);
                 tech.setIsAvailable(true);
                 tech.setJobsCompleted(tech.getJobsCompleted() + 1);
@@ -288,13 +298,17 @@ public class JobService {
 
     @Transactional
     public JobDispute raiseDispute(Long jobId, Long userId, Map<String, String> body) {
-        return disputeRepository.save(JobDispute.builder()
+        JobDispute dispute = JobDispute.builder()
                 .jobId(jobId)
                 .raisedBy(userId)
                 .disputeType(body.getOrDefault("disputeType", "QUALITY_ISSUE"))
                 .description(body.getOrDefault("description", "Dispute raised"))
                 .status("OPEN")
-                .build());
+                .build();
+        if (dispute == null) {
+            throw new IllegalStateException("Failed to build dispute");
+        }
+        return disputeRepository.save(dispute);
     }
 
     private void ensureNotLocked(Job job) {
@@ -305,12 +319,15 @@ public class JobService {
     }
 
     private void recordPathStep(Long jobId, int stepNum, String pathType, String outcome, String notes) {
-        pathHistoryRepository.save(JobPathHistory.builder()
+        JobPathHistory step = JobPathHistory.builder()
                 .jobId(jobId)
                 .pathNumber(stepNum)
                 .pathType(pathType)
                 .outcome(outcome)
                 .notes(notes)
-                .build());
+                .build();
+        if (step != null) {
+            pathHistoryRepository.save(step);
+        }
     }
 }

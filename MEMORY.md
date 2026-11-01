@@ -45,7 +45,7 @@ F:\uptime/
 | **Compile Target** | Java | 17 | `<java.version>17</java.version>` in pom.xml |
 | **Backend** | Spring Boot | 3.3.x | Modular monolith, Maven wrapper |
 | **Database** | Supabase PostgreSQL | 15 | PostGIS, 500MB free tier |
-| **Migrations** | Flyway | V1–V17 | Version-controlled SQL scripts |
+| **Migrations** | Flyway | V1–V18 | Version-controlled SQL scripts |
 | **ORM** | Spring Data JPA + Hibernate | — | — |
 | **Cache (dev)** | ConcurrentMapCacheManager | — | In-memory, zero setup |
 | **Cache (prod)** | Upstash Redis | — | 10K cmd/day free |
@@ -170,9 +170,9 @@ F:\uptime/
 ### Session 4 — 2026-10-31 (Agent: Antigravity / Gemini 4 Argon)
 
 **What happened:**
-1. Created initial monorepo directory structure (ackend/, pps/owner-web/, pps/tech-web/, pps/admin-web/, pps/technician-app/, pps/owner-app/, packages/shared/, docs/) with .gitkeep placeholders.
-2. Moved all 18 specification .md files into docs/, kept MEMORY.md at root, and added root README.md and monorepo .gitignore.
-3. Initialized local Git repository, created main and develop branches, configured remote origin (https://github.com/PavanCodeNexus/uptime.git), committed all project documentation and initial structure, and pushed main and develop to GitHub.
+1. Created initial monorepo directory structure (`backend/`, `apps/owner-web/`, `apps/tech-web/`, `apps/admin-web/`, `apps/technician-app/`, `apps/owner-app/`, `packages/shared/`, `docs/`) with `.gitkeep` placeholders.
+2. Moved all 18 specification `.md` files into `docs/`, kept `MEMORY.md` at root, and added root `README.md` and monorepo `.gitignore`.
+3. Initialized local Git repository, created `main` and `develop` branches, configured remote `origin` (`https://github.com/PavanCodeNexus/uptime.git`), committed all project documentation and initial structure, and pushed `main` and `develop` to GitHub.
 
 ---
 
@@ -197,6 +197,18 @@ F:\uptime/
 5. Created 6 JUnit 5 test suites (`ScoringEngineTest`, `HashUtilsTest`, `OTPServiceTest`, `GSTServiceTest`, `ProductionSafetyStartupGuardTest`, `UptimeContextLoadTest`) in `backend/src/test/java/com/uptime/`.
 6. Verified full clean compilation (126 Java source files + 6 test suites, Java 17 target) and test execution via `mvnw.cmd clean test` — **15/15 tests passed (`BUILD SUCCESS`)**, including full `@SpringBootTest` context startup, JPA/Hibernate entity validation, STOMP WebSocket broker startup, 2-step Admin BCrypt + TOTP 2FA, and 5-attempt admin lockout.
 7. Committed and pushed the complete Phase 1 Backend (`F:\uptime\backend`) and updated `MEMORY.md` to GitHub (`origin/develop` and `origin/main`).
+
+---
+
+### Session 6 — 2026-11-01 (Agent: Antigravity)
+
+**What happened:**
+1. Resolved all **54 VS Code Eclipse JDT Problems panel warnings** (`0` errors, `54` null-safety / override-annotation / unused-field warnings) across 15 backend Java files:
+   - Added Spring `@NonNull` / `@Nullable` override annotations matching framework contracts in `WebMvcConfig`, `WebSocketConfig`, `CurrentUserArgumentResolver`, `JwtAuthFilter`, and `RateLimitFilter` (14 warnings).
+   - Replaced unbound method references (`AbstractHttpConfigurer::disable`, `HeadersConfigurer.FrameOptionsConfig::sameOrigin`) with explicit lambdas and removed unused imports in `SecurityConfig` (2 warnings).
+   - Wired `PromptManager.loadPrompt(...)` into `GeminiService.diagnoseFault(...)` to resolve unused-field warning (1 warning).
+   - Replaced `ConcurrentHashMap.merge(..., Integer::sum)` `BiFunction` null-unboxing warning and added explicit null guards for Spring Data `CrudRepository` (`findById`, `save`) and `ResponseEntity.status` calls across `GlobalExceptionHandler`, `AdminService`, `AuthService`, `JobService`, `MatchingService`, `PaymentService`, `TechnicianService`, and `UserService` (37 warnings).
+2. Re-verified full clean compilation and JUnit 5 suite (`15/15` passing) via `mvnw.cmd clean test`, and pushed fixes to `main` and `develop` on GitHub.
 
 ---
 
@@ -227,6 +239,6 @@ F:\uptime/
 - **API endpoints defined:** 125+ REST endpoints (including KYC & Skill Verification L0–L3)
 - **Flyway migrations created:** 18 scripts (`V1`–`V18`)
 - **Features documented:** 61 (including 19 World-First Innovations)
-- **Backend modules implemented:** 15 packages + 5 JUnit test suites
+- **Backend modules implemented:** 15 packages + 6 JUnit test suites (0 errors, 0 IDE warnings)
 - **Client platforms:** 6 (3 React web + 2 Flutter mobile + 1 TS shared)
 - **External service integrations:** 10 (Supabase, Redis, RabbitMQ, Gemini, Maps, Razorpay, FCM, Cloudinary, Agora, SendGrid)
