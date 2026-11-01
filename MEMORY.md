@@ -176,15 +176,33 @@ F:\uptime/
 
 ---
 
+### Session 5 — 2026-11-01 (Agent: Antigravity)
+
+**What happened:**
+1. Built the complete **Spring Boot 3.3.5** backend (`F:\uptime\backend`, Java 17 target on JDK 21 runtime) with Maven Wrapper (`mvnw` / `mvnw.cmd` / `.mvn/wrapper/mvnw.ps1`), `Dockerfile`, `.env.example`, and multi-profile configurations (`application.yml`, `application-dev.yml`, `application-demo.yml`, `application-prod.yml`, `application-test.yml`).
+2. Generated all **18 Flyway SQL migrations** (`V1__create_users_and_auth.sql` through `V18__technician_kyc_and_skill_verification.sql`) in `backend/src/main/resources/db/migration/`, resolving 19 forward foreign-key references cleanly in `V15__add_indexes_and_spatial.sql`.
+3. Created all **12 AI prompt files** in `backend/src/main/resources/prompts/` and `invoice_template.html` in `backend/src/main/resources/static/`.
+4. Implemented all **core, security, config, and 15 modular packages** under `com.uptime`:
+   - `common/`: constants (`AppConstants`, `ApiRoutes`, `ErrorCodes`, `CacheNames`, `QueueNames`), enums, `ApiResponse`/`PagedResponse`/`ErrorResponse`, global exceptions, and utilities (`HashUtils`, `GeoUtils`, `OTPUtils`, `DateUtils`, `InvoiceNumberUtils`, `PhoneUtils`, `FileUtils` with magic-bytes verification).
+   - `security/`: `JwtTokenProvider` (RS256 with auto-generated 2048-bit keypair in dev/test), `JwtAuthFilter` (blocks `TEMP_2FA` tokens on all non-2FA routes), `RateLimitFilter`, `CurrentUserArgumentResolver`, and `ProductionSafetyStartupGuard` (fails fast if `MockOtpProvider` or `MockIdentityVerificationProvider` is active under `prod` profile).
+   - `modules/auth/`: `OtpProvider` strategy (`MockOtpProvider` with `123456` for `dev`/`test`, `DemoOtpProvider` for seeded demo phones, `Fast2SmsOtpProvider` for `prod`), `AuthService`, `AuthController`.
+   - `modules/user/`: `User`, `UserAddress`, `UserSession`, `UserService`, `UserController`.
+   - `modules/technician/`: `Technician`, `TechnicianSkill`, `TechnicianDocument`, `TechnicianIdentityVerification`, `TechnicianTradeVerification`, `TechnicianSkillTestAttempt`, `TechnicianReference`, `TechnicianKycAuditLog`, `IdentityVerificationProvider` strategy, `TechnicianService`, `TechnicianController` (implementing all L0–L3 KYC, DigiLocker, selfie liveness, UPI penny-drop, Track A/B skill verification, MCQ test, video proof, reference OTP, and provisional L2-P graduation flows).
+   - `modules/job/`: `Job`, `JobMedia`, `JobChecklistItem`, `JobPartsUsed`, `JobDispute`, `JobPathHistory`, `JobService`, `JobController` (implementing 3-path selection, escalation with ₹149 video fee credit, 500m GPS + BCrypt arrival OTP verification, and SHA-256 tamper-proof completion lock).
+   - `modules/ai/`: `PromptManager`, `GeminiService` (with structured fallback when `GEMINI_API_KEY` is absent), `AIController`.
+   - `modules/matching/`: `ScoringEngine` and `MatchingService` enforcing strict query-level exclusion of fatigued technicians (`AND t.isFatigueRestricted = false` — never `-50` points or `score = 0`) and provisional L2-P job caps (≤ ₹3,000, non-emergency).
+   - `modules/payment/`: `Payment`, `Invoice`, `GSTService` (18% GST split into CGST 9% + SGST 9% or IGST 18%), `PaymentService`, `PaymentController`.
+   - `modules/admin/`: `AdminUser`, `AdminService`, `AdminController` (two-step admin login with 5-attempt 30-min lockout, 5-min `TEMP_2FA` token, 6-digit TOTP verification issuing 30-min Admin JWT, 5-min signed KYC document view URL with mandatory `TechnicianKycAuditLog` entry, document review, and L2/L3 verification).
+   - `modules/tracking/`, `modules/rating/`, `modules/notification/`, `modules/industry/`, `modules/insurance/`, `modules/marketplace/`, `modules/wiki/`, `modules/video/` (`503 VID_001` "Coming Soon in Wave 3"), and `HealthController`.
+5. Created 6 JUnit 5 test suites (`ScoringEngineTest`, `HashUtilsTest`, `OTPServiceTest`, `GSTServiceTest`, `ProductionSafetyStartupGuardTest`, `UptimeContextLoadTest`) in `backend/src/test/java/com/uptime/`.
+6. Verified full clean compilation (126 Java source files + 6 test suites, Java 17 target) and test execution via `mvnw.cmd clean test` — **15/15 tests passed (`BUILD SUCCESS`)**, including full `@SpringBootTest` context startup, JPA/Hibernate entity validation, STOMP WebSocket broker startup, 2-step Admin BCrypt + TOTP 2FA, and 5-attempt admin lockout.
+7. Committed and pushed the complete Phase 1 Backend (`F:\uptime\backend`) and updated `MEMORY.md` to GitHub (`origin/develop` and `origin/main`).
+
+---
+
 ## 🔲 What's Next (For the Next Agent)
 
-1. **Create monorepo directory structure** at `F:\uptime/` as defined above
-2. **Move all .md files** from root to `F:\uptime\docs/`
-3. **Initialize Spring Boot backend** with Maven Wrapper (`mvnw`)
-4. **Write all 17 Flyway migration scripts** (V1 through V17)
-5. **Scaffold all 14 Spring Boot module packages** with Controller/Service/Repository/Entity/DTO/Mapper layers
-6. **Implement Auth module first** (OTP strategy, JWT RS256, admin 2FA)
-7. Then proceed through the backend modules in dependency order
+1. Proceed to Phase 2 (Wave 1 Web Apps: `packages/shared`, `apps/owner-web`, `apps/tech-web`, `apps/admin-web`) once instructed by the user.
 
 ---
 
@@ -197,19 +215,18 @@ F:\uptime/
 5. **Gemini Flash is not a DSP engine** — sound analysis should use spectrogram image, not raw FFT
 6. **24h JWT expiry in SECURITY.md is too long** — consumer tokens use 24h (acceptable for mobile), admin tokens use 30min
 7. **Feature count discrepancy** — docs say 69, actual enumerated features = 61
-8. **Table count discrepancy** — docs say 141+, actual DDL = 130 tables
+8. **Table count discrepancy** — docs say 141+, actual DDL = 135 tables (V1–V18)
 9. **STRUCTURE.md lists both pom.xml and build.gradle** — we use Maven ONLY
 
 ---
 
 ## 📊 Project Metrics Snapshot
 
-- **Specification files:** 15 markdown files (~800 KB)
-- **Database tables defined:** 130 (across 14 modules + additional)
-- **API endpoints defined:** 108+ REST endpoints
-- **Flyway migrations planned:** 17 scripts (V1–V17)
-- **Features documented:** 61 (12 Core + 11 Industrial + 15 Auto + 15 Electronics + 7 Platform + 1 Virtual)
-- **Backend modules:** 14
+- **Specification files:** 18 markdown files in `docs/`
+- **Database tables defined:** 135 (across V1–V18 Flyway migrations)
+- **API endpoints defined:** 125+ REST endpoints (including KYC & Skill Verification L0–L3)
+- **Flyway migrations created:** 18 scripts (`V1`–`V18`)
+- **Features documented:** 61 (including 19 World-First Innovations)
+- **Backend modules implemented:** 15 packages + 5 JUnit test suites
 - **Client platforms:** 6 (3 React web + 2 Flutter mobile + 1 TS shared)
 - **External service integrations:** 10 (Supabase, Redis, RabbitMQ, Gemini, Maps, Razorpay, FCM, Cloudinary, Agora, SendGrid)
-- **Source code written so far:** 0 lines

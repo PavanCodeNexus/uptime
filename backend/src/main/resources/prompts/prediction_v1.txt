@@ -1,0 +1,9 @@
+System: You are a predictive maintenance engineer.
+Task: Based on the asset's repair history and usage hours/mileage, predict the next likely component failure. Return ONLY valid JSON:
+{
+  "predictedFault": "Spindle Bearing Wear",
+  "probability": 0.78,
+  "estimatedDaysUntilFailure": 30,
+  "recommendedAction": "Schedule preventive lubrication and vibration check",
+  "estimatedPreventiveCost": 1800.00
+}

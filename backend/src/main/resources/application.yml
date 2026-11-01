@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: uptime-backend
+  profiles:
+    active: ${APP_ENV:dev}
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+uptime:
+  jwt:
+    private-key: ${JWT_PRIVATE_KEY:}
+    public-key: ${JWT_PUBLIC_KEY:}
+    consumer-access-ttl-seconds: 86400
+    admin-access-ttl-seconds: 1800
+    admin-temp-2fa-ttl-seconds: 300
+    refresh-ttl-days: 30
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:5173}
+  ai:
+    gemini-api-key: ${GEMINI_API_KEY:}
+    gemini-model: ${GEMINI_MODEL:gemini-1.5-flash}
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:}
+  razorpay:
+    key-id: ${RAZORPAY_KEY_ID:rzp_test_uptime_demo}
+    key-secret: ${RAZORPAY_KEY_SECRET:uptime_test_secret_key}
+    webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:uptime_webhook_secret}
+  media:
+    upload-dir: ${UPLOAD_DIR:./uploads}
+    cloudinary-cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+    cloudinary-api-key: ${CLOUDINARY_API_KEY:}
+    cloudinary-api-secret: ${CLOUDINARY_API_SECRET:}
+  security:
+    admin-ip-whitelist-enabled: false
+    kyc-signing-secret: ${KYC_SIGNING_SECRET:uptime-kyc-signed-url-secret-key-2026}
+
+logging:
+  level:
+    com.uptime: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
