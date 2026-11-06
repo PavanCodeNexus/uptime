@@ -212,9 +212,27 @@ F:\uptime/
 
 ---
 
+### Session 7 — 2026-11-06 (Agent: Antigravity)
+
+**What happened:**
+1. Built both **Flutter 3.x + Riverpod 2.x** mobile applications (`apps/owner-app` and `apps/technician-app`) per user's team division (user leads Backend, Database, and Mobile Apps while 3 teammates handle the 3 React Web Apps):
+   - **`apps/owner-app` (`uptime_owner_app`):**
+     - Implemented `UptimeTheme` (`#1A3C6E` Deep Blue, `#00D4AA` Electric Teal, Material 3 Light/Dark themes), `FormatUtils` (Indian Rupee `₹1,00,000` formatter, `DD/MM/YYYY`, phone validation, Haversine distance), and `dioClientProvider` with JWT `AuthInterceptor` + local demo fallback.
+     - Built Riverpod 2.x providers (`Provider`, `FutureProvider.autoDispose`, `AsyncNotifierProvider.autoDispose` without codegen) in `owner_providers.dart`.
+     - Built complete interactive flows in `owner_shell_screen.dart`: Phone OTP login (`123456`), Industry Selector (`INDUSTRIAL`, `AUTOMOBILE`, `ELECTRONICS`), Fault Reporting with Voice & Engine/Machine Sound Fingerprint ⭐, Gemini AI Triage, **3-Path Resolution Selection** (Free AI Copilot with Step 3 Escalation Banner, Video Consultation `[Coming Soon]` Wave 3 preview with ₹149 fee credit, and Direct Technician Booking), Digital Twin & Vehicle Mood Score ⭐, Live GPS Tracking with 500m Geofence Arrival OTP (`123456`), 18% GST Invoice (CGST 9% + SGST 9%), and SHA-256 Tamper-Proof Certificate.
+     - Added unit & widget test suite in `test/owner_app_test.dart`.
+   - **`apps/technician-app` (`uptime_technician_app`):**
+     - Implemented `KycAndFatigueValidators` enforcing the DPDP Act 2023 12-digit Aadhaar prohibition, Regulated Trade (`HV_ELECTRICIAN`, `BOILER_OPERATOR`, `COMMERCIAL_HVAC_GAS`) Track A license requirement, MCQ pass criteria (`>= 70%` total & `2/2` mandatory safety questions), and 500m Haversine arrival geofence.
+     - Implemented `filterEligibleTechniciansForDispatch` and `TechnicianStateNotifier` enforcing the **Fatigue Rule** (`isFatigueRestricted == true` strictly excluded from dispatch queries, never scored, with mandatory rest-period countdown banner on dashboard) and **Provisional `L2-P` (Track B Experienced Ustad)** job cap (`<= ₹3,000`, non-emergency, auto-graduation after 5 jobs with rating `>= 4.2`).
+     - Built `TechRootScreen` (`tech_shell_screen.dart`) with `TechHomeScreen` (Online/Offline toggle, Fatigue Rest-Period Banner, Today's Stats Row, Incoming 60s Job Request), 500m Arrival OTP verification, Field AI Copilot & Safety Checklist, Spare Parts logging, SHA-256 job completion, 7-Step KYC Wizard (`L0`–`L3`), Wallet/UPI payouts, and NFT Skill Badges ⭐.
+     - Added unit & widget test suite in `test/technician_app_test.dart` including `"Restricted technician is absent from matching results"`.
+
+---
+
 ## 🔲 What's Next (For the Next Agent)
 
-1. Proceed to Phase 2 (Wave 1 Web Apps: `packages/shared`, `apps/owner-web`, `apps/tech-web`, `apps/admin-web`) once instructed by the user.
+1. Connect Supabase PostgreSQL + PostGIS credentials and Gemini API key in `backend/.env` when ready to switch from local H2 dev mode to shared cloud DB for the 4-member team.
+2. Coordinate with the 3 teammates on `apps/owner-web`, `apps/tech-web`, and `apps/admin-web`.
 
 ---
 
