@@ -1,19 +1,17 @@
 -- V17: Seed Demo Data for UPTIME (Admin with TOTP, Demo Owners, Demo Technicians, Plans)
 
-INSERT INTO admin_roles (role_name, role_slug, description, is_system_role)
+INSERT INTO admin_roles (role_name, role_slug, description)
 VALUES
-  ('Super Administrator', 'SUPER_ADMIN', 'Full platform access including admin management and commission settings', TRUE),
-  ('Operations Admin', 'OPS_ADMIN', 'Verification queue, KYC review, and dispute resolution', TRUE),
-  ('Finance Admin', 'FINANCE_ADMIN', 'Payouts, GST reports, and refunds', TRUE)
+  ('Super Administrator', 'SUPER_ADMIN', 'Full platform access including admin management and commission settings'),
+  ('Operations Admin', 'OPS_ADMIN', 'Verification queue, KYC review, and dispute resolution'),
+  ('Finance Admin', 'FINANCE_ADMIN', 'Payouts, GST reports, and refunds')
 ON CONFLICT (role_slug) DO NOTHING;
 
-INSERT INTO admin_permissions (permission_key, module, description)
-VALUES
-  ('KYC_REVIEWER', 'TECHNICIAN', 'Can view signed KYC documents and approve/reject technician verification'),
-  ('DISPUTE_RESOLVER', 'JOB', 'Can resolve job disputes and trigger escrow release/refund'),
-  ('MASS_NOTIFIER', 'NOTIFICATION', 'Can send mass notifications'),
-  ('FEATURE_FLAG_MANAGER', 'ADMIN', 'Can toggle platform feature flags')
-ON CONFLICT (permission_key) DO NOTHING;
+INSERT INTO admin_permissions (role_id, permission, can_read, can_create, can_update, can_delete)
+SELECT r.id, p.permission, TRUE, TRUE, TRUE, TRUE
+FROM admin_roles r
+CROSS JOIN (VALUES ('KYC_REVIEWER'), ('DISPUTE_RESOLVER'), ('MASS_NOTIFIER'), ('FEATURE_FLAG_MANAGER')) AS p(permission)
+WHERE r.role_slug = 'SUPER_ADMIN';
 
 -- Demo Super Admin (password: Admin@123 -> BCrypt 12 rounds, TOTP secret: JBSWY3DPEHPK3PXP)
 INSERT INTO admin_users (full_name, email, phone, password_hash, role_id, is_active, is_2fa_enabled, two_fa_secret)
@@ -38,19 +36,19 @@ VALUES
 ON CONFLICT (phone) DO NOTHING;
 
 -- Seed Platform Settings
-INSERT INTO platform_settings (setting_key, setting_value, data_type, category, description)
+INSERT INTO platform_settings (setting_key, setting_value, value_type, description)
 VALUES
-  ('platform.commission.percent', '12.0', 'DECIMAL', 'FINANCE', 'Default platform commission percentage'),
-  ('platform.gst.percent', '18.0', 'DECIMAL', 'FINANCE', 'Standard GST rate on service fee'),
-  ('matching.radius.km', '20', 'INTEGER', 'MATCHING', 'Default PostGIS search radius in km'),
-  ('arrival.radius.meters', '500', 'INTEGER', 'SECURITY', 'Maximum GPS distance for arrival OTP verification')
+  ('platform.commission.percent', '12.0', 'DECIMAL', 'Default platform commission percentage'),
+  ('platform.gst.percent', '18.0', 'DECIMAL', 'Standard GST rate on service fee'),
+  ('matching.radius.km', '20', 'INTEGER', 'Default PostGIS search radius in km'),
+  ('arrival.radius.meters', '500', 'INTEGER', 'Maximum GPS distance for arrival OTP verification')
 ON CONFLICT (setting_key) DO NOTHING;
 
 -- Seed Feature Flags
-INSERT INTO feature_flags (flag_name, flag_slug, description, is_enabled, rollout_percentage)
+INSERT INTO feature_flags (feature_name, feature_slug, description, is_enabled, rollout_percentage)
 VALUES
   ('AI Repair Copilot', 'ai-repair-copilot', 'Enable step-by-step AI Repair Copilot in Wave 1', TRUE, 100),
   ('Virtual Video Consultation', 'virtual-video-consultation', 'Enable Agora live video consultation (Wave 3)', FALSE, 0),
   ('Machine Sound FFT Analysis', 'machine-sound-analysis', 'Enable spectrogram audio fault detection (Wave 3)', FALSE, 0),
   ('Repair Time Auction', 'repair-time-auction', 'Enable technician bidding auction mode (Wave 3)', FALSE, 0)
-ON CONFLICT (flag_slug) DO NOTHING;
+ON CONFLICT (feature_slug) DO NOTHING;

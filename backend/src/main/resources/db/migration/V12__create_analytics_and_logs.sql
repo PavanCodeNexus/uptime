@@ -43,7 +43,7 @@ CREATE TABLE api_logs (
   user_agent        VARCHAR(300),
   request_id        VARCHAR(50),
   is_error          BOOLEAN DEFAULT FALSE,
-  created_at        TIMESTAMPTZ NOT NULL) PARTITION BY RANGE (EXTRACT(YEAR FROM created_at));
+  created_at        TIMESTAMPTZ NOT NULL);
 
 CREATE INDEX idx_api_logs_endpoint ON api_logs(endpoint);
 CREATE INDEX idx_api_logs_error    ON api_logs(is_error);
@@ -100,7 +100,7 @@ CREATE TABLE user_activity_logs (
   platform        VARCHAR(20) NOT NULL,
   metadata        JSONB,
   ip_address      VARCHAR(45),
-  created_at      TIMESTAMPTZ NOT NULL) PARTITION BY RANGE (EXTRACT(YEAR FROM created_at));
+  created_at      TIMESTAMPTZ NOT NULL);
 
 CREATE INDEX idx_activity_user ON user_activity_logs(user_id);
 CREATE INDEX idx_activity_type ON user_activity_logs(activity_type);

@@ -273,7 +273,7 @@ CREATE TABLE iot_sensor_readings (
   reading_unit    VARCHAR(20),
   is_anomaly      BOOLEAN DEFAULT FALSE,
   anomaly_score   DECIMAL(5,2),
-  recorded_at     TIMESTAMPTZ NOT NULL) PARTITION BY RANGE (EXTRACT(MONTH FROM recorded_at));
+  recorded_at     TIMESTAMPTZ NOT NULL);
 
 CREATE INDEX idx_iot_device ON iot_sensor_readings(device_id);
 CREATE INDEX idx_iot_anomaly ON iot_sensor_readings(is_anomaly);

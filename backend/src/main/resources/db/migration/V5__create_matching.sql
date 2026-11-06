@@ -82,7 +82,7 @@ CREATE TABLE live_location_tracking (
   heading_degrees DECIMAL(6,2),
   accuracy_meters DECIMAL(8,2),
   battery_level   INT,
-  recorded_at     TIMESTAMPTZ NOT NULL) PARTITION BY RANGE (EXTRACT(MONTH FROM recorded_at));
+  recorded_at     TIMESTAMPTZ NOT NULL);
 
 CREATE INDEX idx_live_tracking_job  ON live_location_tracking(job_id);
 CREATE INDEX idx_live_tracking_tech ON live_location_tracking(technician_id);

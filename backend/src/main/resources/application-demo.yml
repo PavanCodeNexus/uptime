@@ -18,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update   # demo only: Hibernate adds any entity columns/tables Flyway doesn't define yet
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

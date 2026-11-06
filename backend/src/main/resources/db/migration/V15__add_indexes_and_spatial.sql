@@ -22,49 +22,49 @@ ALTER TABLE mass_notifications ADD CONSTRAINT fk_mass_notifications_created_by F
 ALTER TABLE admin_users ADD CONSTRAINT fk_admin_users_role_id FOREIGN KEY (role_id) REFERENCES admin_roles(id);
 
 -- All GIST indexes for PostGIS spatial queries
-CREATE INDEX idx_user_addresses_location
+CREATE INDEX IF NOT EXISTS idx_user_addresses_location
   ON user_addresses USING GIST(location);
 
-CREATE INDEX idx_tech_locations_current
+CREATE INDEX IF NOT EXISTS idx_tech_locations_current
   ON technician_locations USING GIST(current_location);
 
-CREATE INDEX idx_tech_service_areas_center
+CREATE INDEX IF NOT EXISTS idx_tech_service_areas_center
   ON technician_service_areas USING GIST(center_location);
 
-CREATE INDEX idx_jobs_owner_location
+CREATE INDEX IF NOT EXISTS idx_jobs_owner_location
   ON jobs USING GIST(owner_location);
 
-CREATE INDEX idx_vehicle_fuel_location
+CREATE INDEX IF NOT EXISTS idx_vehicle_fuel_location
   ON vehicle_fuel_logs USING GIST(location);
 
-CREATE INDEX idx_insurance_claims_location
+CREATE INDEX IF NOT EXISTS idx_insurance_claims_location
   ON insurance_claims USING GIST(incident_location);
 
-CREATE INDEX idx_live_tracking_location
+CREATE INDEX IF NOT EXISTS idx_live_tracking_location
   ON live_location_tracking USING GIST(location);
 
-CREATE INDEX idx_iot_sensor_readings_device
+CREATE INDEX IF NOT EXISTS idx_iot_sensor_readings_device
   ON iot_sensor_readings(device_id);
 
 -- Full-text search
-CREATE INDEX idx_wiki_fulltext
+CREATE INDEX IF NOT EXISTS idx_wiki_fulltext
   ON wiki_articles
   USING gin(to_tsvector('english',
     title || ' ' || fault_category || ' ' || fault_description));
 
 -- Composite indexes for common queries
-CREATE INDEX idx_jobs_owner_status
+CREATE INDEX IF NOT EXISTS idx_jobs_owner_status
   ON jobs(owner_id, status)
   WHERE deleted_at IS NULL;
 
-CREATE INDEX idx_jobs_tech_status
+CREATE INDEX IF NOT EXISTS idx_jobs_tech_status
   ON jobs(technician_id, status)
   WHERE deleted_at IS NULL;
 
-CREATE INDEX idx_matching_scores_job_rank
+CREATE INDEX IF NOT EXISTS idx_matching_scores_job_rank
   ON matching_scores(job_id, rank_position);
 
-CREATE INDEX idx_notifications_recipient_unread
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient_unread
   ON notifications(recipient_id, is_read)
   WHERE is_read = FALSE;
 
