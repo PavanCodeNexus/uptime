@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../app.dart';
 import '../../core/config/app_config.dart';
 import '../../core/config/theme.dart';
+import '../../core/utils/kyc_and_fatigue_validators.dart';
 import '../models/tech_models.dart';
 import '../providers/tech_providers.dart';
 
 class TechRootScreen extends ConsumerStatefulWidget {
-  const TechRootScreen();
+  const TechRootScreen({super.key});
 
   @override
   ConsumerState<TechRootScreen> createState() => _TechRootScreenState();
 }
 
 class _TechRootScreenState extends ConsumerState<TechRootScreen> {
-  final _phoneCtrl = TextEditingController(text: '9880012345');
-  final _otpCtrl = TextEditingController(text: '123456');
   int _tabIndex = 0;
+  final _phoneCtrl = TextEditingController(text: '9845012345');
+  final _otpCtrl = TextEditingController(text: '123456');
+
+  static const _navItems = [
+    (Icons.space_dashboard_outlined, 'Field Radar'),
+    (Icons.navigation_outlined, 'Active Job & Copilot'),
+    (Icons.verified_user_outlined, 'KYC L0-L3 & MCQ'),
+    (Icons.account_balance_wallet_outlined, 'Earnings & UPI'),
+    (Icons.workspace_premium_outlined, 'Polygon NFTs'),
+    (Icons.calendar_month_outlined, 'Schedule & Wiki'),
+  ];
 
   @override
   void dispose() {
@@ -26,175 +37,523 @@ class _TechRootScreenState extends ConsumerState<TechRootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final techState = ref.watch(technicianStateProvider);
-    final tech = techState.valueOrNull;
+    final tech = ref.watch(technicianStateProvider).valueOrNull;
+    final themeMode = ref.watch(techThemeModeProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (tech == null) {
-      return Scaffold(
-        backgroundColor: UptimeTheme.blue700,
-        body: SafeArea(
+      return _buildProTechLoginScreen(context, isDark);
+    }
+
+    final pages = [
+      TechHomeScreen(
+        tech: tech,
+        onOpenActiveJob: () => setState(() => _tabIndex = 1),
+      ),
+      _ActiveFieldJobAndCopilotScreen(tech: tech),
+      _KycVerificationAndMcqWizardScreen(tech: tech),
+      _EarningsGstTdsAndUpiScreen(tech: tech),
+      const _PolygonNftBadgesScreen(),
+      const _AvailabilityRadiusAndWikiScreen(),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth >= 960;
+
+        return Scaffold(
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(68),
+            child: Container(
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF081022) : UptimeTheme.blue900,
+                border: Border(
+                  bottom: BorderSide(
+                    color: tech.isFatigueRestricted
+                        ? UptimeTheme.danger
+                        : UptimeTheme.teal500.withValues(alpha: 0.45),
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SafeArea(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [UptimeTheme.teal500, UptimeTheme.blue500],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'U↑',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          color: UptimeTheme.dark,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'UPTIME FIELD SPECIALIST',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.4,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            'L${tech.verificationLevel}${tech.isProvisional ? "-P Provisional" : " Master"} • ${tech.industryType}',
+                            style: const TextStyle(
+                              color: UptimeTheme.teal500,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: (tech.isFatigueRestricted
+                                ? UptimeTheme.danger
+                                : (tech.isOnline ? UptimeTheme.teal500 : UptimeTheme.gray500))
+                            .withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: tech.isFatigueRestricted
+                              ? UptimeTheme.danger
+                              : UptimeTheme.teal500,
+                        ),
+                      ),
+                      child: Text(
+                        tech.isFatigueRestricted
+                            ? 'MANDATORY REST'
+                            : (tech.isOnline ? 'DUTY ONLINE' : 'OFFLINE'),
+                        style: TextStyle(
+                          color: tech.isFatigueRestricted
+                              ? Colors.redAccent
+                              : UptimeTheme.teal500,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      tooltip: 'Toggle Dark / Light Theme',
+                      icon: Icon(
+                        themeMode == ThemeMode.dark
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
+                        color: Colors.amberAccent,
+                      ),
+                      onPressed: () => ref.read(techThemeModeProvider.notifier).toggle(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          body: Row(
+            children: [
+              if (isDesktop)
+                Container(
+                  width: 250,
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0B1326) : Colors.white,
+                    border: Border(
+                      right: BorderSide(
+                        color: isDark ? const Color(0xFF1E293B) : UptimeTheme.gray300,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [UptimeTheme.blue900, UptimeTheme.industrial],
+                          ),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tech.fullName,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 15,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${tech.ratingAvg}★ • ${tech.jobsCompleted} Jobs • Fatigue ${tech.fatigueScore}/100',
+                              style: const TextStyle(color: Colors.white70, fontSize: 11.5),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'UPI: ${tech.upiId}',
+                              style: const TextStyle(
+                                color: UptimeTheme.teal500,
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          itemCount: _navItems.length,
+                          itemBuilder: (_, idx) {
+                            final item = _navItems[idx];
+                            final selected = _tabIndex == idx;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                tileColor: selected
+                                    ? UptimeTheme.teal500.withValues(alpha: 0.16)
+                                    : Colors.transparent,
+                                leading: Icon(
+                                  item.$1,
+                                  color: selected ? UptimeTheme.teal500 : UptimeTheme.gray500,
+                                ),
+                                title: Text(
+                                  item.$2,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                                    color: selected
+                                        ? (isDark ? Colors.white : UptimeTheme.blue700)
+                                        : UptimeTheme.gray500,
+                                  ),
+                                ),
+                                onTap: () => setState(() => _tabIndex = idx),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: OutlinedButton.icon(
+                          onPressed: () => ref.read(technicianStateProvider.notifier).logout(),
+                          icon: const Icon(Icons.logout_rounded, size: 16),
+                          label: const Text('Sign Out'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              Expanded(
+                child: IndexedStack(
+                  index: _tabIndex,
+                  children: pages,
+                ),
+              ),
+            ],
+          ),
+          bottomNavigationBar: isDesktop
+              ? null
+              : NavigationBar(
+                  selectedIndex: _tabIndex,
+                  onDestinationSelected: (idx) => setState(() => _tabIndex = idx),
+                  destinations: _navItems
+                      .map(
+                        (e) => NavigationDestination(
+                          icon: Icon(e.$1),
+                          label: e.$2.split(' ').first,
+                        ),
+                      )
+                      .toList(),
+                ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProTechLoginScreen(BuildContext context, bool isDark) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF060C1A), Color(0xFF0D2347), Color(0xFF1A3C6E)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
-              child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'UPTIME Technician Portal',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: UptimeTheme.blue700,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 460),
+                child: Card(
+                  color: isDark ? const Color(0xFF13203B) : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(color: UptimeTheme.teal500.withValues(alpha: 0.45), width: 1.5),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [UptimeTheme.teal500, UptimeTheme.blue500],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text(
+                                'U↑',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: UptimeTheme.dark,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'UPTIME Technician Portal',
+                                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                                  ),
+                                  Text(
+                                    AppConfig.tagline,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: UptimeTheme.teal500,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        AppConfig.tagline,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: UptimeTheme.teal600,
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: UptimeTheme.teal500.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            '7-Step KYC L0–L3 • DPDP Act 2023 Masked Aadhaar • Mandatory Fatigue Safety • Instant UPI Payouts',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        controller: _phoneCtrl,
-                        keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(
-                          labelText: 'Technician Mobile (+91)',
-                          border: OutlineInputBorder(),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _phoneCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Registered Technician Mobile',
+                            prefixText: '+91 ',
+                            prefixIcon: Icon(Icons.phone_android_rounded),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _otpCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: '6-Digit OTP (Dev/Demo: 123456)',
-                          border: OutlineInputBorder(),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _otpCtrl,
+                          decoration: const InputDecoration(
+                            labelText: '6-Digit OTP (Dev/Demo: 123456)',
+                            prefixIcon: Icon(Icons.lock_outline_rounded),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => ref
-                            .read(technicianStateProvider.notifier)
-                            .loginWithOtp(_phoneCtrl.text.trim(), _otpCtrl.text.trim()),
-                        child: const Text('Verify OTP & Enter Field App'),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: UptimeTheme.teal500,
+                            foregroundColor: UptimeTheme.dark,
+                            minimumSize: const Size.fromHeight(50),
+                          ),
+                          onPressed: () async {
+                            await ref
+                                .read(technicianStateProvider.notifier)
+                                .loginWithOtp(_phoneCtrl.text.trim(), _otpCtrl.text.trim());
+                          },
+                          child: const Text(
+                            'Verify OTP & Enter Field App',
+                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(
-              Icons.circle,
-              size: 12,
-              color: tech.isAvailable ? UptimeTheme.teal500 : UptimeTheme.warning,
-            ),
-            const SizedBox(width: 8),
-            const Text('UPTIME Tech'),
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.18),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                tech.levelBadge,
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton.icon(
-            onPressed: () => ref
-                .read(technicianStateProvider.notifier)
-                .simulateFatigueLockout(restricted: !tech.isFatigueRestricted),
-            icon: Icon(
-              tech.isFatigueRestricted ? Icons.bedtime : Icons.bolt,
-              color: Colors.white,
-              size: 18,
-            ),
-            label: Text(
-              tech.isFatigueRestricted ? 'End Rest' : 'Test Fatigue',
-              style: const TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
-        ],
-      ),
-      body: IndexedStack(
-        index: _tabIndex,
-        children: [
-          _TechHomeTab(
-            tech: tech,
-            onOpenJobExecution: () => setState(() => _tabIndex = 1),
-          ),
-          _JobExecutionAndCopilotTab(tech: tech),
-          _KycVerificationWizardTab(tech: tech),
-          _EarningsAndBadgesTab(tech: tech),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tabIndex,
-        onTap: (idx) => setState(() => _tabIndex = idx),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.handyman_outlined), label: 'Active Job'),
-          BottomNavigationBarItem(icon: Icon(Icons.verified_user_outlined), label: 'KYC L0-L3'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), label: 'Earnings'),
-        ],
       ),
     );
   }
 }
 
-// ── TAB 1: TECH HOME SCREEN (Per DESIGN.md Appendix) ─────────────────────
-class _TechHomeTab extends ConsumerWidget {
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB 1: TECH HOME SCREEN (Greeting, Fatigue Banner, 60s Radar & Bento Stats)
+// ═══════════════════════════════════════════════════════════════════════════
+class TechHomeScreen extends ConsumerWidget {
   final TechnicianProfile tech;
-  final VoidCallback onOpenJobExecution;
+  final VoidCallback onOpenActiveJob;
 
-  const _TechHomeTab({
+  const TechHomeScreen({
+    super.key,
     required this.tech,
-    required this.onOpenJobExecution,
+    required this.onOpenActiveJob,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final job = ref.watch(fieldJobProvider).valueOrNull;
+    final activeJob = ref.watch(fieldJobProvider).valueOrNull;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       children: [
-        Text(
-          'Good morning, ${tech.fullName}! ₹${tech.todayEarningsInr} today',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+        // 1. Greeting Header + Verification Badge
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Wrap(
+              spacing: 14,
+              runSpacing: 10,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 26,
+                  backgroundColor: UptimeTheme.teal500.withValues(alpha: 0.2),
+                  child: const Icon(Icons.engineering_rounded, color: UptimeTheme.teal500, size: 28),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Good morning, ${tech.fullName}!',
+                      style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${tech.industryType} Specialist • Rating ${tech.ratingAvg}★ (${tech.jobsCompleted} jobs)',
+                      style: const TextStyle(fontSize: 13, color: UptimeTheme.gray500),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: UptimeTheme.teal500.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: UptimeTheme.teal500),
+                  ),
+                  child: Text(
+                    tech.isProvisional
+                        ? 'L${tech.verificationLevel}-P PROVISIONAL'
+                        : 'L${tech.verificationLevel} ${tech.verificationStatus}',
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w900,
+                      color: UptimeTheme.teal500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 12),
 
-        // MANDATORY FATIGUE REST-PERIOD BANNER (CORE-03 / RULES.md SB-00)
-        if (tech.isFatigueRestricted)
+        // 2. Online / Offline Toggle Card + Fatigue Simulator Switch
+        Card(
+          child: Column(
+            children: [
+              SwitchListTile(
+                title: Text(
+                  tech.isOnline && tech.isAvailable
+                      ? 'Status: ONLINE & AVAILABLE'
+                      : 'Status: OFFLINE / PAUSED',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: tech.isOnline && tech.isAvailable
+                        ? UptimeTheme.teal500
+                        : UptimeTheme.gray500,
+                  ),
+                ),
+                subtitle: Text(
+                  tech.isFatigueRestricted
+                      ? 'Dispatch paused: Mandatory rest period active (${tech.fatigueResetAt})'
+                      : 'PostGIS 5-second live GPS telemetry active • Consecutive Jobs: ${tech.consecutiveJobsCount}/5',
+                ),
+                value: tech.isOnline && tech.isAvailable,
+                activeThumbColor: UptimeTheme.teal500,
+                onChanged: tech.isFatigueRestricted
+                    ? null
+                    : (val) => ref
+                        .read(technicianStateProvider.notifier)
+                        .toggleAvailability(val, val),
+              ),
+              const Divider(height: 1),
+              SwitchListTile(
+                dense: true,
+                title: const Text(
+                  'Simulate Fatigue Alert (Test Mandatory Rest Banner & Exclusion Rule)',
+                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                ),
+                subtitle: const Text(
+                  'Triggers when consecutive_jobs >= 5 OR hours_worked_today >= 10.0h (SB-00)',
+                  style: TextStyle(fontSize: 11.5),
+                ),
+                value: tech.isFatigueRestricted,
+                activeThumbColor: UptimeTheme.danger,
+                onChanged: (val) => ref
+                    .read(technicianStateProvider.notifier)
+                    .simulateFatigueLockout(restricted: val),
+              ),
+            ],
+          ),
+        ),
+
+        // 3. Mandatory Fatigue Rest-Period Banner (RULES.md SB-00)
+        if (tech.isFatigueRestricted) ...[
+          const SizedBox(height: 14),
           Container(
-            margin: const EdgeInsets.only(bottom: 14),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: const Color(0xFFFEF2F2),
-              borderRadius: BorderRadius.circular(12),
+              color: UptimeTheme.danger.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: UptimeTheme.danger, width: 2),
             ),
             child: Column(
@@ -202,126 +561,168 @@ class _TechHomeTab extends ConsumerWidget {
               children: [
                 const Row(
                   children: [
-                    Icon(Icons.bedtime, color: UptimeTheme.danger),
-                    SizedBox(width: 8),
+                    Icon(Icons.bedtime_rounded, color: UptimeTheme.danger, size: 24),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Mandatory Rest Period Active (Fatigue Protection)',
+                        'Mandatory Rest Period Active — Fatigue Safety Guard (SB-00)',
                         style: TextStyle(
-                          fontWeight: FontWeight.w800,
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w900,
                           color: UptimeTheme.danger,
-                          fontSize: 15,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
-                  'You have worked ${tech.hoursWorkedToday} hrs (${tech.consecutiveJobsCount} consecutive jobs). '
-                  'Per safety policy, you are excluded from dispatch queries until: ${tech.fatigueResetAt}.',
-                  style: const TextStyle(fontSize: 13),
+                  'You have worked ${tech.hoursWorkedToday} hrs today (${tech.consecutiveJobsCount} consecutive jobs • Fatigue Score ${tech.fatigueScore}/100).\n'
+                  'Rest until: ${tech.fatigueResetAt ?? "Tomorrow 08:00 IST"}\n'
+                  'Your profile is excluded from matching queries (AND is_fatigue_restricted = FALSE) with zero rating penalty.',
+                  style: const TextStyle(fontSize: 13, height: 1.45),
                 ),
               ],
             ),
           ),
+        ],
 
-        // Big Online / Offline Availability Card
-        Card(
-          child: SwitchListTile(
-            title: Text(
-              tech.isAvailable ? '🟢 ONLINE & AVAILABLE' : '⚪ OFFLINE / RESTING',
-              style: const TextStyle(fontWeight: FontWeight.w800),
-            ),
-            subtitle: Text(
-              tech.isFatigueRestricted
-                  ? 'Locked during mandatory rest period'
-                  : (tech.isAvailable
-                      ? 'You are visible to machine/vehicle owners nearby'
-                      : 'Switch online to receive live job dispatches'),
-            ),
-            value: tech.isAvailable,
-            onChanged: tech.isFatigueRestricted
-                ? null
-                : (val) => ref
-                    .read(technicianStateProvider.notifier)
-                    .toggleAvailability(true, val),
-          ),
-        ),
-        const SizedBox(height: 14),
-
-        // Provisional L2-P Graduation Progress Banner
-        if (tech.isProvisional)
-          Container(
-            margin: const EdgeInsets.only(bottom: 14),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: UptimeTheme.blue50,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: UptimeTheme.blue700),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '🌟 Track B Provisional Ustad (L2-P): ${tech.provisionalCompletedJobs}/5 Jobs to Full L2',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: UptimeTheme.blue700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Eligible for non-emergency jobs ≤ ₹3,000. Complete 1 more job with ≥ 4.2⭐ rating to graduate automatically to full L2 Verified!',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-
-        // Active / Incoming Job Banner
-        if (job != null)
+        // 4. Provisional L2-P Graduation Progress Tracker
+        if (tech.isProvisional) ...[
+          const SizedBox(height: 14),
           Card(
-            color: UptimeTheme.blue700,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '⚡ ${job.jobNumber} · ${job.status}',
-                        style: const TextStyle(
-                          color: UptimeTheme.teal500,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        '₹${job.estimatedPayoutInr} + ₹${job.surgeBonusInr} Surge',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
                   Text(
-                    job.equipmentSummary,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                    'Provisional L2-P Graduation Progress (${tech.provisionalCompletedJobs} of 5 Supervised Jobs)',
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Current Cap: Non-emergency jobs <= ₹3,000 • Maintain >= 4.0★ across 5 jobs for automatic Full L2 upgrade.',
+                    style: TextStyle(fontSize: 12, color: UptimeTheme.gray500),
+                  ),
+                  const SizedBox(height: 10),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      value: (tech.provisionalCompletedJobs / 5.0).clamp(0.0, 1.0),
+                      minHeight: 8,
+                      color: UptimeTheme.teal500,
                     ),
                   ),
-                  Text(
-                    'AI Triage: ${job.aiPreDiagnosis}\n📍 ${job.ownerAddress}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                ],
+              ),
+            ),
+          ),
+        ],
+
+        const SizedBox(height: 16),
+
+        // 5. Today's Bento Stats Row
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            _TechStatTile(
+              label: "Today's Earnings",
+              value: '₹${tech.todayEarningsInr}',
+              sub: '+18% vs yesterday',
+              color: UptimeTheme.teal500,
+              icon: Icons.currency_rupee_rounded,
+            ),
+            _TechStatTile(
+              label: 'This Week Net',
+              value: '₹${tech.weeklyEarningsInr}',
+              sub: '90% payout ratio',
+              color: UptimeTheme.blue500,
+              icon: Icons.show_chart_rounded,
+            ),
+            _TechStatTile(
+              label: 'Fatigue Telemetry',
+              value: '${tech.fatigueScore}/100',
+              sub: '${tech.hoursWorkedToday}h / 10h max',
+              color: tech.isFatigueRestricted ? UptimeTheme.danger : UptimeTheme.warning,
+              icon: Icons.monitor_heart_outlined,
+            ),
+            const _TechStatTile(
+              label: 'Acceptance SLA',
+              value: '96.4%',
+              sub: 'Avg response 18s',
+              color: UptimeTheme.industrial,
+              icon: Icons.bolt_rounded,
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+
+        // 6. Incoming 60s Countdown Job Request Radar Card (Screen 15)
+        if (activeJob != null)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0D2347), Color(0xFF1A3C6E), Color(0xFF311068)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: UptimeTheme.teal500, width: 1.5),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: UptimeTheme.teal500,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        '⚡ ${activeJob.urgency} DISPATCH • ${activeJob.status}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          color: UptimeTheme.dark,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Est. ₹${activeJob.estimatedPayoutInr} + ₹${activeJob.surgeBonusInr} Surge',
+                      style: const TextStyle(
+                        color: UptimeTheme.teal500,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '${activeJob.jobNumber}: ${activeJob.equipmentSummary}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
                   ),
-                  const SizedBox(height: 12),
-                  ElevatedButton.icon(
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'AI Triage: ${activeJob.aiPreDiagnosis}\n📍 ${activeJob.ownerAddress}',
+                  style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: UptimeTheme.teal500,
                       foregroundColor: UptimeTheme.dark,
@@ -329,431 +730,562 @@ class _TechHomeTab extends ConsumerWidget {
                     onPressed: tech.isFatigueRestricted
                         ? null
                         : () {
-                            if (job.status == 'REQUESTED') {
-                              ref.read(fieldJobProvider.notifier).acceptJob(tech);
-                            }
-                            onOpenJobExecution();
+                            ref.read(fieldJobProvider.notifier).acceptJob(tech);
+                            onOpenActiveJob();
                           },
-                    icon: const Icon(Icons.navigation),
+                    icon: const Icon(Icons.check_circle_outline_rounded),
                     label: Text(
-                      job.status == 'REQUESTED'
-                          ? 'Accept Dispatch (60s Timer) →'
-                          : 'Open Active Job Execution →',
+                      activeJob.status == 'REQUESTED'
+                          ? 'Accept Job (00:47 Remaining) & Navigate'
+                          : 'Open Active Field Copilot →',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        const SizedBox(height: 16),
-
-        // Today's Stats Row per DESIGN.md Appendix
-        const Text(
-          "Today's Stats",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            _StatPill(label: 'Jobs', value: '${tech.jobsCompleted}'),
-            const SizedBox(width: 8),
-            _StatPill(label: 'Today', value: '₹${tech.todayEarningsInr}'),
-            const SizedBox(width: 8),
-            _StatPill(label: 'Rating', value: '${tech.ratingAvg}⭐'),
-            const SizedBox(width: 8),
-            const _StatPill(label: 'Accept', value: '94%'),
-          ],
-        ),
-        const SizedBox(height: 16),
-
-        // Weekly Earnings Preview Card
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Earnings Preview (Mon–Sun)',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '₹${tech.weeklyEarningsInr} this week ↑12% vs last week',
-                  style: const TextStyle(
-                    color: UptimeTheme.success,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
             ),
           ),
-        ),
       ],
     );
   }
 }
 
-class _StatPill extends StatelessWidget {
+class _TechStatTile extends StatelessWidget {
   final String label;
   final String value;
-  const _StatPill({required this.label, required this.value});
+  final String sub;
+  final Color color;
+  final IconData icon;
+
+  const _TechStatTile({
+    required this.label,
+    required this.value,
+    required this.sub,
+    required this.color,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: UptimeTheme.gray300),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 15,
-                color: UptimeTheme.blue700,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 11, color: UptimeTheme.gray500)),
-          ],
+    return SizedBox(
+      width: 220,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: color, size: 22),
+              const SizedBox(height: 10),
+              Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 2),
+              Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+              Text(sub, style: const TextStyle(fontSize: 11, color: UptimeTheme.gray500)),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ── TAB 2: NAVIGATION, 500M ARRIVAL OTP, FIELD AI COPILOT & COMPLETION ────
-class _JobExecutionAndCopilotTab extends ConsumerStatefulWidget {
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB 2: ACTIVE JOB NAVIGATION, 500m GEOFENCE OTP, AI COPILOT & SIGNATURE PAD
+// ═══════════════════════════════════════════════════════════════════════════
+class _ActiveFieldJobAndCopilotScreen extends ConsumerStatefulWidget {
   final TechnicianProfile tech;
-  const _JobExecutionAndCopilotTab({required this.tech});
+  const _ActiveFieldJobAndCopilotScreen({required this.tech});
 
   @override
-  ConsumerState<_JobExecutionAndCopilotTab> createState() =>
-      _JobExecutionAndCopilotTabState();
+  ConsumerState<_ActiveFieldJobAndCopilotScreen> createState() =>
+      _ActiveFieldJobAndCopilotScreenState();
 }
 
-class _JobExecutionAndCopilotTabState extends ConsumerState<_JobExecutionAndCopilotTab> {
-  final _arrivalOtpCtrl = TextEditingController(text: '123456');
+class _ActiveFieldJobAndCopilotScreenState
+    extends ConsumerState<_ActiveFieldJobAndCopilotScreen> {
+  final _otpCtrl = TextEditingController(text: '123456');
+  final _partNameCtrl = TextEditingController(text: 'Schneider M65 Contactor Coil');
+  final _partPriceCtrl = TextEditingController(text: '420');
+  bool _ownerSigned = true;
+  bool _liveStreamOn = false;
+  String? _statusMsg;
 
   @override
   void dispose() {
-    _arrivalOtpCtrl.dispose();
+    _otpCtrl.dispose();
+    _partNameCtrl.dispose();
+    _partPriceCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final job = ref.watch(fieldJobProvider).valueOrNull;
-    if (job == null) return const SizedBox.shrink();
+    if (job == null) {
+      return const Center(child: Text('No active field job.'));
+    }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       children: [
         Card(
-          child: ListTile(
-            title: Text(
-              '${job.jobNumber} · ${job.equipmentSummary}',
-              style: const TextStyle(fontWeight: FontWeight.w800),
-            ),
-            subtitle: Text('Status: ${job.status} · Owner: ${job.ownerName}'),
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // 500m Geofence + 6-Digit Arrival OTP Verification
-        if (!job.otpVerified)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '📍 Step 1: 500m GPS Geofence & Arrival OTP Verification',
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'GPS Distance to Owner: 120m (Within 500m Geofence ✅). Enter Owner 6-digit Arrival OTP:',
-                    style: TextStyle(fontSize: 13),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: _arrivalOtpCtrl,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Owner Arrival OTP (123456)',
-                      border: OutlineInputBorder(),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      '${job.jobNumber} • Status: ${job.status}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        color: UptimeTheme.teal500,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      ref
-                          .read(fieldJobProvider.notifier)
-                          .verifyArrivalOtp(_arrivalOtpCtrl.text.trim());
-                    },
-                    icon: const Icon(Icons.verified),
-                    label: const Text('Verify Arrival OTP & Start Repair'),
-                  ),
-                ],
-              ),
-            ),
-          )
-        else ...[
-          // Field AI Copilot + Checklist + Parts + SHA-256 Completion
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '🤖 Field AI Copilot & Mandatory Safety Checklist',
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-                  ),
-                  const SizedBox(height: 8),
-                  ...List.generate(job.checklistSteps.length, (i) {
-                    final checked = job.completedSteps.contains(i);
-                    return CheckboxListTile(
-                      value: checked,
-                      onChanged: (_) =>
-                          ref.read(fieldJobProvider.notifier).toggleChecklistStep(i),
-                      title: Text(
-                        job.checklistSteps[i],
-                        style: const TextStyle(fontSize: 13),
+                    OutlinedButton.icon(
+                      onPressed: () => setState(() => _liveStreamOn = !_liveStreamOn),
+                      icon: Icon(
+                        _liveStreamOn ? Icons.videocam : Icons.videocam_off_outlined,
+                        size: 16,
                       ),
-                    );
-                  }),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Spare Parts Logged: ₹${job.partsTotalInr}',
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: () =>
-                            ref.read(fieldJobProvider.notifier).addSparePart(450),
-                        icon: const Icon(Icons.add),
-                        label: const Text('+ Add OEM Relay (₹450)'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (job.status != 'COMPLETED')
-                    ElevatedButton.icon(
-                      onPressed: () => ref
-                          .read(fieldJobProvider.notifier)
-                          .completeJobWithSha256Lock(),
-                      icon: const Icon(Icons.lock_outline),
-                      label: const Text('Complete Job & Lock with SHA-256 Certificate'),
-                    )
-                  else
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF0FDF4),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: UptimeTheme.success),
-                      ),
-                      child: Text(
-                        '✅ Job Completed & Cryptographically Locked!\nSHA-256: ${job.sha256RecordHash}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: UptimeTheme.success,
+                      label: Text(_liveStreamOn ? 'Owner Live Stream ON' : 'Stream Repair to Owner'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  job.equipmentSummary,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Client: ${job.ownerName} • ${job.ownerAddress} • PostGIS Distance: 120m (<= 500m Geofence PASS)',
+                  style: const TextStyle(fontSize: 12.5, color: UptimeTheme.gray500),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _otpCtrl,
+                        enabled: !job.otpVerified,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter Owner 6-Digit Arrival OTP (123456)',
+                          prefixIcon: Icon(Icons.pin_outlined),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: job.otpVerified
+                          ? null
+                          : () {
+                              try {
+                                ref
+                                    .read(fieldJobProvider.notifier)
+                                    .verifyArrivalOtp(_otpCtrl.text.trim());
+                                setState(() {
+                                  _statusMsg =
+                                      '✅ Arrival OTP + 500m Geofence Verified! Job IN_PROGRESS.';
+                                });
+                              } catch (e) {
+                                setState(() => _statusMsg = '❌ $e');
+                              }
+                            },
+                      child: Text(job.otpVerified ? 'Verified ✓' : 'Verify OTP'),
+                    ),
+                  ],
+                ),
+                if (_statusMsg != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _statusMsg!,
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w800,
+                      color: UptimeTheme.teal500,
+                    ),
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
-        ],
+        ),
+        const SizedBox(height: 14),
+
+        // Step 2: AI Field Copilot & LOTO Safety Checklist
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.smart_toy_outlined, color: UptimeTheme.teal500),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Field AI Repair Copilot & Safety Checklist (CORE-06)',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  job.aiPreDiagnosis,
+                  style: const TextStyle(fontSize: 13, height: 1.4),
+                ),
+                const SizedBox(height: 10),
+                ...List.generate(job.checklistSteps.length, (idx) {
+                  final step = job.checklistSteps[idx];
+                  final checked = job.completedSteps.contains(idx);
+                  return CheckboxListTile(
+                    value: checked,
+                    onChanged: (_) =>
+                        ref.read(fieldJobProvider.notifier).toggleChecklistStep(idx),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      step,
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        // Step 3: Spare Parts Logger & Digital Owner Signature Pad
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Spare Parts Logged (Total: ₹${job.partsTotalInr}) & Digital Signature',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: _partNameCtrl,
+                        decoration: const InputDecoration(labelText: 'Part Name'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _partPriceCtrl,
+                        decoration: const InputDecoration(labelText: 'Cost (₹)'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        final cost = int.tryParse(_partPriceCtrl.text.trim()) ?? 0;
+                        if (cost > 0) {
+                          ref.read(fieldJobProvider.notifier).addSparePart(cost);
+                        }
+                      },
+                      child: const Text('Log Part'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _ownerSigned,
+                  onChanged: (v) => setState(() => _ownerSigned = v ?? true),
+                  title: const Text(
+                    'Owner Digital Touch Signature Captured & Before/After Photos Verified',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: UptimeTheme.teal500,
+                      foregroundColor: UptimeTheme.dark,
+                    ),
+                    onPressed: job.status == 'COMPLETED'
+                        ? null
+                        : () => ref.read(fieldJobProvider.notifier).completeJobWithSha256Lock(),
+                    icon: const Icon(Icons.lock_outline_rounded),
+                    label: Text(
+                      job.status == 'COMPLETED'
+                          ? 'Job Completed & Locked (SHA-256)'
+                          : 'Complete Job & Generate SHA-256 Certificate',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ),
+                if (job.sha256RecordHash != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: UptimeTheme.success.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: UptimeTheme.success),
+                    ),
+                    child: Text(
+                      '✅ Job Completed & Cryptographically Locked!\nSHA-256: ${job.sha256RecordHash}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: UptimeTheme.success,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
 }
 
-// ── TAB 3: 7-STEP KYC & SKILL VERIFICATION WIZARD (CORE-10) ───────────────
-class _KycVerificationWizardTab extends ConsumerStatefulWidget {
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB 3: 7-STEP KYC L0-L3 WIZARD & 10-QUESTION SAFETY MCQ SIMULATOR
+// ═══════════════════════════════════════════════════════════════════════════
+class _KycVerificationAndMcqWizardScreen extends StatefulWidget {
   final TechnicianProfile tech;
-  const _KycVerificationWizardTab({required this.tech});
+  const _KycVerificationAndMcqWizardScreen({required this.tech});
 
   @override
-  ConsumerState<_KycVerificationWizardTab> createState() =>
-      _KycVerificationWizardTabState();
+  State<_KycVerificationAndMcqWizardScreen> createState() =>
+      _KycVerificationAndMcqWizardScreenState();
 }
 
-class _KycVerificationWizardTabState extends ConsumerState<_KycVerificationWizardTab> {
-  final _aadhaarLast4Ctrl = TextEditingController(text: 'XXXX-XXXX-4829');
-  final _upiCtrl = TextEditingController(text: 'raju.tech@okaxis');
-  String _selectedTrade = 'CNC_SPINDLE_TECH';
-  String _selectedTrack = 'EXPERIENCED_USTAD';
-  String? _errorMsg;
-
-  @override
-  void dispose() {
-    _aadhaarLast4Ctrl.dispose();
-    _upiCtrl.dispose();
-    super.dispose();
-  }
+class _KycVerificationAndMcqWizardScreenState
+    extends State<_KycVerificationAndMcqWizardScreen> {
+  String _selectedTrade = 'HV_ELECTRICIAN';
+  String _selectedTrack = 'CERTIFIED';
+  final int _mcqTotalScorePercent = 90;
+  final int _mcqSafetyScore = 2;
 
   @override
   Widget build(BuildContext context) {
-    final tech = widget.tech;
+    final isRegulated =
+        KycAndFatigueValidators.regulatedTrades.contains(_selectedTrade.toUpperCase());
+    final passedMcq = KycAndFatigueValidators.evaluateSkillTest(
+      totalScorePercent: _mcqTotalScorePercent,
+      safetyQuestionsCorrect: _mcqSafetyScore,
+    );
+
+    final steps = [
+      ('Step 1 (L0)', 'Phone OTP + Trade Selection', 'Selected: $_selectedTrade'),
+      (
+        'Step 2 (Track)',
+        'Track A (Certified Pro) vs Track B (Experienced Ustad)',
+        isRegulated
+            ? 'Regulated Trade ($_selectedTrade): Strictly locked to Track A (Government License Mandatory)'
+            : 'Selected Track: $_selectedTrack',
+      ),
+      (
+        'Step 3 (L1 — DPDP Act 2023)',
+        'DigiLocker Masked Aadhaar + Selfie Liveness',
+        'Stored Masked Format: XXXX-XXXX-4829 (12-digit storage strictly prohibited)',
+      ),
+      (
+        'Step 4',
+        'Magic-Bytes Trade Document Upload',
+        'CEA Wireman Permit PDF + NCVT ITI Certificate Verified (PDF/JPEG magic bytes)',
+      ),
+      (
+        'Step 5',
+        '10-Question Trade & LOTO Safety MCQ Exam',
+        'Score: $_mcqTotalScorePercent% • Safety Questions: $_mcqSafetyScore/2 (${passedMcq ? "PASSED ✓" : "FAILED"})',
+      ),
+      (
+        'Step 6 (L2-P → L2)',
+        'Provisional L2-P Graduation Rules',
+        'First 5 non-emergency jobs <= ₹3,000 with >= 4.0★ average auto-graduates to Full L2',
+      ),
+      (
+        'Step 7 (L3 Master)',
+        'Master Technician & Polygon NFT Credential',
+        'Unlocked at 50+ completed jobs, >= 4.7★ rating & OEM assessment',
+      ),
+    ];
+
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       children: [
-        Text(
-          '7-Step KYC & Skill Proof Wizard (Current: ${tech.levelBadge})',
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 6),
         const Text(
-          'DPDP Act 2023 Compliant: Never enter a 12-digit Aadhaar number. Only last 4 digits + DigiLocker token are stored.',
-          style: TextStyle(fontSize: 12, color: UptimeTheme.gray700),
+          '7-Step Technician KYC & Regulated Trade Verification (L0 → L3)',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 12),
-        if (_errorMsg != null)
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF2F2),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: UptimeTheme.danger),
-            ),
-            child: Text(
-              _errorMsg!,
-              style: const TextStyle(
-                color: UptimeTheme.danger,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Steps 1–3 & 6: L1 Identity + Selfie Liveness + UPI Penny-Drop',
-                  style: TextStyle(fontWeight: FontWeight.w800),
+                  'Interactive Trade & Track Validator',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: _aadhaarLast4Ctrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Masked Aadhaar (Last 4 Digits Only)',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: _upiCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'UPI ID for ₹1 Penny-Drop Verification',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    try {
-                      setState(() => _errorMsg = null);
-                      ref.read(technicianStateProvider.notifier).completeL1Identity(
-                            aadhaarMaskedInput: _aadhaarLast4Ctrl.text.trim(),
-                            upiId: _upiCtrl.text.trim(),
-                          );
-                    } catch (e) {
-                      setState(() => _errorMsg = e.toString());
-                    }
-                  },
-                  child: const Text('Verify L1 Identity & Penny-Drop'),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    'HV_ELECTRICIAN',
+                    'BOILER_OPERATOR',
+                    'COMMERCIAL_HVAC_GAS',
+                    'CNC_MILLWRIGHT',
+                    'EV_DIAGNOSTIC_TECH',
+                  ].map((trade) {
+                    return ChoiceChip(
+                      label: Text(trade),
+                      selected: _selectedTrade == trade,
+                      onSelected: (_) => setState(() {
+                        _selectedTrade = trade;
+                        if (KycAndFatigueValidators.regulatedTrades.contains(trade)) {
+                          _selectedTrack = 'CERTIFIED';
+                        }
+                      }),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
+        ...steps.map(
+          (s) => Card(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: UptimeTheme.teal500,
+                child: Icon(Icons.check, color: UptimeTheme.dark, size: 18),
+              ),
+              title: Text(
+                '${s.$1}: ${s.$2}',
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+              ),
+              subtitle: Text(s.$3, style: const TextStyle(fontSize: 12.5)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB 4: EARNINGS, 10% PLATFORM FEE, 1% TDS LEDGER & INSTANT UPI PAYOUTS
+// ═══════════════════════════════════════════════════════════════════════════
+class _EarningsGstTdsAndUpiScreen extends ConsumerWidget {
+  final TechnicianProfile tech;
+  const _EarningsGstTdsAndUpiScreen({required this.tech});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const grossMonth = 38450.0;
+    const platformFee = grossMonth * 0.10;
+    const tds194c = grossMonth * 0.01;
+    const netPayout = grossMonth - platformFee - tds194c;
+
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [UptimeTheme.blue900, UptimeTheme.blue700, Color(0xFF0E7490)],
+            ),
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'AVAILABLE ESCROW WALLET BALANCE',
+                style: TextStyle(
+                  color: UptimeTheme.teal500,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '₹${tech.walletBalanceInr}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 34,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Linked Instant UPI VPA: ${tech.upiId} • Zero IMPS/UPI Withdrawal Fee',
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: UptimeTheme.teal500,
+                  foregroundColor: UptimeTheme.dark,
+                ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Instant UPI Payout sent to ${tech.upiId} ✓')),
+                  );
+                },
+                icon: const Icon(Icons.bolt_rounded),
+                label: const Text(
+                  'Withdraw Full Balance to UPI Now',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Steps 4–5: Trade Track Selection & L2 / L2-P Skill Proof',
-                  style: TextStyle(fontWeight: FontWeight.w800),
+                  'Monthly Financial Statement & Section 194C TDS Breakdown',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
                 ),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  value: _selectedTrade,
-                  decoration: const InputDecoration(
-                    labelText: 'Select Trade',
-                    border: OutlineInputBorder(),
+                const SizedBox(height: 12),
+                Text('Gross Job Value (30 Days): ₹${grossMonth.toStringAsFixed(0)}'),
+                Text('UPTIME Platform Fee (10%): −₹${platformFee.toStringAsFixed(0)}'),
+                Text('Income Tax TDS u/s 194C (1%): −₹${tds194c.toStringAsFixed(0)}'),
+                const Divider(height: 20),
+                Text(
+                  'Net Specialist Take-Home (89%): ₹${netPayout.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: UptimeTheme.teal500,
                   ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'CNC_SPINDLE_TECH',
-                      child: Text('CNC Spindle Mechanic (Non-Regulated)'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'HV_ELECTRICIAN',
-                      child: Text('High-Voltage Electrician (REGULATED — Track A Only)'),
-                    ),
-                  ],
-                  onChanged: (v) => setState(() => _selectedTrade = v ?? 'CNC_SPINDLE_TECH'),
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: _selectedTrack,
-                  decoration: const InputDecoration(
-                    labelText: 'Verification Track',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'EXPERIENCED_USTAD',
-                      child: Text('Track B — Experienced Ustad (MCQ + Video + Reference → L2-P)'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'CERTIFIED',
-                      child: Text('Track A — Certified (ITI / Diploma / Statutory License → L2)'),
-                    ),
-                  ],
-                  onChanged: (v) => setState(() => _selectedTrack = v ?? 'EXPERIENCED_USTAD'),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    try {
-                      setState(() => _errorMsg = null);
-                      ref.read(technicianStateProvider.notifier).selectTradeAndTrack(
-                            tradeCode: _selectedTrade,
-                            track: _selectedTrack,
-                          );
-                      ref
-                          .read(technicianStateProvider.notifier)
-                          .submitSkillProofAndActivateL2P(
-                            totalScore: 85,
-                            safetyCorrect: 2,
-                          );
-                    } catch (e) {
-                      setState(() => _errorMsg = e.toString());
-                    }
-                  },
-                  child: const Text('Submit MCQ (85%, 2/2 Safety) + Video Proof'),
                 ),
               ],
             ),
@@ -764,40 +1296,130 @@ class _KycVerificationWizardTabState extends ConsumerState<_KycVerificationWizar
   }
 }
 
-// ── TAB 4: EARNINGS, WALLET & NFT SKILL BADGES ⭐ ──────────────────────────
-class _EarningsAndBadgesTab extends ConsumerWidget {
-  final TechnicianProfile tech;
-  const _EarningsAndBadgesTab({required this.tech});
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB 5: POLYGON BLOCKCHAIN NFT SKILL BADGES (IND-U09)
+// ═══════════════════════════════════════════════════════════════════════════
+class _PolygonNftBadgesScreen extends StatelessWidget {
+  const _PolygonNftBadgesScreen();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final badges = [
+      (
+        'CEA High-Voltage & Arc-Flash Master',
+        'Polygon ERC-721 Token #409',
+        '0x71c...98a4f2',
+        'EARNED • ON-CHAIN VERIFIED',
+        UptimeTheme.teal500,
+      ),
+      (
+        'Zero-Rework 100 CNC Spindle Repairs',
+        'Polygon ERC-721 Token #812',
+        '0x94b...31e0d9',
+        'EARNED • ON-CHAIN VERIFIED',
+        Colors.amberAccent,
+      ),
+      (
+        'EV 400V/800V Battery Pack Isolation Specialist',
+        'Polygon ERC-721 Token #954',
+        '0x38f...11c8a0',
+        'EARNED • ON-CHAIN VERIFIED',
+        UptimeTheme.industrial,
+      ),
+    ];
+
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       children: [
-        Card(
-          child: ListTile(
-            leading: const Icon(Icons.account_balance_wallet, color: UptimeTheme.blue700, size: 32),
-            title: Text(
-              'Withdrawable Wallet Balance: ₹${tech.walletBalanceInr}',
-              style: const TextStyle(fontWeight: FontWeight.w800),
+        const Text(
+          'On-Chain Polygon NFT Skill Badges ⭐ (IND-U09)',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Portable, tamper-proof blockchain credentials owned permanently by the technician',
+          style: TextStyle(fontSize: 13, color: UptimeTheme.gray500),
+        ),
+        const SizedBox(height: 16),
+        ...badges.map(
+          (b) => Card(
+            margin: const EdgeInsets.only(bottom: 14),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(18),
+              leading: CircleAvatar(
+                radius: 24,
+                backgroundColor: b.$5.withValues(alpha: 0.2),
+                child: Icon(Icons.workspace_premium_rounded, color: b.$5, size: 28),
+              ),
+              title: Text(
+                b.$1,
+                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  '${b.$2} • Tx: ${b.$3}\nStatus: ${b.$4}',
+                  style: const TextStyle(height: 1.4, fontSize: 12.5),
+                ),
+              ),
+              isThreeLine: true,
             ),
-            subtitle: Text('Instant UPI Payout to ${tech.upiId}'),
           ),
         ),
-        const SizedBox(height: 12),
+      ],
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB 6: AVAILABILITY CALENDAR, SERVICE RADIUS SLIDER & FIELD WIKI
+// ═══════════════════════════════════════════════════════════════════════════
+class _AvailabilityRadiusAndWikiScreen extends StatefulWidget {
+  const _AvailabilityRadiusAndWikiScreen();
+
+  @override
+  State<_AvailabilityRadiusAndWikiScreen> createState() =>
+      _AvailabilityRadiusAndWikiScreenState();
+}
+
+class _AvailabilityRadiusAndWikiScreenState
+    extends State<_AvailabilityRadiusAndWikiScreen> {
+  double _radiusKm = 12.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
         const Text(
-          'On-Chain Verifiable NFT Skill Badges ⭐',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          'Service Area Radius, Shift Schedule & Field Wiki',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
         ),
-        const SizedBox(height: 8),
-        const Card(
-          child: ListTile(
-            leading: Icon(Icons.military_tech, color: UptimeTheme.teal600, size: 34),
-            title: Text(
-              'CNC Spindle & High-Voltage Safety Badge #0089',
-              style: TextStyle(fontWeight: FontWeight.w700),
+        const SizedBox(height: 14),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'PostGIS Dispatch Radius: ${_radiusKm.toStringAsFixed(0)} km around Peenya / Yeshwanthpur',
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                ),
+                Slider(
+                  value: _radiusKm,
+                  min: 2,
+                  max: 25,
+                  divisions: 23,
+                  label: '${_radiusKm.toStringAsFixed(0)} km',
+                  onChanged: (v) => setState(() => _radiusKm = v),
+                ),
+                const Text(
+                  'Shift Hours: Mon–Sat 08:00 IST – 18:00 IST (Auto-locks after 10.0h active work per Fatigue Rule SB-00)',
+                  style: TextStyle(fontSize: 12.5, color: UptimeTheme.gray500),
+                ),
+              ],
             ),
-            subtitle: Text('Soulbound Credential · Zero Safety Violations · 4.9⭐ Avg'),
           ),
         ),
       ],

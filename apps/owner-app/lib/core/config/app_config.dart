@@ -1,4 +1,5 @@
 class AppConfig {
+  static const String appName = 'UPTIME Owner';
   static const String tagline = 'Downtime ends here.';
   static const String _flavor = String.fromEnvironment(
     'FLAVOR',
