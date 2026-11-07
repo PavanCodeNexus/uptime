@@ -27,6 +27,7 @@ public class TechnicianService {
     private final TechnicianRepository technicianRepository;
     private final TechnicianSkillRepository skillRepository;
     private final TechnicianDocumentRepository documentRepository;
+    private final com.uptime.common.service.MediaStorageService mediaStorageService;
     private final TechnicianIdentityVerificationRepository identityRepository;
     private final TechnicianTradeVerificationRepository tradeVerificationRepository;
     private final TechnicianSkillTestAttemptRepository testAttemptRepository;
@@ -133,7 +134,9 @@ public class TechnicianService {
         String sha256 = fileBytes != null && fileBytes.length > 0
                 ? HashUtils.sha256(Base64.getEncoder().encodeToString(fileBytes))
                 : HashUtils.sha256(docType + ":" + tech.getId() + ":" + Instant.now());
-        String storageRef = "private://kyc-vault/" + tech.getId() + "/" + docType.toLowerCase() + "-" + UUID.randomUUID() + ".pdf";
+        String storageRef = (fileBytes != null && fileBytes.length > 0)
+                ? mediaStorageService.uploadMedia(fileBytes, docType.toLowerCase() + ".pdf", "application/pdf", "uptime/kyc/" + tech.getId())
+                : ("private://kyc-vault/" + tech.getId() + "/" + docType.toLowerCase() + "-" + UUID.randomUUID() + ".pdf");
 
         TechnicianDocument doc = TechnicianDocument.builder()
                 .technicianId(tech.getId())

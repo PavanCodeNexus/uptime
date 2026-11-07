@@ -20,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserAddressRepository addressRepository;
+    private final com.uptime.common.service.MediaStorageService mediaStorageService;
 
     @Transactional(readOnly = true)
     public UserDTO getMe(Long userId) {
@@ -57,7 +58,8 @@ public class UserService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodes.RESOURCE_NOT_FOUND, "User not found"));
-        user.setProfilePhotoUrl("https://res.cloudinary.com/uptime/image/upload/v1/users/" + userId + "_" + UUID.randomUUID() + ".jpg");
+        String photoUrl = mediaStorageService.uploadMultipart(file, "uptime/users");
+        user.setProfilePhotoUrl(photoUrl);
         return toDTO(userRepository.save(user));
     }
 
