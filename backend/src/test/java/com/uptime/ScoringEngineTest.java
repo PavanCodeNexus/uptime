@@ -9,16 +9,12 @@ import com.uptime.modules.technician.repository.TechnicianRepository;
 import com.uptime.modules.technician.repository.TechnicianSkillRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
+import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 class ScoringEngineTest {
 
@@ -28,12 +24,44 @@ class ScoringEngineTest {
     private JobRepository jobRepository;
     private MatchingService matchingService;
 
+    private List<Technician> fakeEligibleTechs = new ArrayList<>();
+    private Map<Long, Job> fakeJobs = new HashMap<>();
+
+    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
         scoringEngine = new ScoringEngine();
-        technicianRepository = Mockito.mock(TechnicianRepository.class);
-        skillRepository = Mockito.mock(TechnicianSkillRepository.class);
-        jobRepository = Mockito.mock(JobRepository.class);
+        fakeEligibleTechs.clear();
+        fakeJobs.clear();
+
+        technicianRepository = (TechnicianRepository) Proxy.newProxyInstance(
+                TechnicianRepository.class.getClassLoader(),
+                new Class<?>[]{TechnicianRepository.class},
+                (proxy, method, args) -> {
+                    if ("findAvailableEligibleTechnicians".equals(method.getName())) {
+                        return fakeEligibleTechs;
+                    }
+                    return null;
+                }
+        );
+
+        skillRepository = (TechnicianSkillRepository) Proxy.newProxyInstance(
+                TechnicianSkillRepository.class.getClassLoader(),
+                new Class<?>[]{TechnicianSkillRepository.class},
+                (proxy, method, args) -> Collections.emptyList()
+        );
+
+        jobRepository = (JobRepository) Proxy.newProxyInstance(
+                JobRepository.class.getClassLoader(),
+                new Class<?>[]{JobRepository.class},
+                (proxy, method, args) -> {
+                    if ("findById".equals(method.getName()) && args != null && args.length > 0) {
+                        return Optional.ofNullable(fakeJobs.get(args[0]));
+                    }
+                    return Optional.empty();
+                }
+        );
+
         matchingService = new MatchingService(technicianRepository, skillRepository, jobRepository, scoringEngine);
     }
 
@@ -103,9 +131,8 @@ class ScoringEngineTest {
                 .ratingAvg(new BigDecimal("5.00"))
                 .build();
 
-        when(jobRepository.findById(jobId)).thenReturn(Optional.of(job));
-        when(technicianRepository.findAvailableEligibleTechnicians()).thenReturn(List.of(activeTech, fatiguedTech));
-        when(skillRepository.findByTechnicianIdAndIndustry(any(), any())).thenReturn(List.of());
+        fakeJobs.put(jobId, job);
+        fakeEligibleTechs.addAll(List.of(activeTech, fatiguedTech));
 
         List<Map<String, Object>> results = matchingService.findRankedCandidates(jobId);
 
@@ -136,8 +163,8 @@ class ScoringEngineTest {
                 .aiEstimatedCostMax(new BigDecimal("4500.00"))
                 .build();
 
-        when(jobRepository.findById(jobId)).thenReturn(Optional.of(highValueJob));
-        when(technicianRepository.findAvailableEligibleTechnicians()).thenReturn(List.of(provisionalTech));
+        fakeJobs.put(jobId, highValueJob);
+        fakeEligibleTechs.add(provisionalTech);
 
         List<Map<String, Object>> results = matchingService.findRankedCandidates(jobId);
         assertTrue(results.isEmpty(), "Provisional L2-P technician must be excluded from jobs > INR 3,000");

@@ -38,9 +38,7 @@ public class MediaStorageService {
     @Value("${uptime.media.upload-dir:./uploads}")
     private String localUploadDir;
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(15))
-            .build();
+    private volatile HttpClient httpClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -69,6 +67,17 @@ public class MediaStorageService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to read upload file bytes", e);
         }
+    }
+
+    private HttpClient getHttpClient() {
+        if (httpClient == null) {
+            synchronized (this) {
+                if (httpClient == null) {
+                    httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build();
+                }
+            }
+        }
+        return httpClient;
     }
 
     private boolean hasCloudinaryConfig() {
@@ -109,7 +118,7 @@ public class MediaStorageService {
                 .POST(HttpRequest.BodyPublishers.ofString(form.toString()))
                 .build();
 
-        HttpResponse<String> resp = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> resp = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         if (resp.statusCode() / 100 != 2) {
             throw new RuntimeException("Cloudinary HTTP " + resp.statusCode() + ": " + resp.body());
         }

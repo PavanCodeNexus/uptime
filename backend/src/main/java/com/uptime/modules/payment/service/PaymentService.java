@@ -7,7 +7,21 @@ import com.uptime.modules.payment.entity.Invoice;
 import com.uptime.modules.payment.entity.Payment;
 import com.uptime.modules.payment.repository.InvoiceRepository;
 import com.uptime.modules.payment.repository.PaymentRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.time.Duration;
+import java.util.Base64;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +30,18 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService {
+
+    @Value("${uptime.razorpay.key-id:}")
+    private String razorpayKeyId;
+
+    @Value("${uptime.razorpay.key-secret:}")
+    private String razorpayKeySecret;
+
+    private volatile HttpClient httpClient;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final PaymentRepository paymentRepository;
     private final InvoiceRepository invoiceRepository;
