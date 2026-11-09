@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",
                                 "/api/v1/admin/auth/login",
                                 "/api/v1/admin/auth/verify-2fa",
+                                "/api/v1/payments/webhook",
                                 "/api/v1/health",
                                 "/actuator/health",
                                 "/actuator/info",

@@ -12,7 +12,7 @@
 *.jks
 google-services.json
 GoogleService-Info.plist
-firebase-adminsdk-*.json
+firebase-adminsdk*.json
 
 # ── Backend (Spring Boot / Java / Maven) ─────────────────────────────────────
 target/

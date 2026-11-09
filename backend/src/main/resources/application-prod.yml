@@ -30,10 +30,14 @@ spring:
         enabled: true
 
   rabbitmq:
+    addresses: ${RABBIT_URL:}
     host: ${RABBIT_HOST:localhost}
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USER:uptime}
     password: ${RABBIT_PASSWORD}
+    virtual-host: ${RABBIT_VHOST:${RABBIT_USER:uptime}}
+    ssl:
+      enabled: ${RABBIT_SSL:false}
 
   cache:
     type: redis
