@@ -6,6 +6,7 @@ import '../../core/config/theme.dart';
 import '../../core/utils/kyc_and_fatigue_validators.dart';
 import '../models/tech_models.dart';
 import '../providers/tech_providers.dart';
+import 'tech_40_screens_catalog.dart';
 
 class TechRootScreen extends ConsumerStatefulWidget {
   const TechRootScreen({super.key});
@@ -38,6 +39,7 @@ class _TechRootScreenState extends ConsumerState<TechRootScreen> {
   @override
   Widget build(BuildContext context) {
     final tech = ref.watch(technicianStateProvider).valueOrNull;
+    final baseZone = ref.watch(techBaseZoneProvider);
     final themeMode = ref.watch(techThemeModeProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -49,6 +51,7 @@ class _TechRootScreenState extends ConsumerState<TechRootScreen> {
       TechHomeScreen(
         tech: tech,
         onOpenActiveJob: () => setState(() => _tabIndex = 1),
+        onJumpToTab: (idx) => setState(() => _tabIndex = idx),
       ),
       _ActiveFieldJobAndCopilotScreen(tech: tech),
       _KycVerificationAndMcqWizardScreen(tech: tech),
@@ -63,80 +66,120 @@ class _TechRootScreenState extends ConsumerState<TechRootScreen> {
 
         return Scaffold(
           appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(68),
+            preferredSize: const Size.fromHeight(72),
             child: Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF081022) : UptimeTheme.blue900,
+                color: isDark ? const Color(0xFF081022) : Colors.white,
                 border: Border(
                   bottom: BorderSide(
                     color: tech.isFatigueRestricted
                         ? UptimeTheme.danger
-                        : UptimeTheme.teal500.withValues(alpha: 0.45),
+                        : (isDark
+                            ? UptimeTheme.teal500.withValues(alpha: 0.45)
+                            : const Color(0xFFE2E8F0)),
                     width: 1.5,
                   ),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SafeArea(
                 child: Row(
                   children: [
+                    // Zomato / Urban Company Partner Style Base-Zone Location Selector
+                    Expanded(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () => showTechBaseZonePickerSheet(context, ref),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: UptimeTheme.blue500.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.location_on_rounded,
+                                  color: UptimeTheme.blue500,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            baseZone.label,
+                                            style: TextStyle(
+                                              color: isDark ? Colors.white : UptimeTheme.dark,
+                                              fontSize: 14.5,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          Icons.keyboard_arrow_down_rounded,
+                                          size: 18,
+                                          color: isDark ? Colors.white70 : UptimeTheme.dark,
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      '${baseZone.addressLine} • ${baseZone.radarBadge}',
+                                      style: TextStyle(
+                                        color: isDark ? Colors.white70 : UptimeTheme.gray500,
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // 40 Screens Directory Button
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        minimumSize: const Size(0, 36),
+                      ),
+                      onPressed: () => showTechAll40ScreensSheet(
+                        context,
+                        onJumpToTab: (idx) => setState(() => _tabIndex = idx),
+                      ),
+                      icon: const Icon(Icons.grid_view_rounded, size: 15),
+                      label: const Text(
+                        '40 Screens',
+                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [UptimeTheme.teal500, UptimeTheme.blue500],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        'U↑',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          color: UptimeTheme.dark,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'UPTIME FIELD SPECIALIST',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.4,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            'L${tech.verificationLevel}${tech.isProvisional ? "-P Provisional" : " Master"} • ${tech.industryType}',
-                            style: const TextStyle(
-                              color: UptimeTheme.teal500,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: (tech.isFatigueRestricted
                                 ? UptimeTheme.danger
                                 : (tech.isOnline ? UptimeTheme.teal500 : UptimeTheme.gray500))
-                            .withValues(alpha: 0.2),
+                            .withValues(alpha: 0.16),
                         borderRadius: BorderRadius.circular(999),
                         border: Border.all(
                           color: tech.isFatigueRestricted
                               ? UptimeTheme.danger
-                              : UptimeTheme.teal500,
+                              : UptimeTheme.teal600,
                         ),
                       ),
                       child: Text(
@@ -145,21 +188,21 @@ class _TechRootScreenState extends ConsumerState<TechRootScreen> {
                             : (tech.isOnline ? 'DUTY ONLINE' : 'OFFLINE'),
                         style: TextStyle(
                           color: tech.isFatigueRestricted
-                              ? Colors.redAccent
-                              : UptimeTheme.teal500,
+                              ? UptimeTheme.danger
+                              : UptimeTheme.teal600,
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     IconButton(
-                      tooltip: 'Toggle Dark / Light Theme',
+                      tooltip: 'Toggle Clean White / Industrial Field Dark Mode',
                       icon: Icon(
                         themeMode == ThemeMode.dark
                             ? Icons.light_mode_outlined
                             : Icons.dark_mode_outlined,
-                        color: Colors.amberAccent,
+                        color: isDark ? Colors.amberAccent : UptimeTheme.blue700,
                       ),
                       onPressed: () => ref.read(techThemeModeProvider.notifier).toggle(),
                     ),
@@ -296,125 +339,122 @@ class _TechRootScreenState extends ConsumerState<TechRootScreen> {
 
   Widget _buildProTechLoginScreen(BuildContext context, bool isDark) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF060C1A), Color(0xFF0D2347), Color(0xFF1A3C6E)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-                child: Card(
-                  color: isDark ? const Color(0xFF13203B) : Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    side: BorderSide(color: UptimeTheme.teal500.withValues(alpha: 0.45), width: 1.5),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [UptimeTheme.teal500, UptimeTheme.blue500],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                'U↑',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  color: UptimeTheme.dark,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'UPTIME Technician Portal',
-                                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
-                                  ),
-                                  Text(
-                                    AppConfig.tagline,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: UptimeTheme.teal500,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: UptimeTheme.teal500.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            '7-Step KYC L0–L3 • DPDP Act 2023 Masked Aadhaar • Mandatory Fatigue Safety • Instant UPI Payouts',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: _phoneCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'Registered Technician Mobile',
-                            prefixText: '+91 ',
-                            prefixIcon: Icon(Icons.phone_android_rounded),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _otpCtrl,
-                          decoration: const InputDecoration(
-                            labelText: '6-Digit OTP (Dev/Demo: 123456)',
-                            prefixIcon: Icon(Icons.lock_outline_rounded),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: UptimeTheme.teal500,
-                            foregroundColor: UptimeTheme.dark,
-                            minimumSize: const Size.fromHeight(50),
-                          ),
-                          onPressed: () async {
-                            await ref
-                                .read(technicianStateProvider.notifier)
-                                .loginWithOtp(_phoneCtrl.text.trim(), _otpCtrl.text.trim());
-                          },
-                          child: const Text(
-                            'Verify OTP & Enter Field App',
-                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
-                          ),
-                        ),
-                      ],
+      backgroundColor: isDark ? const Color(0xFF060C1A) : Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Official T01 Pitch-Black Splash Screen Lockup (Matches User Uploaded Image)
+                  UptimeTechSplashLockup(
+                    onContinue: () => showTechAll40ScreensSheet(
+                      context,
+                      onJumpToTab: (idx) => setState(() => _tabIndex = idx),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  Card(
+                    color: isDark ? const Color(0xFF13203B) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: BorderSide(
+                        color: UptimeTheme.teal500.withValues(alpha: 0.45),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.engineering_rounded,
+                                color: UptimeTheme.blue700,
+                                size: 28,
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'UPTIME Technician Portal',
+                                      style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                                    ),
+                                    Text(
+                                      AppConfig.tagline,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: UptimeTheme.teal600,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: UptimeTheme.teal500.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              '7-Step KYC L0–L3 • DPDP Act 2023 Masked Aadhaar • Mandatory Fatigue Safety • Instant UPI Payouts',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _phoneCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Registered Technician Mobile',
+                              prefixText: '+91 ',
+                              prefixIcon: Icon(Icons.phone_android_rounded),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _otpCtrl,
+                            decoration: const InputDecoration(
+                              labelText: '6-Digit OTP (Dev/Demo: 123456)',
+                              prefixIcon: Icon(Icons.lock_outline_rounded),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: UptimeTheme.teal500,
+                              foregroundColor: UptimeTheme.dark,
+                              minimumSize: const Size.fromHeight(50),
+                            ),
+                            onPressed: () async {
+                              await ref
+                                  .read(technicianStateProvider.notifier)
+                                  .loginWithOtp(_phoneCtrl.text.trim(), _otpCtrl.text.trim());
+                            },
+                            child: const Text(
+                              'Verify OTP & Enter Field App',
+                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -430,11 +470,13 @@ class _TechRootScreenState extends ConsumerState<TechRootScreen> {
 class TechHomeScreen extends ConsumerWidget {
   final TechnicianProfile tech;
   final VoidCallback onOpenActiveJob;
+  final ValueChanged<int>? onJumpToTab;
 
   const TechHomeScreen({
     super.key,
     required this.tech,
     required this.onOpenActiveJob,
+    this.onJumpToTab,
   });
 
   @override
@@ -444,6 +486,65 @@ class TechHomeScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
+        // 0. Quick-Jump Bar for All 40 Screens & Audited Compliance Screens (T35–T40)
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.verified_user_outlined, color: UptimeTheme.blue700, size: 18),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'Complete 40-Screen Field Suite & Regulatory Modules (T01–T40)',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => showTechAll40ScreensSheet(
+                        context,
+                        onJumpToTab: (idx) => onJumpToTab?.call(idx),
+                      ),
+                      child: const Text('Browse All 40 →'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: kTech40Screens
+                      .where((s) => const {'T01', 'T35', 'T36', 'T37', 'T38', 'T39', 'T40'}
+                          .contains(s.code))
+                      .map((spec) {
+                    return ActionChip(
+                      avatar: Icon(spec.icon, size: 15, color: spec.accent),
+                      label: Text(
+                        '${spec.code}: ${spec.title.split(" ").take(3).join(" ")}',
+                        style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => TechDedicatedScreenViewer(
+                              initialSpec: spec,
+                              onJumpToTab: onJumpToTab,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+
         // 1. Greeting Header + Verification Badge
         Card(
           child: Padding(

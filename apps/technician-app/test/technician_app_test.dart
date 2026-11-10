@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uptime_technician_app/app.dart';
 import 'package:uptime_technician_app/core/utils/kyc_and_fatigue_validators.dart';
 import 'package:uptime_technician_app/features/models/tech_models.dart';
 import 'package:uptime_technician_app/features/providers/tech_providers.dart';
+import 'package:uptime_technician_app/features/screens/tech_40_screens_catalog.dart';
 
 void main() {
   group('UPTIME Technician App — Fatigue Rule & KYC L0-L3 Tests', () {
@@ -94,6 +96,29 @@ void main() {
 
       expect(find.textContaining('Good morning, Raju Sharma!'), findsOneWidget);
       expect(find.textContaining('ONLINE & AVAILABLE'), findsOneWidget);
+      expect(find.text('Peenya Industrial Cluster #4'), findsOneWidget);
+      expect(find.text('40 Screens'), findsOneWidget);
+    });
+
+    test('Complete 40-screen catalog (T01..T40), Clean White default theme & Base Zone', () {
+      expect(kTech40Screens.length, 40);
+      expect(kTech40Screens.first.code, 'T01');
+      expect(kTech40Screens.last.code, 'T40');
+
+      final codes = kTech40Screens.map((s) => s.code).toSet();
+      for (var i = 1; i <= 40; i++) {
+        final expectedCode = 'T${i.toString().padLeft(2, '0')}';
+        expect(codes.contains(expectedCode), true, reason: 'Missing $expectedCode');
+      }
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      expect(container.read(techThemeModeProvider), ThemeMode.light);
+      expect(
+        container.read(techBaseZoneProvider).label,
+        'Peenya Industrial Cluster #4',
+      );
     });
   });
 }

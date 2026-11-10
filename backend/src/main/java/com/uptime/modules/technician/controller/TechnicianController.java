@@ -98,6 +98,34 @@ public class TechnicianController {
         return ResponseEntity.ok(ApiResponse.success(technicianService.getFatigueStatus(currentUser.getId())));
     }
 
+    @PostMapping("/me/fatigue/rest-break")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> takeRestBreak(
+            @CurrentUser CustomUserDetails currentUser,
+            @RequestBody(required = false) Map<String, Object> body) {
+        int mins = (body != null && body.containsKey("durationMinutes"))
+                ? ((Number) body.get("durationMinutes")).intValue()
+                : 45;
+        return ResponseEntity.ok(ApiResponse.success(
+                technicianService.recordFatigueRestBreak(currentUser.getId(), mins),
+                "45-minute hydration & rest break recorded (T39)"));
+    }
+
+    @PutMapping("/me/base-zone")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> updateBaseZone(
+            @CurrentUser CustomUserDetails currentUser,
+            @RequestBody Map<String, Object> body) {
+        BigDecimal lat = new BigDecimal(String.valueOf(body.getOrDefault("lat", "13.0285")));
+        BigDecimal lng = new BigDecimal(String.valueOf(body.getOrDefault("lng", "77.5197")));
+        String label = String.valueOf(body.getOrDefault("label", "Peenya Industrial Cluster #4"));
+        technicianService.updateLocation(currentUser.getId(), lat, lng);
+        return ResponseEntity.ok(ApiResponse.success(Map.of(
+                "label", label,
+                "lat", lat,
+                "lng", lng,
+                "status", "BASE_ZONE_UPDATED"
+        )));
+    }
+
     @GetMapping("/{id}/public")
     public ResponseEntity<ApiResponse<Technician>> getPublicProfile(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(technicianService.getById(id)));

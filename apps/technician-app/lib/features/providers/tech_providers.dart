@@ -2,6 +2,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/utils/kyc_and_fatigue_validators.dart';
 import '../models/tech_models.dart';
 
+// ── Top Base-Zone & Dispatch Hub Selector State (Urban Company / Zomato Partner Style) ──
+class TechBaseZoneLocation {
+  final String label;
+  final String addressLine;
+  final String radarBadge;
+
+  const TechBaseZoneLocation({
+    required this.label,
+    required this.addressLine,
+    required this.radarBadge,
+  });
+}
+
+class TechBaseZoneNotifier extends Notifier<TechBaseZoneLocation> {
+  @override
+  TechBaseZoneLocation build() => const TechBaseZoneLocation(
+        label: 'Peenya Industrial Cluster #4',
+        addressLine: 'Stage IV, Peenya Industrial Area, Bengaluru 560058',
+        radarBadge: '12 km Radar • 4 High-Payout Jobs',
+      );
+
+  void selectZone(TechBaseZoneLocation zone) => state = zone;
+}
+
+final techBaseZoneProvider =
+    NotifierProvider<TechBaseZoneNotifier, TechBaseZoneLocation>(
+  TechBaseZoneNotifier.new,
+);
+
 // ── Matching Pool Filter Function (Enforces Locked Fatigue Rule) ──────────
 List<TechnicianProfile> filterEligibleTechniciansForDispatch(
   List<TechnicianProfile> pool, {

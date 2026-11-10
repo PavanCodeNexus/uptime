@@ -229,6 +229,21 @@ F:\uptime/
 
 ---
 
+### Session 8 — 2026-11-10 / 2026-11-11 (Agent: Antigravity)
+
+**What happened:**
+1. **Completed 44-Screen Owner App (`S01`–`S44`) in Figma (`Layer 28:3`) & Flutter (`apps/owner-app`):**
+   - Redesigned to Clean White theme (`#FFFFFF` default, Urban Company / Zomato / AJIO style), replaced top logo with interactive **Zomato/BigBasket Location Selector Header**, replaced `S01` Splash with pitch-black `#000000` lockup matching user's uploaded image, removed onboarding carousel clutter, and built `owner_44_screens_catalog.dart` (`S01`–`S44`).
+2. **Completed 40-Screen Technician App (`T01`–`T40`) in Figma (`Layer 36:3`) & Flutter (`apps/technician-app`):**
+   - Audited all specs and added 6 regulatory/compliance screens (`T35` 3D Face Liveness, `T36` Trade Skill MCQ & Mandatory 415V LOTO Safety Quiz, `T37` Bank Setup & NPCI ₹1 Penny-Drop, `T38` Confidential Blind Customer Rating, `T39` ISO 45001 Fatigue Monitor & Shift Rest Gauge, `T40` 30-Day Warranty Revisit & FFT Dispute Desk).
+   - Implemented `tech_40_screens_catalog.dart` (`T01`–`T40`), Clean White default + High-Contrast Industrial Field Dark Mode, and top Base-Zone Location Selector (`Peenya Industrial Cluster #4`).
+3. **Synchronized Backend API Services & Supabase/PostGIS Database (`V19` + `supabase/`):**
+   - Added Flyway migration `V19__supabase_rls_postgis_and_84_screen_sync.sql` enforcing `RULE SB-00` in `sp_calculate_match_score`, upgrading Postgres 15 views (`v_active_jobs`, `v_technician_dashboard`, `v_platform_summary`) with `security_invoker = true`, enabling Row-Level Security (RLS), adding `sp_verify_arrival_geofence_500m`, and creating tables `blind_mutual_ratings`, `warranty_revisit_claims`, and `technician_fatigue_breaks`.
+   - Added Supabase CLI config (`supabase/config.toml`) and RLS migration (`supabase/migrations/20261111000001_uptime_supabase_postgis_rls.sql`) using `TO authenticated` ownership policies (`USING` + `WITH CHECK`).
+   - Added new Spring Boot REST endpoints in `RatingController` (`/api/v1/ratings/blind`, `/api/v1/ratings/job/{jobId}/blind-status`), `InsuranceController` (`/api/v1/insurance/claims`, `/api/v1/insurance/warranty-revisits`, `/api/v1/insurance/warranty-revisits/{claimNumber}/schedule`), `MarketplaceController` (`/api/v1/parts`, `/api/v1/parts/fitment-check`, `/api/v1/auctions`), `WikiController` (`/api/v1/wiki/schematics/{code}`), and `TechnicianController` (`/api/v1/technicians/me/fatigue/rest-break`, `/api/v1/technicians/me/base-zone`), verified in `UptimeContextLoadTest`.
+
+---
+
 ## 🔲 What's Next (For the Next Agent)
 
 1. Connect Supabase PostgreSQL + PostGIS credentials and Gemini API key in `backend/.env` when ready to switch from local H2 dev mode to shared cloud DB for the 4-member team.

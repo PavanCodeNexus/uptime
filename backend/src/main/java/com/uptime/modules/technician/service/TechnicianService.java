@@ -185,6 +185,27 @@ public class TechnicianService {
         );
     }
 
+    @Transactional
+    public Map<String, Object> recordFatigueRestBreak(Long userId, int breakDurationMinutes) {
+        Technician tech = getByUserId(userId);
+        int scoreBefore = tech.getFatigueScore() != null ? tech.getFatigueScore() : 30;
+        int scoreAfter = Math.max(10, scoreBefore - 20);
+        tech.setFatigueScore(scoreAfter);
+        tech.setConsecutiveJobsCount(0);
+        tech.setIsFatigueRestricted(false);
+        tech.setFatigueResetAt(null);
+        technicianRepository.save(tech);
+
+        return Map.of(
+                "technicianId", tech.getId(),
+                "breakDurationMinutes", breakDurationMinutes,
+                "fatigueScoreBefore", scoreBefore,
+                "fatigueScoreAfter", scoreAfter,
+                "isFatigueRestricted", false,
+                "status", "REST_BREAK_LOGGED"
+        );
+    }
+
     public Map<String, Object> getVerificationStatus(Long userId) {
         Technician tech = getByUserId(userId);
         Optional<TechnicianIdentityVerification> identity = identityRepository.findByTechnicianId(tech.getId());

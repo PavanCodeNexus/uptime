@@ -1,0 +1,51 @@
+import os
+import zipfile
+import hashlib
+import base64
+import requests
+
+archive_path = "F:/uptime/design-system/figma-import.archive"
+source_dir = "F:/uptime/design-system"
+
+print(f"Creating ZIP archive at {archive_path}...")
+with zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+    zf.write(os.path.join(source_dir, 'index.html'), arcname='index.html')
+
+print("Archive created. Files in archive:")
+with zipfile.ZipFile(archive_path, 'r') as zf:
+    for info in zf.infolist():
+        print(f" - {info.filename} ({info.file_size} bytes)")
+
+with open(archive_path, 'rb') as f:
+    archive_bytes = f.read()
+
+sha256_digest = hashlib.sha256(archive_bytes).digest()
+b64_checksum = base64.b64encode(sha256_digest).decode('ascii')
+print(f"Computed SHA256 base64 checksum: {b64_checksum}")
+
+fields = {
+    'key': 'uploads/make_folder_imports/2419982736338157735/1d9289e6-04bf-4b08-bd13-022905c1db68.archive',
+    'acl': 'private',
+    'x-amz-checksum-algorithm': 'SHA256',
+    'policy': 'eyJleHBpcmF0aW9uIjoiMjAyNi0xMS0wOVQyMjozMzoxOFoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJmaWdtYS1hZ2VudHBsYXQtdWdpdC11cy1wcm9kdWN0aW9uIn0seyJrZXkiOiJ1cGxvYWRzL21ha2VfZm9sZGVyX2ltcG9ydHMvMjQxOTk4MjczNjMzODE1NzczNS8xZDkyODllNi0wNGJmLTRiMDgtYmQxMy0wMjI5MDVjMWRiNjguYXJjaGl2ZSJ9LHsiYWNsIjoicHJpdmF0ZSJ9LFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLDEsMTA3Mzc0MTgyNF0sWyJzdGFydHMtd2l0aCIsIiR4LWFtei1jaGVja3N1bS1zaGEyNTYiLCIiXSxbInN0YXJ0cy13aXRoIiwiJENvbnRlbnQtVHlwZSIsIiJdLHsieC1hbXotY2hlY2tzdW0tYWxnb3JpdGhtIjoiU0hBMjU2In0seyJ4LWFtei1jcmVkZW50aWFsIjoiQVNJQVE0R09TRldDU01TSk1LWlMvMjAyNjExMDkvdXMtd2VzdC0yL3MzL2F3czRfcmVxdWVzdCJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotZGF0ZSI6IjIwMjYxMTA5VDIxMzMxOFoifSx7IngtYW16LXNlY3VyaXR5LXRva2VuIjoiSVFvSmIzSnBaMmx1WDJWakVHWWFDWFZ6TFhkbGMzUXRNaUpJTUVZQ0lRREltVnZGS0djY2p6SGl0a0FCcXB5cWliS2xOZkVSU0ZxNHgzN3ZKQnVINkFJaEFQTXhmZzBrOVJYMmVhd3ZEZkpPWXhlV1NwVFdOeUw1QitoZzlxa1hPV3pYS3NJRkNDNFFBQm9NTURZd05UWXlOelEyTnpVM0lnemxOK05JNkNBU1NkYW9Tam9xbndXOWVBRzVnWTc2V1lhM2ZoeVNvRkJXUVFGRTBYaEw5SDdRYjlNMDFqeGM5NlZPTkdSMmE2cmRmU1FOZG5kaWFid1VFNXFaRiswSTV0dXFWeTlLb0FtL1F2azhYZ0RjYlVTVDJTUFNWdFN1YXEvYzRXTFlGRGtmS0ExOE5CUjNyazU4UEpzL1d0WUg4bkYvTEtZaEZQVWJaSXZGVldxZjJYYzlkN25ueXY3Y25PNGlKWEg1K1BMRHJ4U2hESjBrTzJhV2dzVmxLRWtkNmxkSEtweW1NQWpJMlRRZnJWNzJDMlRmK1hZYklHSnVsZVpjT1YrUWZUWW10QVNtVS9YS2ovb2NDanZybWNOUDdJU1ZvR1MyWnNHTmpjZ3Z0T1pRUFZXbzRiR3FKL2VJdWttdUR4V3RPSHdoYmE1dUE0K0pycmxpa2JaTmpzaTQyWGFuZE5xczRpRU83RHkrbUtnRmZZSWExTWRYM3JQay9ndlFSelYxWUZQN0pYQzRPVXg2VEcxNjdWemtCZzRGYXMzV3FnNlFCQlU4bmdlZFZucFBrKzdFMU53TDVYUGVpMS9OVFA1bzN3MVJsTVFpUHZYU3lScWVuR3Y0WnhDMTM5cFlUWlBQTkVlVjVUS0hMM002SHQ2eW1wMHpzR0lFMFlQMWE3bk54ZFhZY3c2VGRjY2cwZnpZQW1BT25FRWFKL0I4YnZLYlBMWVIrL1oxeUFaMTJ4c2d3Q1RqM2sxc1dLb2VTUUdKSFRoVUNHNmtUd1haN0JSVEErR0I2R2llcURsZVZIMnNxUk9pZmZmNDlCVzhveHR0ekJ4cXI5aE8wWlcxT0QvSVVVRHpOdWNhZzYwOXdhZUhwWm4wa24xYUNCOEw5QnBiRVVFeG1yQUpKS1FuUzN5MlRFcVNudlJBMTNTcjlKb3JGS0Vha2Q1VWRnV29oN09NOS9VeEE0b2xHWkxGTjQyK3hWcllWbUlSanRUQm4xVEY3bldMZ3FSNFpDc1lGd1JJNXVUTWN2ejV5VzZNSjNTTWhQeHp4OHAzWjZZdnhQQ2JQb1E4MzlDM2s2a01aQWVVUG84djY1TkgwZnpNQk10OVM4SWZxK1RuVTFUYndlSjBDNTNEQm53aEVXTVVzWDhJelRuaTZ3SGRKbzhwRW8wbzNDWTJJc1JvMjFIV3lYYkNtTjhrcFhPRFMxWmZhVERwOXNqWEJqcVlBUkNnVldXU0I4c0ZIa1BERThzTGtjL2VJeXQ1cGdQSk5BSDFpMm96Zm9iSHRoWVVndHdHUGNDRHgxSjBJVzdMVW1UTlpkOUFETTZ3ZGJ0UmVVa1h6amhWVzh0Q0Yydnd3UXhPekRaWkhzRXhTMENYdy9WVnhGZTd6Q0hYSU8xdFh5RGZQaXdBMGoyc21IUGFISkg1b2dVdGNUZGxHZzU2ZnJ6Qjk0bEcxelZnMG0zcjltelJCTzRNajY0aGhvUzRIT1d3a2tMbXJUMjgifV19',
+    'x-amz-credential': 'ASIAQ4GOSFWCSMSJMKZS/20261109/us-west-2/s3/aws4_request',
+    'x-amz-algorithm': 'AWS4-HMAC-SHA256',
+    'x-amz-date': '20261109T213318Z',
+    'x-amz-security-token': 'IQoJb3JpZ2luX2VjEGYaCXVzLXdlc3QtMiJIMEYCIQDImVvFKGccjzHitkABqpyqibKlNfERSFq4x37vJBuH6AIhAPMxfg0k9RX2eawvDfJOYxeWSpTWNyL5B+hg9qkXOWzXKsIFCC4QABoMMDYwNTYyNzQ2NzU3IgzlN+NI6CASSdaoSjoqnwW9eAG5gY76WYa3fhySoFBWQQFE0XhL9H7Qb9M01jxc96VONGR2a6rdfSQNdndiabwUE5qZF+0I5tuqVy9KoAm/Qvk8XgDcbUST2SPSVtSuaq/c4WLYFDkfKA18NBR3rk58PJs/WtYH8nF/LKYhFPUbZIvFVWqf2Xc9d7nnyv7cnO4iJXH5+PLDrxShDJ0kO2aWgsVlKEkd6ldHKpymMAjI2TQfrV72C2Tf+XYbIGJuleZcOV+QfTYmtASmU/XKj/ocCjvrmcNP7ISVoGS2ZsGNjcgvtOZQPVWo4bGqJ/eIukmuDxWtOHwhba5uA4+JrrlikbZNjsi42XandNqs4iEO7Dy+mKgFfYIa1MdX3rPk/gvQRzV1YFP7JXC4OUx6TG167VzkBg4Fas3Wqg6QBBU8ngedVnpPk+7E1NwL5XPei1/NTP5o3w1RlMQiPvXSyRqenGv4ZxC139pYTZPPNEeV5TKHL3M6Ht6ymp0zsGIE0YP1a7nNxdXYcw6Tdccg0fzYAmAOnEEaJ/B8bvKbPLYR+/Z1yAZ12xsgwCTj3k1sWKoeSQGJHThUCG6kTwXZ7BRTA+GB6GieqDleVH2sqROifff49BW8oxttzBxqr9hO0ZW1OD/IUUDzNucag609waeHpZn0kn1aCB8L9BpbEUExmrAJJKQnS3y2TEqSnvRA13Sr9JorFKEakd5UdgWoh7OM9/UxA4olGZLFN42+xVrYVmIRjtTBn1TF7nWLgqR4ZCsYFwRI5uTMcvz5yW6MJ3SMhPxzx8p3Z6YvxPCbPoQ839C3k6kMZAeUPo8v65NH0fzMBMt9S8Ifq+TnU1TbweJ0C53DBnwhEWMUsX8IzTni6wHdJo8pEo0o3CY2IsRo21HWyXbCmN8kpXODS1ZfaTDp9sjXBjqYARCgVWWSB8sFHkPDE8sLkc/eIyt5pgPJNAH1i2ozfobHthYUgtwGPcCDx1J0IW7LUmTNZd9ADM6wdbtReUkXzjhVW8tCF2vwwQxOzDZZHsExS0CXw/VVxFe7zCHXIO1tXyDfPiwA0j2smHPaHJH5ogUtcTdlGg56frzB94lG1zVg0m3r9mzRBO4Mj64hhoS4HOWwkkLmrT28',
+    'x-amz-signature': '3f95f4cff145e023f8848b082e764913d921b76d26561d20a2d0af29d5f20822',
+    'Content-Type': 'application/octet-stream',
+    'x-amz-checksum-sha256': b64_checksum
+}
+
+url = 'https://www.figma.com/blobs/us/upload/figma-agentplat-ugit-us-production'
+files = {
+    'file': ('figma-import.archive', archive_bytes, 'application/octet-stream')
+}
+
+print(f"Uploading 18-screen master archive to {url}...")
+resp = requests.post(url, data=fields, files=files)
+print(f"Response status: {resp.status_code}")
+if resp.status_code in [200, 204]:
+    print("18-SCREEN ARCHIVE UPLOAD SUCCESSFUL!")
+else:
+    print(f"Upload failed: {resp.status_code} - {resp.text}")

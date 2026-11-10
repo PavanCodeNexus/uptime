@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UPTIME — Certified Technician App (Field Workstation)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-body);
+      margin: 0;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+    .font-display { font-family: var(--font-display); }
+    .font-mono { font-family: var(--font-mono); }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Light Theme Tokens */
+    .theme-light {
+      --bg-chassis: #FFFFFF;
+      --bg-surface: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --border-color: #E2E8F0;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --accent-duty: #16A34A;
+      --accent-duty-bg: #DCFCE7;
+      --accent-duty-text: #15803D;
+    }
+
+    /* High-Contrast Industrial Field Dark Mode */
+    .theme-dark {
+      --bg-chassis: #070B14;
+      --bg-surface: #0F172A;
+      --bg-card: #131D31;
+      --border-color: #1E293B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent-duty: #10B981;
+      --accent-duty-bg: rgba(16, 185, 129, 0.15);
+      --accent-duty-text: #34D399;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.9; }
+      50% { transform: scale(1.15); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.9; }
+    }
+    .pulse-alert { animation: pulse-ring 1.4s infinite ease-in-out; }
+
+    @keyframes radar-sweep {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .radar-sweep { animation: radar-sweep 4s linear infinite; }
+  </style>
+</head>
+<body id="appBody" class="min-h-screen bg-[#F1F5F9] text-slate-900 select-none theme-light">
+
+  <!-- ===================================================================== -->
+  <!-- TOP STUDIO CONTROL HEADER                                             -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2.5 shadow-sm">
+    <div class="max-w-[1650px] mx-auto space-y-2">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Brand Identity -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md">
+            <svg class="w-6 h-6" viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" rx="20" fill="white" />
+              <path d="M22 22 V 54 C 22 72, 78 72, 78 54 V 22" stroke="#0284C7" stroke-width="13" stroke-linecap="round" fill="none" />
+              <path d="M50 32 L50 56 M44 38 L56 38" stroke="#0F172A" stroke-width="8" stroke-linecap="round" />
+              <circle cx="72" cy="28" r="13" stroke="#16A34A" stroke-width="7" fill="none" stroke-dasharray="9 7" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-display font-extrabold tracking-tight text-slate-900">UPTIME — TECHNICIAN APP</h1>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold">FIELD WORKSTATION • 34 SCREENS</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium">Certified Specialist Edition • Onboarding → Live Dispatch → Evidence Vault → Instant UPI Payout</p>
+          </div>
+        </div>
+
+        <!-- Mode Controls + Theme Toggle -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Light vs Field Dark Mode Toggle -->
+          <button onclick="toggleTheme()" id="themeToggleBtn" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-all shadow-xs">
+            <i class="fa-solid fa-moon text-indigo-600" id="themeIcon"></i>
+            <span id="themeLabel">Field Dark Mode</span>
+          </button>
+
+          <!-- Interactive Phone vs All-34 Artboard Grid -->
+          <div class="p-1 rounded-xl bg-slate-100 border border-slate-200 flex items-center gap-1 text-xs font-semibold">
+            <button id="modePhoneBtn" onclick="setDisplayMode('phone')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow-sm flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-mobile-screen-button text-blue-600"></i>
+              <span>Interactive Phone</span>
+            </button>
+            <button id="modeGridBtn" onclick="setDisplayMode('grid')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-grip text-slate-500"></i>
+              <span>All 40 Screens Artboard Grid</span>
+            </button>
+          </div>
+
+          <!-- Live Duty Simulator -->
+          <div id="dutyBadge" class="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] font-medium flex items-center gap-2">
+            <span id="dutyDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="dutyLabel" class="text-emerald-800 font-bold">Status: ONLINE (Receiving Dispatches)</span>
+            <button onclick="toggleDutyState()" id="dutyToggleBtn" class="ml-1 px-2.5 py-0.5 rounded-md bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-[10px] font-bold shadow-xs">Go Offline</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module Filter Bar -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-medium pb-0.5" id="moduleFilterBar"></div>
+
+      <!-- Quick Screen Jump Bar -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[10px] font-mono pt-0.5" id="screenJumpBar"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- MODE 1: INTERACTIVE PHONE SIMULATOR                                   -->
+  <!-- ===================================================================== -->
+  <main id="phoneModeContainer" class="max-w-6xl mx-auto px-3 py-6 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8">
+
+    <!-- MOBILE DEVICE CHASSIS -->
+    <div id="phoneChassis" class="w-full max-w-[412px] h-[872px] bg-white rounded-[48px] border-[10px] border-slate-900 shadow-[0_25px_70px_rgba(15,23,42,0.18),0_0_0_1px_rgba(0,0,0,0.06)] relative overflow-hidden flex flex-col shrink-0 transition-colors">
+
+      <!-- Phone Status Bar -->
+      <div id="phoneStatusBar" class="h-11 px-7 flex items-center justify-between text-[11px] text-slate-800 font-bold z-30 shrink-0 bg-white">
+        <span>10:42</span>
+        <div class="w-28 h-5 bg-slate-950 rounded-full flex items-center justify-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span class="text-[8px] text-slate-300 font-mono tracking-widest">TECH HUD</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-[10px] text-slate-700">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <span class="text-emerald-600 font-bold">5G</span>
+        </div>
+      </div>
+
+      <!-- Persistent Tech Header Bar (Hidden only on Splash T01) -->
+      <div id="appTopHeader" class="px-4 py-2.5 bg-white border-b border-slate-100 z-20 shrink-0 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-xs flex items-center justify-center shadow-xs">
+            RK
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-extrabold text-slate-900" id="techHeaderName">Rajesh Kumar</span>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-bold border border-blue-200">L3 Master</span>
+            </div>
+            <p class="text-[10px] text-slate-500 font-medium">Peenya Industrial Area • 14 km Radar</p>
+          </div>
+        </div>
+
+        <!-- Right Quick Actions -->
+        <div class="flex items-center gap-1.5">
+          <!-- Duty Quick Switch Pill -->
+          <button onclick="toggleDutyState()" id="headerDutyPill" class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="headerDutyText">ONLINE</span>
+          </button>
+          <!-- Notifications Bell -->
+          <button onclick="goScreen(33)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs flex items-center justify-center relative transition-colors" title="Tech Alerts">
+            <i class="fa-solid fa-bell"></i>
+            <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5 ring-2 ring-white"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- DYNAMIC SCREEN VIEWPORT -->
+      <div id="phoneViewport" class="flex-1 overflow-y-auto no-scrollbar z-10 relative bg-white"></div>
+
+      <!-- Persistent 5-Tab Tech Bottom Navigation -->
+      <nav id="appBottomNav" class="h-16 px-2 bg-white border-t border-slate-200/90 grid grid-cols-5 items-center z-20 shrink-0 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+        <button onclick="goScreen(6)" id="bnav-work" class="flex flex-col items-center gap-1 text-blue-600 transition-colors">
+          <i class="fa-solid fa-gauge-high text-base"></i>
+          <span class="text-[10px] font-bold">Duty</span>
+        </button>
+        <button onclick="goScreen(9)" id="bnav-requests" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 relative transition-colors">
+          <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-0.5 right-5 ring-2 ring-white animate-ping"></span>
+          <i class="fa-solid fa-bolt-lightning text-base"></i>
+          <span class="text-[10px] font-semibold">Jobs</span>
+        </button>
+        <button onclick="goScreen(22)" id="bnav-wallet" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-wallet text-base"></i>
+          <span class="text-[10px] font-semibold">Earnings</span>
+        </button>
+        <button onclick="goScreen(25)" id="bnav-badges" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-award text-base"></i>
+          <span class="text-[10px] font-semibold">Badges</span>
+        </button>
+        <button onclick="goScreen(34)" id="bnav-profile" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-circle-user text-base"></i>
+          <span class="text-[10px] font-semibold">Account</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- RIGHT INSPECTOR PANEL -->
+    <aside class="w-full max-w-md space-y-4">
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <span id="inspectorBadge" class="text-[11px] font-mono px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold">SCREEN 01 / 34</span>
+          <span id="inspectorModule" class="text-xs font-bold text-slate-500">Entry & KYC</span>
+        </div>
+        <h2 id="inspectorTitle" class="text-lg font-display font-extrabold text-slate-900 leading-snug">01. Technician Splash Screen</h2>
+        <p id="inspectorDesc" class="text-xs text-slate-600 leading-relaxed">
+          Specialist Edition launch screen with UPTIME gear branding and instant duty state check.
+        </p>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+          <button onclick="prevScreen()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors">
+            <i class="fa-solid fa-arrow-left"></i> Prev
+          </button>
+          <button onclick="nextScreen()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 transition-colors">
+            Next Screen <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Navigator -->
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Technician App Workflows</h3>
+          <span class="text-[10px] font-mono text-slate-500">40 Screens</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button onclick="goScreen(3)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T03</div>
+            <div>Govt KYC Digilocker</div>
+          </button>
+          <button onclick="goScreen(6)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T06</div>
+            <div>Field Workstation HUD</div>
+          </button>
+          <button onclick="goScreen(9)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-rose-600 font-bold">T09</div>
+            <div>42s Incoming Job Alert</div>
+          </button>
+          <button onclick="goScreen(12)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T12</div>
+            <div>Turn-by-Turn GPS HUD</div>
+          </button>
+          <button onclick="goScreen(15)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T15</div>
+            <div>Arrival OTP Keypad</div>
+          </button>
+          <button onclick="goScreen(16)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T16</div>
+            <div>Pre-Repair Photo Vault</div>
+          </button>
+          <button onclick="goScreen(17)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T17</div>
+            <div>AI Copilot Multimeter</div>
+          </button>
+          <button onclick="goScreen(20)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T20</div>
+            <div>Signature & Running Video</div>
+          </button>
+          <button onclick="goScreen(22)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">T22</div>
+            <div>Earnings & ₹8,420 Balance</div>
+          </button>
+          <button onclick="goScreen(23)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-emerald-600 font-bold">T23</div>
+            <div>1-Tap Instant UPI Payout</div>
+          </button>
+          <button onclick="goScreen(35)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-blue-600 font-bold">T35</div>
+            <div>3D Face Liveness Check</div>
+          </button>
+          <button onclick="goScreen(36)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-amber-600 font-bold">T36</div>
+            <div>Trade Skill MCQ & Safety</div>
+          </button>
+          <button onclick="goScreen(37)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-emerald-600 font-bold">T37</div>
+            <div>Bank Setup & Penny-Drop</div>
+          </button>
+          <button onclick="goScreen(38)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-purple-600 font-bold">T38</div>
+            <div>Blind Customer Rating</div>
+          </button>
+          <button onclick="goScreen(39)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-emerald-600 font-bold">T39</div>
+            <div>Fatigue Monitor & Lock</div>
+          </button>
+          <button onclick="goScreen(40)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-amber-600 font-bold">T40</div>
+            <div>Warranty & Dispute Desk</div>
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- MODE 2: ALL 34 SCREENS FIGMA ARTBOARD GRID                            -->
+  <!-- ===================================================================== -->
+  <section id="gridModeContainer" class="hidden max-w-[1700px] mx-auto px-4 py-8">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-display font-extrabold text-slate-900" id="gridTitle">All 40 Dedicated Technician App Screens</h2>
+        <p class="text-xs text-slate-500">Clean White Style + High-Contrast Field Dark Mode • Click any screen to interact</p>
+      </div>
+      <button onclick="setDisplayMode('phone')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs flex items-center gap-2">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+        <span>Switch to Interactive Phone</span>
+      </button>
+    </div>
+    <div id="allScreensGridMount" class="space-y-10"></div>
+  </section>
+
+  <script>
+    // =========================================================================
+    // GLOBAL STATE & DATA
+    // =========================================================================
+    let currentScreen = 1;
+    let displayMode = 'phone';
+    let isDarkTheme = false;
+    let isOnline = true;
+    let currentCategory = 'industrial';
+
+    const SCREENS = [
+      // 1. ENTRY & KYC (T01-T05)
+      { id: 1, group: 'Entry & KYC', short: 'Splash', title: 'T01. Technician Splash Screen', desc: 'Specialist launch screen with centered UPTIME icon and "Downtime ends here." Direct tap enters field workstation.' },
+      { id: 2, group: 'Entry & KYC', short: 'Trade Persona', title: 'T02. Trade Specialty Selector', desc: 'Select primary specialty: Industrial Machinery (CNC/Boilers), Automobile & Fleet (EV/Roadside), or Electronics & HVAC.' },
+      { id: 3, group: 'Entry & KYC', short: 'Govt KYC', title: 'T03. UIDAI Aadhaar & NCVT KYC Onboarding', desc: 'Digilocker Aadhaar OCR scan, NCVT Mechanical Trade Certificate preview, and police verification status check.' },
+      { id: 4, group: 'Entry & KYC', short: 'Skills & Tools', title: 'T04. Skill Matrix & Tool Bag Declaration', desc: 'Declare tools carried: Fluke 87V Multimeter, Dial Indicator, Hydraulic Gauge + Polygon NFT badge minting.' },
+      { id: 5, group: 'Entry & KYC', short: 'Tech Login', title: 'T05. Technician Phone + 6-Digit SMS OTP', desc: 'Mobile number login with auto-read OTP, saving technician profile and hardware token.' },
+
+      // 2. WORKSTATION & DUTY (T06-T08)
+      { id: 6, group: 'Workstation & Duty', short: 'Field HUD', title: 'T06. Field Workstation Command HUD', desc: 'Giant ONLINE/OFFLINE duty toggle, today\'s earnings (₹2,450), 3 jobs completed, and active broadcast radar.' },
+      { id: 7, group: 'Workstation & Duty', short: 'Radar Radius', title: 'T07. Service Area & Radar Radius Settings', desc: 'Adjustable 1-20 km dispatch radius slider with preferred cluster pins (Peenya Industrial Area, Jalahalli, Yeshwanthpur).' },
+      { id: 8, group: 'Workstation & Duty', short: 'Shift Schedule', title: 'T08. Availability & On-Call Shift Schedule', desc: 'Weekly working hours planner with 24/7 emergency roadside/plant on-call toggle.' },
+
+      // 3. JOB REQUESTS & BROADCASTS (T09-T11)
+      { id: 9, group: 'Job Broadcasts', short: 'Incoming 42s', title: 'T09. Incoming Emergency Job Alert (42s Timer)', desc: 'Full-screen incoming alert with 42s countdown ring, payout ₹850-₹1,450, 96% skill match, [ACCEPT] large green button.' },
+      { id: 10, group: 'Job Broadcasts', short: 'Job Details', title: 'T10. Pre-Accept Job Symptom & Tool Checklist', desc: 'Inspect customer sound recording, machine model (Mazak VMC), customer distance (2.3 km), and required tools.' },
+      { id: 11, group: 'Job Broadcasts', short: 'SOS Auction', title: 'T11. 60-Second Emergency SOS Live Auction', desc: 'Fastest-bidder racing mode for urgent highway vehicle breakdown or factory assembly line stoppage.' },
+
+      // 4. NAVIGATION & ARRIVAL (T12-T15)
+      { id: 12, group: 'Navigation & Arrival', short: 'Turn-by-Turn GPS', title: 'T12. Turn-by-Turn GPS Navigation HUD', desc: 'Google Maps navigation with traffic speed, turn directions, masked customer calling, and "I Have Arrived" trigger.' },
+      { id: 13, group: 'Navigation & Arrival', short: 'In-App Chat', title: 'T13. Customer Chat & 9-Language Translation', desc: 'In-app real-time messaging with auto-translation (e.g. Kannada <-> Hindi <-> English) and quick landmark sharing.' },
+      { id: 14, group: 'Navigation & Arrival', short: 'Arrival Lock', title: 'T14. Physical Site Arrival & PostGIS Geofence', desc: 'Confirms technician is physically within 500m of the plant/vehicle before unlocking the OTP entry keypad.' },
+      { id: 15, group: 'Navigation & Arrival', short: 'OTP Keypad', title: 'T15. Tactile Numeric Keypad for Customer OTP', desc: 'Oversized tactile keypad to enter customer\'s 6-digit OTP (482196) to start job clock and unlock escrow.' },
+
+      // 5. REPAIR EXECUTION & COPILOT (T16-T21)
+      { id: 16, group: 'Repair Execution', short: 'Pre-Repair Vault', title: 'T16. Pre-Repair Damage Evidence Camera', desc: 'Mandatory pre-repair photo capture with automated timestamp and GPS coordinate watermarks.' },
+      { id: 17, group: 'Repair Execution', short: 'AI Copilot Guide', title: 'T17. Step-by-Step AI Diagnostic Copilot', desc: 'Interactive field guide: Multimeter test points (320-350V DC), runout measurement, and LOTO safety warnings.' },
+      { id: 18, group: 'Repair Execution', short: 'Parts Requisition', title: 'T18. Spare Part Requisition & Quote Request', desc: 'Add OEM replacement part (SKF 7010 Bearing - ₹640) with instant quote approval push notification to owner.' },
+      { id: 19, group: 'Repair Execution', short: 'Live Stream', title: 'T19. Camera Live Stream to Remote Supervisor', desc: 'Live WebRTC video broadcast to Level-3 remote engineer or plant manager for second opinion.' },
+      { id: 20, group: 'Repair Execution', short: 'Video & Sign', title: 'T20. Running Proof Video & Owner Signature Pad', desc: '10-second running proof test video capture and touch signature pad for owner sign-off.' },
+      { id: 21, group: 'Repair Execution', short: 'Job Complete', title: 'T21. Job Completion & Escrow Payout Confirmation', desc: 'Itemized labour + parts invoice summary (₹1,490), SHA-256 certificate generation, and instant escrow release.' },
+
+      // 6. EARNINGS & FINANCE (T22-T24)
+      { id: 22, group: 'Earnings & Finance', short: 'Earnings HUD', title: 'T22. Technician Earnings Dashboard & Ledger', desc: 'Gross earnings, 10% platform fee, 1% TDS, available balance (₹8,420), and daily/weekly earnings bar chart.' },
+      { id: 23, group: 'Earnings & Finance', short: 'Instant Payout', title: 'T23. 1-Tap Instant Bank Withdrawal via UPI', desc: 'Instant transfer to registered UPI ID (GPay / PhonePe / Paytm / Bank account) in under 10 seconds.' },
+      { id: 24, group: 'Earnings & Finance', short: 'GST & TDS', title: 'T24. GST Invoices & TDS Tax Statement Vault', desc: 'Monthly downloadable GST commission invoices and Form 16A TDS certificates for tax filing.' },
+
+      // 7. BADGES & REPUTATION (T25-T26)
+      { id: 25, group: 'Badges & Reputation', short: 'NFT Badges', title: 'T25. Polygon Blockchain NFT Skill Badges', desc: 'Verified blockchain NFT credentials: Fanuc CNC Master (NFT #4821), Siemens S7 PLC Specialist (NFT #1094).' },
+      { id: 26, group: 'Badges & Reputation', short: 'Performance', title: 'T26. Technician Performance Scorecard', desc: '94% Acceptance rate, 98% On-time arrival rate, 4.9★ customer ratings breakdown, and badge progress meter.' },
+
+      // 8. JOB HISTORY (T27-T28)
+      { id: 27, group: 'Job History', short: 'Job History', title: 'T27. Completed & Active Jobs Ledger', desc: 'Searchable job archive (UPT-2026-XXXX) with status chips and customer ratings received.' },
+      { id: 28, group: 'Job History', short: 'Job File', title: 'T28. Detailed Job Audit File & Review', desc: 'Complete job timeline, before/after media proof, replaced parts list, and customer compliment tags.' },
+
+      // 9. VIDEO CONSULT (T29-T30)
+      { id: 29, group: 'Video Consult', short: 'Incoming Call', title: 'T29. Incoming Remote Video Consult Request', desc: '30-second incoming virtual consultation alert with ₹199 payout, customer equipment model, and [ANSWER] button.' },
+      { id: 30, group: 'Video Consult', short: 'Video HUD', title: 'T30. Agora Video Consult Workstation HUD', desc: 'WebRTC video room with technician AR laser pointer tool and remote multimeter probing instructions.' },
+
+      // 10. WIKI, ALERTS & SETTINGS (T31-T34)
+      { id: 31, group: 'Wiki & Settings', short: 'Repair Wiki', title: 'T31. Offline Field Repair Wiki & Alarm Directory', desc: 'Offline-cached database of Fanuc, Siemens, and Daikin fault codes accessible without cell reception.' },
+      { id: 32, group: 'Wiki & Settings', short: 'Schematic Guide', title: 'T32. Wiki Wiring Schematics & Test Points', desc: 'Full electrical pinout diagrams, terminal test voltages, and component replacement manuals.' },
+      { id: 33, group: 'Wiki & Settings', short: 'Notifications', title: 'T33. Technician Notifications & Dispatch Alerts', desc: 'Real-time alert feed: Instant payout credits, emergency broadcasts, and warranty feedback.' },
+      { id: 34, group: 'Wiki & Settings', short: 'Tech Profile', title: 'T34. Technician Profile, Vehicle & Theme Mode', desc: 'Profile details, registered vehicle (Hero Splendor KA-02-EE-4821), offline cache sync, and Light/Dark Mode switcher.' },
+      // 11. VERIFICATION, SAFETY & AUDIT (T35-T40)
+      { id: 35, group: 'Entry & KYC', short: '3D Liveness', title: 'T35. 3D Face Liveness & Biometric Verification', desc: 'L1 Identity Check: 3D facial depth mesh and liveness verification matching Aadhaar OCR records.' },
+      { id: 36, group: 'Entry & KYC', short: 'Skill MCQ', title: 'T36. Trade Skill MCQ & Mandatory Safety Assessment', desc: 'L2/L2-P Skill Test: 15 technical questions + 2 mandatory electrical/LOTO safety questions (70% pass mark).' },
+      { id: 37, group: 'Earnings & Finance', short: 'Bank Setup', title: 'T37. Bank Account Setup & ₹1 Penny-Drop Verification', desc: 'NPCI penny-drop validation with instant beneficiary name match against Aadhaar and 1% TDS PAN linkage.' },
+      { id: 38, group: 'Repair Execution', short: 'Rate Customer', title: 'T38. Blind Customer Rating & Site Safety Review', desc: 'CORE-07 Mutual Blind Rating: Rate plant facility, machine isolation safety, and payment release promptness.' },
+      { id: 39, group: 'Workstation & Duty', short: 'Fatigue Monitor', title: 'T39. Fatigue Monitor, Shift Rest Gauge & Safety Lock', desc: 'Statutory Fatigue Management: Real-time 0-100 fatigue score, continuous shift clock, and mandatory rest break countdown.' },
+      { id: 40, group: 'Job History', short: 'Warranty Desk', title: 'T40. Warranty Revisit & Dispute Evidence Resolution Desk', desc: '30-Day Workmanship Warranty: Inspect customer claims, compare acoustic FFT before/after telemetry, and manage callbacks.' }
+    ];
+
+    const GROUPS = ['All 40', 'Entry & KYC', 'Workstation & Duty', 'Job Broadcasts', 'Navigation & Arrival', 'Repair Execution', 'Earnings & Finance', 'Badges & Reputation', 'Job History', 'Video Consult', 'Wiki & Settings'];
+    let selectedGroup = 'All 40';
+
+    // =========================================================================
+    // RENDER INDIVIDUAL TECHNICIAN SCREEN HTML (1..34)
+    // =========================================================================
+    function renderScreenHTML(id) {
+      const isDark = isDarkTheme;
+      const cardBg = isDark ? 'bg-[#131D31] border-[#1E293B] text-slate-100' : 'bg-white border-slate-200 text-slate-900';
+      const surfaceBg = isDark ? 'bg-[#0F172A] border-[#1E293B] text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-900';
+      const subText = isDark ? 'text-slate-400' : 'text-slate-500';
+
+      switch (id) {
+        // T01: SPLASH SCREEN (TECHNICIAN EDITION)
+        case 1:
+          return `
+            <div onclick="goScreen(6)" class="h-full bg-slate-950 flex flex-col justify-between items-center text-center p-6 cursor-pointer relative select-none">
+              <div class="h-8"></div>
+              <div class="flex items-center justify-center gap-4">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-[20px] sm:rounded-[24px] flex items-center justify-center p-2.5 shadow-2xl shrink-0">
+                  <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
+                    <path d="M22 22 V 54 C 22 72, 78 72, 78 54 V 22" stroke="#0284C7" stroke-width="13" stroke-linecap="round" fill="none" />
+                    <path d="M50 32 L50 56 M44 38 L56 38" stroke="#0F172A" stroke-width="8" stroke-linecap="round" />
+                    <circle cx="72" cy="28" r="13" stroke="#16A34A" stroke-width="7" fill="none" stroke-dasharray="9 7" />
+                    <path d="M16 66 C 30 84, 70 82, 84 50" stroke="#38BDF8" stroke-width="5" stroke-linecap="round" fill="none" />
+                  </svg>
+                </div>
+                <div class="w-[1.5px] h-12 bg-white/40"></div>
+                <div class="text-left">
+                  <div class="flex items-center gap-2">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-[0.14em] text-white leading-none font-display">UPTIME</h1>
+                    <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500 text-slate-950 font-black">TECH</span>
+                  </div>
+                  <p class="text-[9px] sm:text-[10px] font-bold text-white/90 tracking-[0.22em] mt-1.5 uppercase font-mono">Downtime ends here.</p>
+                </div>
+              </div>
+              <div class="pb-6">
+                <span class="text-[10px] font-mono text-white/40 tracking-wider">TAP ANYWHERE TO ENTER WORKSTATION</span>
+              </div>
+            </div>
+          `;
+
+        // T02: TRADE SPECIALTY SELECTOR
+        case 2:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(6)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Select Your Trade Specialty</h2>
+                <span class="text-[10px] font-mono text-blue-600 font-bold">Step 1 of 3</span>
+              </div>
+
+              <div class="space-y-3">
+                <div onclick="goScreen(3)" class="p-4 rounded-2xl ${cardBg} border hover:border-blue-500 cursor-pointer flex items-center gap-3.5 transition-all shadow-xs">
+                  <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-gears"></i></div>
+                  <div class="min-w-0">
+                    <h3 class="text-xs font-extrabold leading-snug">Industrial Plant Machinery</h3>
+                    <p class="text-[11px] ${subText}">CNC Spindles, IBR Boilers, Hydraulics, ABB Motors & PLCs</p>
+                    <span class="text-[9px] font-bold text-purple-600 mt-1 block">Avg payout: ₹800–₹1,800 / job</span>
+                  </div>
+                </div>
+
+                <div onclick="goScreen(3)" class="p-4 rounded-2xl ${cardBg} border hover:border-blue-500 cursor-pointer flex items-center gap-3.5 transition-all shadow-xs">
+                  <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-car-side"></i></div>
+                  <div class="min-w-0">
+                    <h3 class="text-xs font-extrabold leading-snug">Automobile & EV Roadside Fleet</h3>
+                    <p class="text-[11px] ${subText}">Battery Jumpstarts, EV High-Voltage BMS, OBD-II Scanner, Tyres</p>
+                    <span class="text-[9px] font-bold text-rose-600 mt-1 block">Avg payout: ₹650–₹1,500 / job</span>
+                  </div>
+                </div>
+
+                <div onclick="goScreen(3)" class="p-4 rounded-2xl ${cardBg} border hover:border-blue-500 cursor-pointer flex items-center gap-3.5 transition-all shadow-xs">
+                  <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-snowflake"></i></div>
+                  <div class="min-w-0">
+                    <h3 class="text-xs font-extrabold leading-snug">Electronics & Commercial HVAC</h3>
+                    <p class="text-[11px] ${subText}">Inverter Split ACs, PCB Soldering, Compressors, Servers</p>
+                    <span class="text-[9px] font-bold text-cyan-600 mt-1 block">Avg payout: ₹600–₹1,200 / job</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T03: GOVERNMENT KYC DIGILOCKER ONBOARDING
+        case 3:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(2)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Government KYC Verification</h2>
+                <span class="text-[10px] font-mono text-emerald-600 font-bold">UIDAI Certified</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
+                <div class="flex items-center gap-2 text-xs font-bold">
+                  <i class="fa-solid fa-shield-check text-emerald-600 text-base"></i>
+                  <span>UIDAI Aadhaar Digilocker Verified</span>
+                </div>
+                <div class="flex items-center justify-between text-xs pt-1">
+                  <span class="text-[11px] text-emerald-800">Aadhaar: XXXX-XXXX-4821</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold text-[9px]">MATCH 100%</span>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="p-3.5 rounded-2xl ${cardBg} border space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold">NCVT Mechanical Trade Certificate</span>
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                  </div>
+                  <div class="text-[11px] ${subText}">Certificate #NCVT-2018-BLR-0941 • Machine Tool Maintenance</div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl ${cardBg} border space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold">Karnataka Police Clearance (PCC)</span>
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                  </div>
+                  <div class="text-[11px] ${subText}">Clear record verified via State Police Portal</div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(4)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Continue to Skill Matrix & Tools →
+              </button>
+            </div>
+          `;
+
+        // T04: SKILLS MATRIX & TOOL BAG DECLARATION
+        case 4:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(3)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Tools Carried & Skills</h2>
+                <span class="text-[10px] font-mono text-purple-600 font-bold">Polygon NFT</span>
+              </div>
+
+              <div class="space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Equipped Tool Bag Checklist</span>
+                <div class="space-y-2 text-xs">
+                  <div class="p-3 rounded-xl ${cardBg} border flex items-center justify-between">
+                    <span>Fluke 87V True-RMS Digital Multimeter</span>
+                    <i class="fa-solid fa-square-check text-blue-600 text-base"></i>
+                  </div>
+                  <div class="p-3 rounded-xl ${cardBg} border flex items-center justify-between">
+                    <span>Mitutoyo Dial Indicator & Magnetic Base</span>
+                    <i class="fa-solid fa-square-check text-blue-600 text-base"></i>
+                  </div>
+                  <div class="p-3 rounded-xl ${cardBg} border flex items-center justify-between">
+                    <span>Hydraulic Pressure Test Kit (0–400 Bar)</span>
+                    <i class="fa-solid fa-square-check text-blue-600 text-base"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 space-y-1">
+                <div class="flex items-center gap-1.5 text-xs font-bold">
+                  <i class="fa-solid fa-award text-purple-600"></i>
+                  <span>Polygon NFT Credentials Minted</span>
+                </div>
+                <p class="text-[11px] text-purple-800">Your verified skills are minted to wallet 0x71C...482a as tamper-proof Soulbound badges.</p>
+              </div>
+
+              <button onclick="goScreen(5)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-md">
+                Complete Setup & Login →
+              </button>
+            </div>
+          `;
+
+        // T05: TECHNICIAN PHONE + 6-DIGIT OTP LOGIN
+        case 5:
+          return `
+            <div class="p-5 space-y-4">
+              <div class="text-center space-y-1 pt-2">
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mx-auto mb-2 border border-blue-100">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 class="text-lg font-extrabold">Specialist Login</h2>
+                <p class="text-xs ${subText}">Sign in with your verified technician mobile number</p>
+              </div>
+
+              <div class="${surfaceBg} rounded-2xl p-4 border space-y-3">
+                <div>
+                  <label class="text-[11px] font-bold block mb-1">Mobile Number</label>
+                  <div class="flex gap-2">
+                    <span class="px-3 py-2.5 rounded-xl ${cardBg} border font-bold text-xs">+91</span>
+                    <input type="tel" value="98451 23456" class="flex-1 px-3 py-2.5 rounded-xl ${cardBg} border font-semibold text-xs focus:outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label class="text-[11px] font-bold block mb-1">6-Digit SMS OTP</label>
+                  <div class="grid grid-cols-6 gap-1.5 text-center font-bold text-sm">
+                    <input value="7" class="py-2 rounded-xl ${cardBg} border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="3" class="py-2 rounded-xl ${cardBg} border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="9" class="py-2 rounded-xl ${cardBg} border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="1" class="py-2 rounded-xl ${cardBg} border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="4" class="py-2 rounded-xl ${cardBg} border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="8" class="py-2 rounded-xl ${cardBg} border border-blue-500 text-blue-600 text-center font-extrabold" />
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(6)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Verify & Open Field Workstation →
+              </button>
+            </div>
+          `;
+
+        // T06: FIELD WORKSTATION COMMAND HUD (PRIMARY HOME)
+        case 6:
+          return `
+            <div class="p-4 space-y-4">
+              <!-- Giant Duty Toggle Card (Glove-Friendly) -->
+              <div class="p-4 rounded-3xl ${isOnline ? (isDark ? 'bg-emerald-950/40 border-emerald-500/50' : 'bg-emerald-50 border-emerald-200') : (isDark ? 'bg-slate-900 border-slate-700' : 'bg-slate-100 border-slate-300')} border-2 transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl ${isOnline ? 'bg-emerald-600' : 'bg-slate-500'} text-white flex items-center justify-center text-xl shadow-md">
+                      <i class="fa-solid fa-power-off"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold uppercase tracking-wider ${isOnline ? 'text-emerald-700' : 'text-slate-500'}">Duty Status</div>
+                      <h3 class="text-base font-extrabold ${isOnline ? 'text-emerald-900' : 'text-slate-700'}">${isOnline ? 'ONLINE & DISPATCHABLE' : 'OFFLINE (Resting)'}</h3>
+                    </div>
+                  </div>
+                  <button onclick="toggleDutyState()" class="px-4 py-2.5 rounded-xl ${isOnline ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-white'} font-extrabold text-xs shadow-xs">
+                    ${isOnline ? 'Go Offline' : 'Go Online'}
+                  </button>
+                </div>
+                <div class="mt-2.5 pt-2 border-t ${isOnline ? 'border-emerald-200/60' : 'border-slate-200'} flex items-center justify-between text-[11px] font-medium">
+                  <span class="${isOnline ? 'text-emerald-800' : 'text-slate-500'}"><i class="fa-solid fa-radar mr-1"></i> Radar Active: 14 km radius</span>
+                  <button onclick="goScreen(7)" class="text-blue-600 font-bold hover:underline">Adjust Radius →</button>
+                </div>
+              </div>
+
+              <!-- Today's Earnings & Shift KPI Cards -->
+              <div class="grid grid-cols-2 gap-2.5">
+                <div onclick="goScreen(22)" class="p-3.5 rounded-2xl ${cardBg} border cursor-pointer hover:border-blue-500 shadow-xs space-y-1">
+                  <span class="text-[10px] font-bold ${subText} uppercase">Today's Earnings</span>
+                  <div class="text-xl font-extrabold text-emerald-600">₹2,450</div>
+                  <div class="text-[9px] text-slate-400">3 Jobs Finished</div>
+                </div>
+                <div onclick="goScreen(26)" class="p-3.5 rounded-2xl ${cardBg} border cursor-pointer hover:border-blue-500 shadow-xs space-y-1">
+                  <span class="text-[10px] font-bold ${subText} uppercase">Acceptance Rate</span>
+                  <div class="text-xl font-extrabold text-blue-600">96.4%</div>
+                  <div class="text-[9px] text-amber-500 font-bold">★ 4.9 (428 reviews)</div>
+                </div>
+              </div>
+
+              <!-- Quick Field Actions -->
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div onclick="goScreen(9)" class="p-3 rounded-2xl ${cardBg} border hover:border-rose-400 cursor-pointer space-y-1 relative">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500 absolute top-2 right-2 animate-ping"></span>
+                  <i class="fa-solid fa-bolt-lightning text-rose-600 text-lg"></i>
+                  <div class="font-extrabold text-[11px]">Incoming Alert</div>
+                  <div class="text-[9px] text-rose-600 font-bold">42s Timer</div>
+                </div>
+                <div onclick="goScreen(12)" class="p-3 rounded-2xl ${cardBg} border hover:border-blue-400 cursor-pointer space-y-1">
+                  <i class="fa-solid fa-location-arrow text-blue-600 text-lg"></i>
+                  <div class="font-extrabold text-[11px]">GPS Route</div>
+                  <div class="text-[9px] ${subText}">Peenya Unit #4</div>
+                </div>
+                <div onclick="goScreen(29)" class="p-3 rounded-2xl ${cardBg} border hover:border-purple-400 cursor-pointer space-y-1">
+                  <i class="fa-solid fa-headset text-purple-600 text-lg"></i>
+                  <div class="font-extrabold text-[11px]">Video Consult</div>
+                  <div class="text-[9px] text-purple-600 font-bold">₹199 / call</div>
+                </div>
+              </div>
+
+              <!-- Active Broadcast Scanner Simulation -->
+              <div class="p-4 rounded-2xl ${surfaceBg} border space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-extrabold flex items-center gap-1.5">
+                    <i class="fa-solid fa-satellite-dish text-blue-600"></i> Local Dispatch Radar
+                  </span>
+                  <span class="text-[10px] font-mono text-blue-600 font-bold">Scanning Peenya...</span>
+                </div>
+                <p class="text-[11px] ${subText}">Listening for high-urgency CNC spindle, IBR boiler & automobile breakdowns within your 14 km zone.</p>
+              </div>
+            </div>
+          `;
+
+        // T07: SERVICE AREA & RADAR RADIUS
+        case 7:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(6)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Service Area & Radar</h2>
+                <span class="text-xs font-bold text-blue-600">14 km Radius</span>
+              </div>
+
+              <div class="p-4 rounded-2xl ${cardBg} border space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold">Dispatch Distance Slider</span>
+                  <span class="text-sm font-extrabold text-blue-600">14 km</span>
+                </div>
+                <input type="range" min="1" max="25" value="14" class="w-full accent-blue-600 cursor-pointer" />
+                <div class="flex justify-between text-[10px] ${subText}">
+                  <span>1 km (Hyperlocal)</span>
+                  <span>14 km (Current)</span>
+                  <span>25 km (Max)</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Preferred Industrial Hubs</span>
+                <div class="space-y-2 text-xs">
+                  <div class="p-3 rounded-xl ${cardBg} border flex items-center justify-between">
+                    <div>
+                      <div class="font-bold">Peenya Industrial Area (Phase 1–4)</div>
+                      <div class="text-[10px] text-emerald-600 font-bold">High Density (82 Plants)</div>
+                    </div>
+                    <i class="fa-solid fa-toggle-on text-blue-600 text-xl"></i>
+                  </div>
+                  <div class="p-3 rounded-xl ${cardBg} border flex items-center justify-between">
+                    <div>
+                      <div class="font-bold">Yeshwanthpur & Jalahalli Cross</div>
+                      <div class="text-[10px] ${subText}">Automobile Garages</div>
+                    </div>
+                    <i class="fa-solid fa-toggle-on text-blue-600 text-xl"></i>
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(6)" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md">
+                Save Radar Settings
+              </button>
+            </div>
+          `;
+
+        // T08: AVAILABILITY & ON-CALL SHIFT SCHEDULE
+        case 8:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(6)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Weekly Shift Planner</h2>
+                <span class="text-xs font-bold text-emerald-600">Active</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 space-y-1">
+                <div class="flex items-center gap-1.5 text-xs font-bold">
+                  <i class="fa-solid fa-bell text-amber-600"></i>
+                  <span>24/7 Highway & Plant Emergency On-Call</span>
+                </div>
+                <p class="text-[11px] text-amber-800">Earn 1.5x surge pricing on dispatches accepted between 10 PM and 6 AM.</p>
+              </div>
+
+              <div class="space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Working Days (08:00 – 20:00)</span>
+                <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold">
+                  <div class="p-2 rounded-xl bg-blue-600 text-white">Mon</div>
+                  <div class="p-2 rounded-xl bg-blue-600 text-white">Tue</div>
+                  <div class="p-2 rounded-xl bg-blue-600 text-white">Wed</div>
+                  <div class="p-2 rounded-xl bg-blue-600 text-white">Thu</div>
+                  <div class="p-2 rounded-xl bg-blue-600 text-white">Fri</div>
+                  <div class="p-2 rounded-xl bg-blue-600 text-white">Sat</div>
+                  <div class="p-2 rounded-xl ${surfaceBg} border">Sun</div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(6)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-md">
+                Update Availability
+              </button>
+            </div>
+          `;
+
+        // T09: INCOMING EMERGENCY JOB ALERT (42S COUNTDOWN RING)
+        case 9:
+          return `
+            <div class="h-full bg-slate-950 text-white flex flex-col justify-between p-5 relative select-none">
+              <!-- Top Alert Bar -->
+              <div class="flex items-center justify-between z-10 pt-2">
+                <span class="px-3 py-1 rounded-full bg-rose-600 text-white text-[10px] font-extrabold uppercase tracking-wider animate-pulse">
+                  ⚡ CRITICAL EMERGENCY DISPATCH
+                </span>
+                <span class="text-xs font-mono text-slate-400">96% Skill Match</span>
+              </div>
+
+              <!-- Center 42s Countdown Circular HUD -->
+              <div class="my-auto text-center space-y-4">
+                <div class="w-40 h-40 rounded-full border-4 border-rose-500 border-t-transparent flex flex-col items-center justify-center mx-auto shadow-2xl pulse-alert relative">
+                  <span class="text-4xl font-extrabold font-mono text-rose-400">42s</span>
+                  <span class="text-[9px] uppercase font-bold text-slate-400">Time to Accept</span>
+                </div>
+
+                <div class="space-y-1">
+                  <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Mazak VCN-530C (VMC)</span>
+                  <h2 class="text-xl font-extrabold leading-snug">Spindle Bearing Race Degradation</h2>
+                  <p class="text-xs text-slate-300">Peenya MSME Unit #4 • 2.3 km away (8 Mins ETA)</p>
+                </div>
+
+                <!-- Payout Banner -->
+                <div class="p-3.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 max-w-[280px] mx-auto flex items-center justify-between">
+                  <span class="text-xs text-slate-300">Estimated Payout:</span>
+                  <span class="text-lg font-extrabold text-emerald-400 font-mono">₹950 – ₹1,490</span>
+                </div>
+
+                <button onclick="goScreen(10)" class="text-xs text-blue-400 underline font-semibold">View Fault Symptoms & Tools Checklist ↓</button>
+              </div>
+
+              <!-- Huge Glove-Friendly Action Buttons -->
+              <div class="flex gap-2.5 z-10 pb-4">
+                <button onclick="goScreen(6)" class="w-1/3 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-white/10">
+                  Decline (✕)
+                </button>
+                <button onclick="goScreen(12)" class="w-2/3 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-xl flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-check text-base"></i>
+                  <span>ACCEPT JOB NOW →</span>
+                </button>
+              </div>
+            </div>
+          `;
+
+        // T10: PRE-ACCEPT JOB DETAILS & SYMPTOM AUDIO
+        case 10:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(9)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Pre-Accept Job Symptoms</h2>
+                <span class="text-[10px] font-mono text-rose-600 font-bold">Timer: 34s</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-volume-high"></i> Customer Audio Recording</span>
+                  <span class="text-[10px] font-mono">4,210 Hz Peak</span>
+                </div>
+                <div class="p-2.5 bg-white rounded-xl flex items-center gap-3 border border-purple-100">
+                  <button class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-play"></i></button>
+                  <div class="flex-1 h-3 flex items-center gap-1">
+                    <span class="w-1 bg-purple-600 h-2"></span><span class="w-1 bg-purple-600 h-3"></span><span class="w-1 bg-purple-600 h-2"></span><span class="w-1 bg-purple-600 h-3"></span>
+                  </div>
+                  <span class="text-[10px] font-mono text-slate-500">0:14</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Required Tools Check</span>
+                <div class="space-y-1.5 text-xs">
+                  <div class="p-2.5 rounded-xl ${cardBg} border flex items-center gap-2"><i class="fa-solid fa-check text-emerald-600"></i> Fluke Multimeter</div>
+                  <div class="p-2.5 rounded-xl ${cardBg} border flex items-center gap-2"><i class="fa-solid fa-check text-emerald-600"></i> Bearing Puller Set</div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(12)" class="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm shadow-lg">
+                ACCEPT & START NAVIGATION →
+              </button>
+            </div>
+          `;
+
+        // T11: 60-SECOND EMERGENCY SOS RACING AUCTION
+        case 11:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(6)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-rose-600">Live SOS Bidding Race</h2>
+                <span class="text-[10px] font-mono text-slate-400">60s Window</span>
+              </div>
+
+              <div class="w-28 h-28 rounded-full border-4 border-rose-600 flex flex-col items-center justify-center mx-auto my-2">
+                <span class="text-3xl font-extrabold text-rose-600 font-mono">18s</span>
+                <span class="text-[9px] font-bold text-slate-500 uppercase">Fastest Wins</span>
+              </div>
+
+              <div class="p-3.5 rounded-2xl ${cardBg} border text-left text-xs space-y-1">
+                <span class="font-extrabold text-slate-900">Highway Truck Air Brake Failure</span>
+                <p class="text-[11px] ${subText}">Tumkur Road Near Peenya Flyover • ₹1,800 Guaranteed</p>
+              </div>
+
+              <button onclick="goScreen(12)" class="w-full py-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm shadow-xl">
+                BID 8 MINS ARRIVAL & CLAIM JOB →
+              </button>
+            </div>
+          `;
+
+        // T12: TURN-BY-TURN GPS NAVIGATION HUD
+        case 12:
+          return `
+            <div class="p-4 space-y-3.5">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <h2 class="text-base font-extrabold">Turn-by-Turn GPS</h2>
+                <span class="text-xs font-mono text-emerald-600 font-bold">11 Mins ETA</span>
+              </div>
+
+              <!-- Map Simulation -->
+              <div class="rounded-2xl bg-slate-100 border ${isDark ? 'border-slate-800 bg-slate-900' : 'border-slate-200'} h-44 relative overflow-hidden flex items-center justify-center">
+                <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:12px_12px]"></div>
+                <!-- Route Polyline -->
+                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 300 150">
+                  <path d="M 50 120 Q 150 40 250 80" stroke="#2563EB" stroke-width="4" fill="none" stroke-dasharray="6 4" />
+                </svg>
+                <div class="absolute left-32 top-12 flex flex-col items-center">
+                  <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md animate-bounce">
+                    <i class="fa-solid fa-motorcycle"></i>
+                  </div>
+                  <span class="text-[9px] font-bold bg-white text-slate-900 px-2 py-0.5 rounded-full shadow-xs mt-1">You</span>
+                </div>
+              </div>
+
+              <!-- Turn Direction Banner -->
+              <div class="p-3.5 rounded-2xl bg-slate-900 text-white flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-arrow-turn-up text-white"></i></div>
+                <div>
+                  <div class="text-xs font-bold">In 350 meters, turn right</div>
+                  <div class="text-[10px] text-slate-400">onto TVS Cross Road towards Peenya Unit #4</div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="goScreen(13)" class="py-3 rounded-xl ${surfaceBg} border text-xs font-bold flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-comments text-blue-600"></i> Chat Owner
+                </button>
+                <button onclick="goScreen(14)" class="py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md">
+                  <i class="fa-solid fa-location-dot"></i> I Have Arrived →
+                </button>
+              </div>
+            </div>
+          `;
+
+        // T13: IN-APP CHAT & 9-LANGUAGE TRANSLATION
+        case 13:
+          return `
+            <div class="h-full flex flex-col justify-between p-4 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'} shrink-0">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(12)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                  <div>
+                    <h2 class="text-xs font-extrabold">Pavan Sharma (Owner)</h2>
+                    <span class="text-[9px] text-emerald-600 font-bold">Auto-Translating (HI ⇄ EN)</span>
+                  </div>
+                </div>
+                <button class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-phone"></i></button>
+              </div>
+
+              <div class="flex-1 overflow-y-auto space-y-2.5 text-xs">
+                <div class="p-3 rounded-2xl bg-blue-600 text-white max-w-[85%] ml-auto rounded-tr-none">
+                  "Bhaiya main TVS cross ke paas pahunch gaya hoon. Gate number 2 kahan hai?"
+                </div>
+                <div class="p-3 rounded-2xl ${surfaceBg} border max-w-[85%] rounded-tl-none space-y-1">
+                  <div class="text-[9px] text-slate-400 font-mono">10:04 AM • English (Owner)</div>
+                  <div>Take the right turn after TVS showroom. Security guard will open Gate #2 for you.</div>
+                </div>
+              </div>
+
+              <div class="flex gap-2 pt-2 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'} shrink-0">
+                <input type="text" placeholder="Type reply in Hindi/English..." class="flex-1 px-3 py-2 rounded-xl ${surfaceBg} border text-xs focus:outline-none" />
+                <button class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-paper-plane"></i></button>
+              </div>
+            </div>
+          `;
+
+        // T14: PHYSICAL SITE ARRIVAL & POSTGIS GEOFENCE
+        case 14:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(12)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Site Arrival Verification</h2>
+                <span class="text-[10px] font-mono text-emerald-600 font-bold">PostGIS</span>
+              </div>
+
+              <div class="w-20 h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl mx-auto border border-emerald-200">
+                <i class="fa-solid fa-location-crosshairs"></i>
+              </div>
+
+              <div class="space-y-1">
+                <h3 class="text-base font-extrabold">You are within 50 meters!</h3>
+                <p class="text-xs ${subText}">PostGIS geofence confirmed. Please meet the owner and enter their 6-digit Arrival OTP to unlock the repair escrow.</p>
+              </div>
+
+              <button onclick="goScreen(15)" class="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md">
+                Open Customer OTP Keypad →
+              </button>
+            </div>
+          `;
+
+        // T15: TACTILE NUMERIC KEYPAD FOR CUSTOMER OTP
+        case 15:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(14)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Enter Customer's OTP</h2>
+                <span class="text-[10px] font-mono text-blue-600 font-bold">Unlock Escrow</span>
+              </div>
+
+              <div class="space-y-1">
+                <span class="text-xs ${subText}">Ask owner for the 6-digit code on their UPTIME app</span>
+                <div class="flex justify-center gap-2 font-mono text-xl font-extrabold py-2">
+                  <span class="w-10 h-12 rounded-xl ${cardBg} border-2 border-blue-600 flex items-center justify-center">4</span>
+                  <span class="w-10 h-12 rounded-xl ${cardBg} border-2 border-blue-600 flex items-center justify-center">8</span>
+                  <span class="w-10 h-12 rounded-xl ${cardBg} border-2 border-blue-600 flex items-center justify-center">2</span>
+                  <span class="w-10 h-12 rounded-xl ${cardBg} border-2 border-blue-600 flex items-center justify-center">1</span>
+                  <span class="w-10 h-12 rounded-xl ${cardBg} border-2 border-blue-600 flex items-center justify-center">9</span>
+                  <span class="w-10 h-12 rounded-xl ${cardBg} border-2 border-blue-600 flex items-center justify-center">6</span>
+                </div>
+              </div>
+
+              <!-- Tactile Oversized Numeric Keypad -->
+              <div class="grid grid-cols-3 gap-2.5 max-w-[280px] mx-auto text-lg font-extrabold">
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">1</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">2</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">3</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">4</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">5</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">6</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">7</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">8</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">9</button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs"><i class="fa-solid fa-delete-left"></i></button>
+                <button class="py-3.5 rounded-2xl ${surfaceBg} border shadow-xs">0</button>
+                <button onclick="goScreen(16)" class="py-3.5 rounded-2xl bg-emerald-600 text-white shadow-md"><i class="fa-solid fa-check"></i></button>
+              </div>
+
+              <button onclick="goScreen(16)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-md mt-2">
+                Verify OTP & Start Repair Clock →
+              </button>
+            </div>
+          `;
+
+        // T16: PRE-REPAIR DAMAGE EVIDENCE CAMERA
+        case 16:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(15)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Pre-Repair Evidence</h2>
+                <span class="text-[10px] font-mono text-rose-600 font-bold">Mandatory</span>
+              </div>
+
+              <div class="rounded-2xl bg-slate-900 text-white h-48 flex flex-col items-center justify-center relative p-4 text-center">
+                <div class="w-40 h-28 border-2 border-dashed border-rose-400 rounded-xl flex items-center justify-center">
+                  <span class="text-[10px] text-rose-400 font-bold">Capture Damaged Bearing</span>
+                </div>
+                <div class="absolute bottom-2 left-3 text-[9px] font-mono text-slate-400">Watermark: Nov 10, 2026 • Peenya Phase 4</div>
+              </div>
+
+              <div class="space-y-1.5 text-xs">
+                <div class="font-bold">Required Photos (2 Captured)</div>
+                <div class="grid grid-cols-2 gap-2 text-[10px]">
+                  <div class="p-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 font-bold">
+                    <i class="fa-solid fa-check"></i> Spindle Front Face
+                  </div>
+                  <div class="p-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 font-bold">
+                    <i class="fa-solid fa-check"></i> Broken Bearing Race
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(17)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Lock Pre-Photos & Open AI Copilot →
+              </button>
+            </div>
+          `;
+
+        // T17: STEP-BY-STEP AI DIAGNOSTIC COPILOT
+        case 17:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(16)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Step 3 of 6: Check Runout</h2>
+                <span class="text-[10px] font-mono text-blue-600 font-bold">AI Copilot</span>
+              </div>
+
+              <div class="p-4 rounded-2xl ${cardBg} border space-y-2.5">
+                <div class="flex items-center gap-2 text-xs font-bold text-purple-600">
+                  <i class="fa-solid fa-robot"></i> AI Measurement Instructions
+                </div>
+                <p class="text-xs leading-relaxed">Mount magnetic dial indicator on machine bed. Touch probe to inner spindle taper. Rotate spindle slowly by hand.</p>
+                <div class="p-2.5 rounded-xl ${surfaceBg} border font-mono text-xs text-blue-600 font-bold">
+                  Target Runout: &lt; 0.003 mm (3 microns)
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm"></i>
+                <span class="font-medium">Lock Out / Tag Out (LOTO): Verify main isolator switch is padlocked.</span>
+              </div>
+
+              <div class="flex gap-2">
+                <button onclick="goScreen(18)" class="flex-1 py-3 rounded-xl ${surfaceBg} border text-xs font-bold">
+                  + Add Parts Quote
+                </button>
+                <button onclick="goScreen(20)" class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                  Complete Steps →
+                </button>
+              </div>
+            </div>
+          `;
+
+        // T18: SPARE PART REQUISITION & QUOTE REQUEST
+        case 18:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(17)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Requisition Spare Part</h2>
+                <span class="text-xs font-bold text-blue-600">Quote Push</span>
+              </div>
+
+              <div class="p-4 rounded-2xl ${cardBg} border space-y-3 text-xs">
+                <div>
+                  <label class="text-[11px] font-bold block mb-1">Part Needed</label>
+                  <input type="text" value="SKF 7010 CD/P4A High-Precision Bearing" class="w-full px-3 py-2 rounded-xl ${surfaceBg} border font-semibold" />
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[11px] font-bold block mb-1">Quantity</label>
+                    <input type="number" value="1" class="w-full px-3 py-2 rounded-xl ${surfaceBg} border font-bold" />
+                  </div>
+                  <div>
+                    <label class="text-[11px] font-bold block mb-1">Part Cost (₹)</label>
+                    <input type="number" value="640" class="w-full px-3 py-2 rounded-xl ${surfaceBg} border font-bold text-emerald-600" />
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-[11px] ${subText}">This sends an instant approval notification to the owner's phone. Once they approve, ₹640 is added to the escrow bill.</p>
+
+              <button onclick="goScreen(17)" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md">
+                Push Quote to Owner's Phone (₹640) →
+              </button>
+            </div>
+          `;
+
+        // T19: CAMERA LIVE STREAM TO REMOTE SUPERVISOR
+        case 19:
+          return `
+            <div class="h-full bg-slate-900 text-white flex flex-col justify-between p-4 relative select-none">
+              <div class="flex items-center justify-between z-10">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                  <span class="text-xs font-bold font-mono">BROADCASTING LIVE</span>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10">Connected to L3 Master</span>
+              </div>
+
+              <div class="my-auto text-center space-y-3">
+                <div class="w-48 h-48 rounded-full border-2 border-emerald-400 mx-auto flex items-center justify-center">
+                  <i class="fa-solid fa-video text-emerald-400 text-4xl animate-pulse"></i>
+                </div>
+                <div class="bg-black/60 rounded-xl p-3 max-w-[260px] mx-auto text-left text-xs">
+                  <div class="text-[9px] text-emerald-400 font-bold uppercase">Supervisor Audio</div>
+                  <div>"Torque the 4 bearing cap bolts diagonally to 45 Nm in 3 passes."</div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(17)" class="w-full py-3.5 rounded-xl bg-slate-800 text-white font-bold text-xs">
+                End Stream & Return to Checklist
+              </button>
+            </div>
+          `;
+
+        // T20: POST-REPAIR RUNNING PROOF & OWNER SIGNATURE
+        case 20:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(17)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Final Sign-Off Proof</h2>
+                <span class="text-[10px] font-mono text-emerald-600 font-bold">Step 6 of 6</span>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between text-xs">
+                <span>10-Second Running Video Captured ✓</span>
+                <span class="font-bold text-emerald-700">Ready</span>
+              </div>
+
+              <!-- Digital Signature Pad Simulation -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="font-bold">Customer Touch Signature</span>
+                  <button class="text-blue-600 text-[10px] font-bold">Clear</button>
+                </div>
+                <div class="h-28 rounded-2xl ${surfaceBg} border-2 border-dashed border-slate-300 flex items-center justify-center relative">
+                  <!-- Simulated Drawn Signature Polyline -->
+                  <svg class="w-48 h-16" viewBox="0 0 200 60">
+                    <path d="M 20 40 Q 50 10 80 35 T 140 25 T 180 35" stroke="#2563EB" stroke-width="3" fill="none" />
+                  </svg>
+                  <span class="absolute bottom-2 text-[9px] text-slate-400">Pavan Sharma (Customer)</span>
+                </div>
+              </div>
+
+              <button onclick="goScreen(21)" class="w-full py-4 rounded-2xl bg-slate-900 hover:bg-black text-white font-extrabold text-xs shadow-md">
+                Lock Job & Release Escrow Funds →
+              </button>
+            </div>
+          `;
+
+        // T21: JOB COMPLETION & ESCROW PAYOUT CONFIRMATION
+        case 21:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl mx-auto border border-emerald-200 shadow-sm">
+                <i class="fa-solid fa-check"></i>
+              </div>
+
+              <div class="space-y-1">
+                <h2 class="text-lg font-extrabold">Job UPT-0941 Completed!</h2>
+                <p class="text-xs ${subText}">SHA-256 Warranty Certificate issued to owner.</p>
+              </div>
+
+              <!-- Payout Bill Breakdown -->
+              <div class="p-4 rounded-2xl ${cardBg} border space-y-2 text-xs text-left">
+                <div class="flex justify-between"><span>Inspection & Labour</span><span class="font-bold">₹850</span></div>
+                <div class="flex justify-between"><span>Parts (SKF Bearing)</span><span class="font-bold">₹640</span></div>
+                <div class="flex justify-between text-slate-400"><span>Platform Fee (10%)</span><span>- ₹85</span></div>
+                <div class="pt-2 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'} flex justify-between font-extrabold text-sm text-emerald-600">
+                  <span>Credited to Wallet</span><span>+ ₹1,405</span>
+                </div>
+              </div>
+
+              <button onclick="goScreen(22)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Open Wallet & Withdraw to Bank →
+              </button>
+            </div>
+          `;
+
+        // T22: EARNINGS DASHBOARD & LEDGER
+        case 22:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <h2 class="text-base font-extrabold">Earnings & Wallet</h2>
+                <button onclick="goScreen(24)" class="text-xs font-bold text-blue-600">GST / Tax</button>
+              </div>
+
+              <!-- Main Balance Card -->
+              <div class="p-5 rounded-3xl bg-slate-900 text-white space-y-3 shadow-lg">
+                <span class="text-[10px] font-mono tracking-widest text-emerald-400 uppercase font-bold">Available Payout Balance</span>
+                <div class="text-3xl font-extrabold font-mono">₹8,420.00</div>
+                <div class="flex gap-2 pt-1">
+                  <button onclick="goScreen(23)" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-xs">
+                    Withdraw to UPI →
+                  </button>
+                </div>
+              </div>
+
+              <!-- Weekly Chart Simulation -->
+              <div class="p-4 rounded-2xl ${cardBg} border space-y-2">
+                <span class="text-xs font-bold uppercase">Weekly Earnings Trend</span>
+                <div class="h-24 flex items-end justify-between gap-2 pt-2 px-1">
+                  <div class="flex-1 bg-blue-600 rounded-t h-[40%] flex flex-col justify-end text-[8px] text-white text-center pb-1">M</div>
+                  <div class="flex-1 bg-blue-600 rounded-t h-[65%] flex flex-col justify-end text-[8px] text-white text-center pb-1">T</div>
+                  <div class="flex-1 bg-blue-600 rounded-t h-[50%] flex flex-col justify-end text-[8px] text-white text-center pb-1">W</div>
+                  <div class="flex-1 bg-blue-600 rounded-t h-[85%] flex flex-col justify-end text-[8px] text-white text-center pb-1">T</div>
+                  <div class="flex-1 bg-blue-600 rounded-t h-[95%] flex flex-col justify-end text-[8px] text-white text-center pb-1">F</div>
+                  <div class="flex-1 bg-blue-600 rounded-t h-[70%] flex flex-col justify-end text-[8px] text-white text-center pb-1">S</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T23: 1-TAP INSTANT BANK WITHDRAWAL VIA UPI
+        case 23:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(22)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Withdraw Funds</h2>
+                <span class="text-xs font-mono text-emerald-600 font-bold">Instant Payout</span>
+              </div>
+
+              <div class="p-4 rounded-2xl ${cardBg} border space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="${subText}">Transfer Amount</span>
+                  <span class="text-blue-600 font-bold">All (₹8,420)</span>
+                </div>
+                <div class="text-2xl font-extrabold font-mono">₹8,420</div>
+              </div>
+
+              <div class="space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Select Verified UPI ID</span>
+                <div class="p-3.5 rounded-2xl ${cardBg} border border-blue-500 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-mobile-screen text-blue-600 text-base"></i>
+                    <div>
+                      <div class="text-xs font-bold">9845123456@okhdfcbank</div>
+                      <div class="text-[10px] text-emerald-600 font-bold">Primary (Rajesh Kumar)</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-circle-check text-blue-600"></i>
+                </div>
+              </div>
+
+              <button onclick="goScreen(22)" class="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md">
+                Transfer ₹8,420 Now (Zero Fee) →
+              </button>
+            </div>
+          `;
+
+        // T24: GST & TDS TAX STATEMENT VAULT
+        case 24:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(22)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">GST & Tax Reports</h2>
+                <span class="text-xs font-mono text-blue-600 font-bold">FY 2026-27</span>
+              </div>
+
+              <div class="space-y-2.5 text-xs">
+                <div class="p-3.5 rounded-2xl ${cardBg} border flex items-center justify-between">
+                  <div>
+                    <div class="font-bold">Form 16A (TDS Statement - Q2)</div>
+                    <div class="text-[10px] ${subText}">1% Sec 194M Deducted: ₹284</div>
+                  </div>
+                  <button class="text-blue-600 font-bold">PDF ↓</button>
+                </div>
+                <div class="p-3.5 rounded-2xl ${cardBg} border flex items-center justify-between">
+                  <div>
+                    <div class="font-bold">Monthly Platform GST Invoice (Oct 2026)</div>
+                    <div class="text-[10px] ${subText}">18% GST Input Credit Invoice</div>
+                  </div>
+                  <button class="text-blue-600 font-bold">PDF ↓</button>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T25: POLYGON BLOCKCHAIN NFT SKILL BADGES
+        case 25:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <h2 class="text-base font-extrabold">Polygon NFT Credentials</h2>
+                <span class="text-xs font-mono text-purple-600 font-bold">Polygon POS</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2.5">
+                <div class="p-3.5 rounded-2xl ${cardBg} border border-purple-300 space-y-2 text-center">
+                  <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl mx-auto"><i class="fa-solid fa-award"></i></div>
+                  <div class="text-xs font-extrabold">Fanuc CNC Master</div>
+                  <div class="text-[9px] font-mono text-purple-600 font-bold">NFT #4821</div>
+                </div>
+                <div class="p-3.5 rounded-2xl ${cardBg} border border-blue-300 space-y-2 text-center">
+                  <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mx-auto"><i class="fa-solid fa-bolt"></i></div>
+                  <div class="text-xs font-extrabold">Siemens S7 PLC</div>
+                  <div class="text-[9px] font-mono text-blue-600 font-bold">NFT #1094</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T26: TECHNICIAN PERFORMANCE SCORECARD
+        case 26:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(6)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Performance Scorecard</h2>
+                <span class="text-xs font-bold text-emerald-600">Top 5% Tech</span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="p-3 rounded-2xl ${cardBg} border">
+                  <div class="text-base font-extrabold text-blue-600">96.4%</div>
+                  <div class="text-[10px] ${subText}">Acceptance</div>
+                </div>
+                <div class="p-3 rounded-2xl ${cardBg} border">
+                  <div class="text-base font-extrabold text-emerald-600">98.2%</div>
+                  <div class="text-[10px] ${subText}">On-Time Arrival</div>
+                </div>
+                <div class="p-3 rounded-2xl ${cardBg} border">
+                  <div class="text-base font-extrabold text-amber-500">4.9 ★</div>
+                  <div class="text-[10px] ${subText}">Rating (428)</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T27: PAST JOBS LEDGER
+        case 27:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <h2 class="text-base font-extrabold">Job History Archive</h2>
+                <span class="text-xs font-bold text-blue-600">428 Completed</span>
+              </div>
+
+              <div class="space-y-2.5">
+                <div onclick="goScreen(28)" class="p-3.5 rounded-2xl ${cardBg} border hover:border-blue-500 cursor-pointer space-y-1">
+                  <div class="flex justify-between text-xs">
+                    <span class="font-mono text-slate-400">UPT-2026-0941</span>
+                    <span class="text-emerald-600 font-bold">COMPLETED</span>
+                  </div>
+                  <h4 class="text-xs font-extrabold">Mazak VMC Spindle Bearing Replacement</h4>
+                  <div class="text-[10px] ${subText}">Pavan Sharma • Peenya Unit #4 • ₹1,490 Payout</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T28: DETAILED JOB AUDIT FILE
+        case 28:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(27)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Job Audit File #0941</h2>
+                <span class="text-xs font-mono text-emerald-600 font-bold">SHA-256</span>
+              </div>
+
+              <div class="p-4 rounded-2xl ${cardBg} border space-y-2 text-xs">
+                <div class="flex justify-between"><span>Customer</span><span class="font-bold">Pavan Sharma</span></div>
+                <div class="flex justify-between"><span>Machine</span><span class="font-bold">Mazak VCN-530C</span></div>
+                <div class="flex justify-between"><span>Replaced Part</span><span class="font-bold">SKF 7010 Angular Bearing</span></div>
+                <div class="flex justify-between text-emerald-600 font-bold"><span>Total Net Earned</span><span>₹1,405</span></div>
+              </div>
+            </div>
+          `;
+
+        // T29: INCOMING REMOTE VIDEO CONSULT ALERT
+        case 29:
+          return `
+            <div class="h-full bg-slate-950 text-white flex flex-col justify-between p-5 text-center select-none">
+              <div class="pt-2">
+                <span class="px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase">
+                  📹 INCOMING VIDEO CONSULTATION
+                </span>
+              </div>
+
+              <div class="my-auto space-y-3">
+                <div class="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl mx-auto shadow-xl pulse-alert">
+                  <i class="fa-solid fa-video"></i>
+                </div>
+                <h3 class="text-lg font-extrabold">Pavan Sharma (Owner)</h3>
+                <p class="text-xs text-slate-400">Requesting 20-min Full Diagnosis for Inverter AC Board</p>
+                <div class="text-base font-extrabold text-emerald-400 font-mono">₹199 Immediate Credit</div>
+              </div>
+
+              <div class="flex gap-2.5 pb-4">
+                <button onclick="goScreen(6)" class="w-1/3 py-3.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">Decline</button>
+                <button onclick="goScreen(30)" class="w-2/3 py-3.5 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-xs shadow-lg">Answer Call →</button>
+              </div>
+            </div>
+          `;
+
+        // T30: AGORA VIDEO CONSULT WORKSTATION HUD
+        case 30:
+          return `
+            <div class="h-full bg-slate-900 text-white flex flex-col justify-between p-4 relative select-none">
+              <div class="flex items-center justify-between z-10">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                  <span class="text-xs font-bold">HD Call • 03:40</span>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10">AR Laser Pointer: ON</span>
+              </div>
+
+              <div class="my-auto text-center space-y-3">
+                <div class="w-48 h-48 rounded-full border-2 border-emerald-400 mx-auto flex items-center justify-center relative">
+                  <i class="fa-solid fa-crosshairs text-emerald-400 text-4xl"></i>
+                  <span class="absolute bottom-2 bg-emerald-500 text-slate-950 text-[9px] font-bold px-2 py-0.5 rounded-full">Laser On T3</span>
+                </div>
+                <p class="text-xs text-slate-300">Point phone camera to guide customer to PCB relay.</p>
+              </div>
+
+              <button onclick="goScreen(6)" class="w-full py-3.5 rounded-xl bg-rose-600 text-white font-bold text-xs">
+                End Consultation & Credit ₹199
+              </button>
+            </div>
+          `;
+
+        // T31: OFFLINE FIELD REPAIR WIKI & ALARM DIRECTORY
+        case 31:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(6)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Field Repair Wiki</h2>
+                <span class="text-xs font-mono text-emerald-600 font-bold">Offline Sync</span>
+              </div>
+
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search alarm code (Fanuc, Siemens, Daikin)..." class="w-full pl-8 pr-3 py-2 rounded-xl ${surfaceBg} border text-xs" />
+              </div>
+
+              <div onclick="goScreen(32)" class="p-3.5 rounded-2xl ${cardBg} border hover:border-blue-500 cursor-pointer space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="font-bold">Fanuc 401 ALM: V-Ready Off</span>
+                  <span class="text-blue-600 font-bold">Schematics →</span>
+                </div>
+                <p class="text-[11px] ${subText}">Check CX1A pin 1 & 2 auxiliary 24V DC coil voltage.</p>
+              </div>
+            </div>
+          `;
+
+        // T32: WIKI WIRING SCHEMATICS & TEST POINTS
+        case 32:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(31)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Wiring Schematics</h2>
+                <span class="text-xs font-mono text-blue-600 font-bold">Fanuc 0i-MF</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-2">
+                <span class="text-[10px] font-mono text-emerald-400 font-bold">Terminal CX1A Pinout</span>
+                <div class="font-mono text-xs space-y-1 text-slate-300">
+                  <div>Pin 1: 24V DC Auxiliary (MCC Coil +)</div>
+                  <div>Pin 2: 0V Return (GND)</div>
+                  <div>Pin 3: EMG Emergency Stop Loop</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T33: TECHNICIAN NOTIFICATIONS & DISPATCH ALERTS
+        case 33:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <button onclick="goScreen(6)" class="w-8 h-8 rounded-full ${isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'} flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold">Technician Alerts</h2>
+                <button class="text-xs text-blue-600 font-bold">Clear</button>
+              </div>
+
+              <div class="space-y-2.5 text-xs">
+                <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1">
+                  <div class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-600"></i> Payout Credited: ₹1,405</div>
+                  <p class="text-[11px] text-emerald-800">Escrow released for Job #0941. Transferred to wallet balance.</p>
+                </div>
+                <div class="p-3.5 rounded-2xl ${cardBg} border space-y-1">
+                  <div class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Batch Alert: Siemens S120 Drives</div>
+                  <p class="text-[11px] ${subText}">Peenya plants reporting firmware faults. Review patch bulletin.</p>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // T34: TECHNICIAN PROFILE, VEHICLE & THEME MODE
+        case 34:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}">
+                <h2 class="text-base font-extrabold">Technician Profile</h2>
+                <button onclick="goScreen(5)" class="text-xs font-bold text-rose-600">Sign Out</button>
+              </div>
+
+              <div class="p-4 rounded-2xl ${cardBg} border flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-extrabold text-lg flex items-center justify-center">
+                  RK
+                </div>
+                <div>
+                  <h3 class="text-sm font-extrabold">Rajesh Kumar</h3>
+                  <p class="text-xs ${subText}">+91 98451 23456 • Hero Splendor KA-02-EE-4821</p>
+                  <span class="text-[10px] font-bold text-emerald-600">✓ UIDAI & NCVT Level-3 Master</span>
+                </div>
+              </div>
+
+              <!-- Theme Switcher Option Inside Profile -->
+              <div class="p-2 rounded-2xl ${cardBg} border space-y-1 text-xs font-semibold">
+                <div onclick="toggleTheme()" class="p-2.5 rounded-xl hover:${surfaceBg} flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2"><i class="fa-solid fa-circle-half-stroke text-blue-600"></i> Workstation Theme</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isDark ? 'bg-indigo-900 text-indigo-300' : 'bg-slate-100 text-slate-800'}">
+                    ${isDark ? 'Field Dark Mode' : 'Clean Light Mode'}
+                  </span>
+                </div>
+                <div onclick="goScreen(7)" class="p-2.5 rounded-xl hover:${surfaceBg} flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2"><i class="fa-solid fa-radar text-emerald-600"></i> Radar Radius (14 km)</span>
+                  <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                </div>
+                <div onclick="goScreen(25)" class="p-2.5 rounded-xl hover:${surfaceBg} flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2"><i class="fa-solid fa-award text-purple-600"></i> Polygon NFT Badges</span>
+                  <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                </div>
+              </div>
+            </div>
+          `;
+
+        default:
+          return `<div class="p-6 text-center text-slate-500">Screen T${String(id).padStart(2,'0')}</div>`;
+      }
+    }
+
+    // =========================================================================
+    // UI NAVIGATION & INTERACTION LOGIC
+    // =========================================================================
+    function goScreen(id) {
+      currentScreen = id;
+      updateUI();
+    }
+
+    function prevScreen() {
+      if (currentScreen > 1) {
+        currentScreen--;
+        updateUI();
+      }
+    }
+
+    function nextScreen() {
+      if (currentScreen < SCREENS.length) {
+        currentScreen++;
+        updateUI();
+      }
+    }
+
+    function toggleTheme() {
+      isDarkTheme = !isDarkTheme;
+      const body = document.getElementById('appBody');
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      const chassis = document.getElementById('phoneChassis');
+
+      if (isDarkTheme) {
+        body.className = 'min-h-screen bg-[#070B14] text-slate-100 select-none theme-dark';
+        icon.className = 'fa-solid fa-sun text-amber-400';
+        label.textContent = 'Clean Light Mode';
+        chassis.className = 'w-full max-w-[412px] h-[872px] bg-[#070B14] rounded-[48px] border-[10px] border-slate-800 shadow-[0_25px_70px_rgba(0,0,0,0.6)] relative overflow-hidden flex flex-col shrink-0';
+      } else {
+        body.className = 'min-h-screen bg-[#F1F5F9] text-slate-900 select-none theme-light';
+        icon.className = 'fa-solid fa-moon text-indigo-600';
+        label.textContent = 'Field Dark Mode';
+        chassis.className = 'w-full max-w-[412px] h-[872px] bg-white rounded-[48px] border-[10px] border-slate-900 shadow-[0_25px_70px_rgba(15,23,42,0.18)] relative overflow-hidden flex flex-col shrink-0';
+      }
+      updateUI();
+      if (displayMode === 'grid') renderGridMode();
+    }
+
+    function toggleDutyState() {
+      isOnline = !isOnline;
+      syncDutyUI();
+      updateUI();
+    }
+
+    function syncDutyUI() {
+      const bDot = document.getElementById('dutyDot');
+      const bLabel = document.getElementById('dutyLabel');
+      const bBtn = document.getElementById('dutyToggleBtn');
+      const hDot = document.getElementById('headerDutyPill');
+      const hText = document.getElementById('headerDutyText');
+
+      if (isOnline) {
+        bDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
+        bLabel.className = 'text-emerald-800 font-bold';
+        bLabel.textContent = 'Status: ONLINE (Receiving Dispatches)';
+        bBtn.textContent = 'Go Offline';
+        hDot.className = 'px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold flex items-center gap-1';
+        hText.textContent = 'ONLINE';
+      } else {
+        bDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
+        bLabel.className = 'text-slate-600 font-bold';
+        bLabel.textContent = 'Status: OFFLINE (Resting)';
+        bBtn.textContent = 'Go Online';
+        hDot.className = 'px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-300 text-[10px] font-bold flex items-center gap-1';
+        hText.textContent = 'OFFLINE';
+      }
+    }
+
+    function setDisplayMode(mode) {
+      displayMode = mode;
+      const pContainer = document.getElementById('phoneModeContainer');
+      const gContainer = document.getElementById('gridModeContainer');
+      const pBtn = document.getElementById('modePhoneBtn');
+      const gBtn = document.getElementById('modeGridBtn');
+
+      if (mode === 'phone') {
+        pContainer.classList.remove('hidden');
+        gContainer.classList.add('hidden');
+        pBtn.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow-sm flex items-center gap-1.5';
+        gBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
+      } else {
+        pContainer.classList.add('hidden');
+        gContainer.classList.remove('hidden');
+        gBtn.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow-sm flex items-center gap-1.5';
+        pBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
+        renderGridMode();
+      }
+    }
+
+    function buildTopBars() {
+      const mBar = document.getElementById('moduleFilterBar');
+      mBar.innerHTML = GROUPS.map(g => `
+        <button onclick="setFilterGroup('${g}')" class="px-3 py-1 rounded-full whitespace-nowrap transition-all ${selectedGroup===g ? 'bg-slate-900 text-white font-bold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+          ${g}
+        </button>
+      `).join('');
+
+      const sBar = document.getElementById('screenJumpBar');
+      const filtered = selectedGroup === 'All 40' ? SCREENS : SCREENS.filter(s => s.group === selectedGroup);
+      sBar.innerHTML = filtered.map(s => `
+        <button onclick="goScreen(${s.id})" class="px-2.5 py-1 rounded-lg whitespace-nowrap transition-all ${currentScreen===s.id ? 'bg-blue-600 text-white font-bold' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}">
+          T${String(s.id).padStart(2,'0')} • ${s.short}
+        </button>
+      `).join('');
+    }
+
+    function setFilterGroup(grp) {
+      selectedGroup = grp;
+      buildTopBars();
+      if (displayMode === 'grid') renderGridMode();
+    }
+
+    function renderGridMode() {
+      const mount = document.getElementById('allScreensGridMount');
+      const filtered = selectedGroup === 'All 40' ? SCREENS : SCREENS.filter(s => s.group === selectedGroup);
+      const groupsPresent = Array.from(new Set(filtered.map(s => s.group)));
+      const isDark = isDarkTheme;
+
+      mount.innerHTML = groupsPresent.map(grp => {
+        const items = filtered.filter(s => s.group === grp);
+        return `
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} pb-2">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider ${isDark ? 'text-slate-100' : 'text-slate-900'}">${grp} (${items.length} Screens)</h3>
+              <span class="text-xs font-mono text-slate-500">Click any card to open in phone mode</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              ${items.map(s => `
+                <div onclick="goScreen(${s.id}); setDisplayMode('phone');" class="rounded-[28px] ${isDark ? 'bg-[#0F172A] border-[#1E293B]' : 'bg-white border-slate-200'} border-2 ${currentScreen===s.id ? 'border-blue-600 ring-2 ring-blue-100' : 'hover:border-blue-400'} overflow-hidden flex flex-col cursor-pointer transition-all shadow-sm hover:shadow-md">
+                  <div class="px-4 py-2.5 ${isDark ? 'bg-[#131D31] border-slate-800' : 'bg-slate-50 border-slate-100'} border-b flex items-center justify-between">
+                    <span class="text-xs font-mono font-extrabold text-blue-600">T${String(s.id).padStart(2,'0')}</span>
+                    <span class="text-xs font-bold truncate max-w-[180px] ${isDark ? 'text-slate-100' : 'text-slate-900'}">${s.short}</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                  </div>
+                  <div class="flex-1 max-h-[440px] overflow-y-auto no-scrollbar pointer-events-none ${isDark ? 'bg-[#070B14]' : 'bg-white'}">
+                    ${renderScreenHTML(s.id)}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateUI() {
+      buildTopBars();
+      const meta = SCREENS.find(s => s.id === currentScreen) || SCREENS[0];
+      document.getElementById('phoneViewport').innerHTML = renderScreenHTML(currentScreen);
+
+      const topBar = document.getElementById('appTopHeader');
+      const botNav = document.getElementById('appBottomNav');
+      const phoneStatus = document.getElementById('phoneStatusBar');
+      const isDark = isDarkTheme;
+
+      if (currentScreen === 1) {
+        topBar.classList.add('hidden');
+        botNav.classList.add('hidden');
+        phoneStatus.className = 'h-11 px-7 flex items-center justify-between text-[11px] text-white font-bold z-30 shrink-0 bg-black';
+      } else {
+        topBar.classList.remove('hidden');
+        botNav.classList.remove('hidden');
+        phoneStatus.className = `h-11 px-7 flex items-center justify-between text-[11px] font-bold z-30 shrink-0 ${isDark ? 'bg-[#070B14] text-slate-200' : 'bg-white text-slate-800'}`;
+        topBar.className = `px-4 py-2.5 ${isDark ? 'bg-[#070B14] border-slate-800 text-slate-100' : 'bg-white border-slate-100 text-slate-900'} border-b z-20 shrink-0 flex items-center justify-between gap-2`;
+        botNav.className = `h-16 px-2 ${isDark ? 'bg-[#070B14] border-slate-800' : 'bg-white border-slate-200/90'} border-t grid grid-cols-5 items-center z-20 shrink-0`;
+      }
+
+      // Highlight active bottom nav item
+      const navMap = {
+        work: [6,7,8,39],
+        requests: [9,10,11,12,13,14,15,16,17,18,19,20,21,38],
+        wallet: [22,23,24,37],
+        badges: [25,26,27,28,29,30,40],
+        profile: [1,2,3,4,5,31,32,33,34,35,36]
+      };
+      Object.keys(navMap).forEach(k => {
+        const el = document.getElementById('bnav-' + k);
+        if (el) {
+          el.className = navMap[k].includes(currentScreen)
+            ? 'flex flex-col items-center gap-1 text-blue-600 transition-colors'
+            : `flex flex-col items-center gap-1 ${isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-400 hover:text-slate-700'} transition-colors`;
+        }
+      });
+
+      // Inspector panel updates
+      document.getElementById('inspectorBadge').textContent = `SCREEN T${String(meta.id).padStart(2,'0')} / 40`;
+      document.getElementById('inspectorModule').textContent = meta.group;
+      document.getElementById('inspectorTitle').textContent = meta.title;
+      document.getElementById('inspectorDesc').textContent = meta.desc;
+    }
+
+    // Initialize UI on T01 Splash screen
+    syncDutyUI();
+    updateUI();
+  </script>
+</body>
+</html>

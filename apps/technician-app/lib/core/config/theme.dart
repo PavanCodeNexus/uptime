@@ -44,12 +44,13 @@ class UptimeTheme {
         onSecondary: dark,
         onSurface: dark,
       ),
-      scaffoldBackgroundColor: gray50,
+      scaffoldBackgroundColor: Colors.white,
     );
     return base.copyWith(
       appBarTheme: const AppBarTheme(
-        backgroundColor: blue900,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: dark,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
       cardTheme: CardThemeData(

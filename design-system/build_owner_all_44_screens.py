@@ -1,0 +1,2434 @@
+# -*- coding: utf-8 -*-
+import os
+
+html_code = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UPTIME — Owner App (Complete 44 Screens • Modern Light Theme)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-body);
+      background: #F1F5F9;
+      color: #0F172A;
+      margin: 0;
+    }
+    .font-display { font-family: var(--font-display); }
+    .font-mono { font-family: var(--font-mono); }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .app-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      border-radius: 18px;
+    }
+
+    @keyframes pulse-gentle {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.85; }
+    }
+    .pulse-dot { animation: pulse-gentle 2s infinite ease-in-out; }
+
+    @keyframes eq-bounce {
+      0%, 100% { height: 8px; }
+      50% { height: 36px; }
+    }
+    .eq-bar { animation: eq-bounce 0.8s ease-in-out infinite alternate; }
+  </style>
+</head>
+<body class="min-h-screen bg-[#F1F5F9] text-slate-900 select-none">
+
+  <!-- ===================================================================== -->
+  <!-- TOP STUDIO CONTROL HEADER (LIGHT THEME STUDIO BAR)                    -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2.5 shadow-sm">
+    <div class="max-w-[1650px] mx-auto space-y-2">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Brand Identity -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md">
+            <!-- Inline SVG UPTIME Logo -->
+            <svg class="w-6 h-6" viewBox="0 0 100 100" fill="none">
+              <rect width="100" height="100" rx="20" fill="white" />
+              <path d="M24 26 C24 26, 24 58, 50 68 C76 58, 76 26, 76 26" stroke="#0284C7" stroke-width="12" stroke-linecap="round" fill="none"/>
+              <path d="M50 32 L50 56 M44 38 L56 38" stroke="#0F172A" stroke-width="7" stroke-linecap="round"/>
+              <circle cx="72" cy="30" r="14" stroke="#16A34A" stroke-width="7" fill="none" stroke-dasharray="8 6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-display font-extrabold tracking-tight text-slate-900">UPTIME — OWNER APP</h1>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">ALL 44 SCREENS COMPLETE • 100% COVERAGE</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium">Urban Company / Zomato / BigBasket Clean White Style • Guest-First Browse → Service-Triggered Auth</p>
+          </div>
+        </div>
+
+        <!-- View Mode Switcher + Auth Simulator -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Interactive vs All Artboard Grid Switch -->
+          <div class="p-1 rounded-xl bg-slate-100 border border-slate-200 flex items-center gap-1 text-xs font-semibold">
+            <button id="modePhoneBtn" onclick="setDisplayMode('phone')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow-sm flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-mobile-screen-button text-blue-600"></i>
+              <span>Interactive Phone</span>
+            </button>
+            <button id="modeGridBtn" onclick="setDisplayMode('grid')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition-all">
+              <i class="fa-solid fa-grip text-slate-500"></i>
+              <span>All 44 Screens Artboard Grid</span>
+            </button>
+          </div>
+
+          <!-- Live Guest / Logged-In Indicator -->
+          <div id="guestBadge" class="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] font-medium flex items-center gap-2">
+            <span id="guestDot" class="w-2 h-2 rounded-full bg-amber-500 pulse-dot"></span>
+            <span id="guestLabel" class="text-amber-800 font-semibold">Guest Mode (Free Browse)</span>
+            <button onclick="toggleAuthState()" id="guestToggleBtn" class="ml-1 px-2.5 py-0.5 rounded-md bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-[10px] font-bold shadow-xs">Login</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module Group Filter Bar -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-medium pb-0.5" id="moduleFilterBar"></div>
+
+      <!-- Horizontal 44-Screen Quick Jump Bar -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[10px] font-mono pt-0.5" id="screenJumpBar"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- MODE 1: INTERACTIVE PHONE SIMULATOR + LIVE WORKFLOW SIDEBAR           -->
+  <!-- ===================================================================== -->
+  <main id="phoneModeContainer" class="max-w-6xl mx-auto px-3 py-6 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8">
+
+    <!-- MOBILE DEVICE CHASSIS (CLEAN PREMIUM WHITE/SLATE DEVICE FRAME) -->
+    <div id="phoneChassis" class="w-full max-w-[412px] h-[872px] bg-white rounded-[48px] border-[10px] border-slate-900 shadow-[0_25px_70px_rgba(15,23,42,0.18),0_0_0_1px_rgba(0,0,0,0.06)] relative overflow-hidden flex flex-col shrink-0">
+
+      <!-- Phone Status Bar -->
+      <div id="phoneStatusBar" class="h-11 px-7 flex items-center justify-between text-[11px] text-slate-800 font-bold z-30 shrink-0 bg-white">
+        <span>09:41</span>
+        <!-- Dynamic Island / Speaker Notch -->
+        <div class="w-28 h-5 bg-slate-950 rounded-full flex items-center justify-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span class="text-[8px] text-slate-300 font-mono tracking-widest">UPTIME</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-[10px] text-slate-700">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <span class="text-emerald-600 font-bold">100%</span>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- ZOMATO / BIGBASKET STYLE TOP LOCATION HEADER                      -->
+      <!-- ================================================================= -->
+      <div id="appTopHeader" class="px-4 pt-1 pb-2.5 bg-white border-b border-slate-100 z-20 shrink-0">
+        <div class="flex items-center justify-between gap-2">
+          <!-- Zomato / BigBasket Location Picker Trigger -->
+          <div onclick="goScreen(2)" class="flex items-center gap-2 cursor-pointer flex-1 min-w-0 group">
+            <div class="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 shrink-0 group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-location-dot text-sm"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1 leading-tight">
+                <span id="activeLocationLabel" class="text-xs font-bold text-slate-900 truncate">Home</span>
+                <i class="fa-solid fa-chevron-down text-[9px] text-slate-600"></i>
+              </div>
+              <p id="activeLocationAddress" class="text-[10px] text-slate-500 truncate max-w-[210px]">Plot 42, 4th Phase, Peenya Industrial Area, Bengaluru</p>
+            </div>
+          </div>
+
+          <!-- Header Right Utilities (Language, Notifications, Profile Avatar) -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <!-- 9-Language Pill -->
+            <button onclick="cycleLanguage()" id="langBtn" class="px-2 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-[10px] font-bold text-slate-700 flex items-center gap-1 transition-colors" title="Switch Language">
+              <i class="fa-solid fa-language text-blue-600"></i>
+              <span id="langCode">EN</span>
+            </button>
+            <!-- Dedicated Notifications Bell (Opens S43 Notifications Center!) -->
+            <button onclick="goScreen(43)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs flex items-center justify-center relative transition-colors" title="Notifications & Alerts">
+              <i class="fa-solid fa-bell"></i>
+              <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5 ring-2 ring-white"></span>
+            </button>
+            <!-- User Profile Avatar -->
+            <button onclick="goScreen(44)" class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white text-xs font-bold flex items-center justify-center shadow-xs" title="User Profile">
+              <span id="headerAvatarText">P</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DYNAMIC SCREEN VIEWPORT (WHITE BACKGROUND APPS) -->
+      <div id="phoneViewport" class="flex-1 overflow-y-auto no-scrollbar z-10 relative bg-white"></div>
+
+      <!-- Automobile Floating Red SOS 60s Button -->
+      <button id="autoSosFab" onclick="requireServiceAuth(14, 'Launch 60s Roadside Emergency SOS')" class="hidden absolute bottom-20 right-4 z-30 px-4 py-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 items-center gap-2 transition-all">
+        <i class="fa-solid fa-truck-medical animate-bounce"></i>
+        <span>SOS 60s</span>
+      </button>
+
+      <!-- Persistent 5-Tab Bottom Navigation (Urban Company / Zomato Clean Style) -->
+      <nav id="appBottomNav" class="h-16 px-2 bg-white border-t border-slate-200/90 grid grid-cols-5 items-center z-20 shrink-0 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+        <button onclick="goScreen(4)" id="bnav-home" class="flex flex-col items-center gap-1 text-blue-600 transition-colors">
+          <i class="fa-solid fa-house text-base"></i>
+          <span class="text-[10px] font-bold">Home</span>
+        </button>
+        <button onclick="goScreen(19)" id="bnav-jobs" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 relative transition-colors">
+          <span class="w-2 h-2 rounded-full bg-blue-600 absolute top-0.5 right-5 ring-2 ring-white"></span>
+          <i class="fa-solid fa-clipboard-list text-base"></i>
+          <span class="text-[10px] font-semibold">Jobs</span>
+        </button>
+        <button onclick="goScreen(22)" id="bnav-assets" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-boxes-stacked text-base"></i>
+          <span class="text-[10px] font-semibold">Assets</span>
+        </button>
+        <button onclick="goScreen(34)" id="bnav-market" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-bag-shopping text-base"></i>
+          <span class="text-[10px] font-semibold">Spares</span>
+        </button>
+        <button onclick="goScreen(44)" id="bnav-profile" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 transition-colors">
+          <i class="fa-solid fa-circle-user text-base"></i>
+          <span class="text-[10px] font-semibold">Account</span>
+        </button>
+      </nav>
+
+      <!-- SEAMLESS SERVICE-TRIGGERED LOGIN OVERLAY MODAL -->
+      <div id="serviceAuthOverlay" class="hidden absolute inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex flex-col justify-end">
+        <div class="bg-white rounded-t-[32px] p-6 shadow-2xl border-t border-slate-200 space-y-4">
+          <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto"></div>
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">Service Authentication</span>
+              <h3 class="text-base font-extrabold text-slate-900 mt-1.5">Sign In to Take Service</h3>
+              <p id="pendingActionLabel" class="text-xs text-slate-500 mt-0.5">Booking context will be preserved</p>
+            </div>
+            <button onclick="closeAuthOverlay()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="text-[11px] font-bold text-slate-700 block mb-1">10-Digit Mobile Number (India)</label>
+              <div class="flex gap-2">
+                <span class="px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 font-bold text-slate-700">+91</span>
+                <input id="modalPhone" type="tel" value="98450 67890" class="flex-1 px-3 py-2.5 rounded-xl bg-white border border-slate-300 font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600" />
+              </div>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-700 block mb-1">6-Digit SMS OTP (Auto-Filled)</label>
+              <div class="grid grid-cols-6 gap-2 text-center font-bold text-base">
+                <input value="4" maxlength="1" class="py-2 rounded-xl bg-slate-50 border border-blue-500 text-blue-700 text-center font-extrabold" />
+                <input value="8" maxlength="1" class="py-2 rounded-xl bg-slate-50 border border-blue-500 text-blue-700 text-center font-extrabold" />
+                <input value="2" maxlength="1" class="py-2 rounded-xl bg-slate-50 border border-blue-500 text-blue-700 text-center font-extrabold" />
+                <input value="9" maxlength="1" class="py-2 rounded-xl bg-slate-50 border border-blue-500 text-blue-700 text-center font-extrabold" />
+                <input value="1" maxlength="1" class="py-2 rounded-xl bg-slate-50 border border-blue-500 text-blue-700 text-center font-extrabold" />
+                <input value="6" maxlength="1" class="py-2 rounded-xl bg-slate-50 border border-blue-500 text-blue-700 text-center font-extrabold" />
+              </div>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-700 block mb-1">Owner / Plant Name</label>
+              <input id="modalOwnerName" type="text" value="Pavan Sharma • Peenya Unit #4" class="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-300 font-semibold text-slate-900 focus:outline-none focus:border-blue-600" />
+            </div>
+          </div>
+
+          <button onclick="confirmServiceLogin()" class="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all">
+            <i class="fa-solid fa-shield-check text-emerald-400"></i>
+            <span>Verify OTP & Continue to Service →</span>
+          </button>
+          <p class="text-[11px] text-center text-slate-500">Browsing is always free • Login only triggers on bookings</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT INSPECTOR PANEL: SCREEN SPEC + WORKFLOW GUIDE -->
+    <aside class="w-full max-w-md space-y-4">
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <span id="inspectorBadge" class="text-[11px] font-mono px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold">SCREEN 01 / 44</span>
+          <span id="inspectorModule" class="text-xs font-bold text-slate-500">Entry & Location</span>
+        </div>
+        <h2 id="inspectorTitle" class="text-lg font-display font-extrabold text-slate-900 leading-snug">01. Splash Screen (Uploaded Image Match)</h2>
+        <p id="inspectorDesc" class="text-xs text-slate-600 leading-relaxed">
+          Matches uploaded brand image with centered UPTIME icon and "Downtime ends here." Tap anywhere to launch directly into Home in Guest Mode.
+        </p>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+          <button onclick="prevScreen()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors">
+            <i class="fa-solid fa-arrow-left"></i> Prev
+          </button>
+          <button onclick="nextScreen()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 transition-colors">
+            Next Screen <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Jump Navigator Across All 12 Modules -->
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Owner App Core Hubs</h3>
+          <span class="text-[10px] font-mono text-slate-500">44 Total Screens</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button onclick="goScreen(1)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">S01</div>
+            <div>Brand Splash</div>
+          </button>
+          <button onclick="goScreen(2)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">S02</div>
+            <div>Location & Address</div>
+          </button>
+          <button onclick="goScreen(4)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">S04</div>
+            <div>3-Portal Home</div>
+          </button>
+          <button onclick="goScreen(7)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">S07</div>
+            <div>Gemini AI + 3-Path</div>
+          </button>
+          <button onclick="goScreen(15)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-slate-500">S15</div>
+            <div>Live GPS Radar</div>
+          </button>
+          <button onclick="goScreen(16)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-blue-600 font-bold">S16 • NEW</div>
+            <div>In-App Chat & Translate</div>
+          </button>
+          <button onclick="goScreen(26)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-blue-600 font-bold">S26 • NEW</div>
+            <div>Component Telemetry</div>
+          </button>
+          <button onclick="goScreen(32)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-blue-600 font-bold">S32 • NEW</div>
+            <div>File Incident Claim Form</div>
+          </button>
+          <button onclick="goScreen(35)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-blue-600 font-bold">S35 • NEW</div>
+            <div>Part Specs & Fit Check</div>
+          </button>
+          <button onclick="goScreen(41)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-blue-600 font-bold">S41 • NEW</div>
+            <div>Wiki Article Solution</div>
+          </button>
+          <button onclick="goScreen(43)" class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/80 text-left font-semibold text-slate-800 transition-all">
+            <div class="text-[10px] text-blue-600 font-bold">S43 • NEW</div>
+            <div>Notifications Center</div>
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- MODE 2: ALL 44 SCREENS FIGMA ARTBOARD GRID (PANORAMIC LIGHT THEME)   -->
+  <!-- ===================================================================== -->
+  <section id="gridModeContainer" class="hidden max-w-[1700px] mx-auto px-4 py-8">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-display font-extrabold text-slate-900">All 44 Dedicated Owner App Screens (100% Complete)</h2>
+        <p class="text-xs text-slate-500">Urban Company / Zomato / BigBasket Clean White Style • Click any screen to interact</p>
+      </div>
+      <button onclick="setDisplayMode('phone')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs flex items-center gap-2">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+        <span>Switch to Interactive Phone</span>
+      </button>
+    </div>
+    <div id="allScreensGridMount" class="space-y-10"></div>
+  </section>
+
+  <script>
+    // =========================================================================
+    // GLOBAL STATE & DATA
+    // =========================================================================
+    let currentScreen = 1;
+    let displayMode = 'phone';
+    let isAuthenticated = false;
+    let ownerName = 'Guest Explorer';
+    let pendingScreenAfterAuth = null;
+    let currentPortal = 'industrial';
+    const languages = ['EN', 'HI • हिं', 'KN • ಕ', 'TA • த', 'TE • తె', 'ML • മ', 'MR • म', 'GU • ગુ', 'BN • বাং'];
+    let langIdx = 0;
+
+    let selectedLocation = {
+      tag: 'Home',
+      title: 'Peenya Industrial Area',
+      address: 'Plot 42, 4th Phase, Peenya Industrial Area, Bengaluru, 560058'
+    };
+
+    const portalThemes = {
+      industrial: {
+        name: 'Industrial Machinery',
+        shortName: 'Industries',
+        badge: '1,151+ Heavy Machines',
+        accentColor: 'text-purple-600',
+        activePill: 'bg-white text-slate-900 shadow-sm border border-slate-200 font-bold',
+        inactivePill: 'text-slate-600 hover:text-slate-900',
+        heroTitle: 'Factory Breakdown? Spindle or Boiler Down?',
+        heroSub: 'Certified Fanuc, Siemens, IBR Boiler & PLC specialists at your plant in <18 mins.',
+        searchPlaceholder: "Search 'CNC Spindle', 'IBR Boiler', 'Hydraulic Press', 'ABB VFD'...",
+        chips: ['⚙️ CNC Spindle', '🔥 IBR Boiler', '💧 Hydraulic Press', '🔌 PLC / VFD', '❄️ Industrial Chiller'],
+        bannerTitle: 'Zero-Downtime Guarantee',
+        bannerSub: 'Level-3 Master Plant Engineers available on-site with 30-Day Escrow Warranty.',
+        cats: [
+          { title: 'CNC & VMC Machines', sub: 'Fanuc • Siemens • Haas', icon: 'fa-gears', bg: 'bg-purple-50', color: 'text-purple-600', count: '342 Techs' },
+          { title: 'IBR Boilers & Burners', sub: 'Thermax • Steam • Valves', icon: 'fa-fire-flame-curved', bg: 'bg-amber-50', color: 'text-amber-600', count: '189 Techs' },
+          { title: 'Hydraulic & Pneumatics', sub: 'Rexroth • Cylinders • Seals', icon: 'fa-compress', bg: 'bg-blue-50', color: 'text-blue-600', count: '276 Techs' },
+          { title: '3-Phase Motors & VFDs', sub: 'ABB • Rewinding • Bearings', icon: 'fa-bolt', bg: 'bg-emerald-50', color: 'text-emerald-600', count: '412 Techs' }
+        ]
+      },
+      automobile: {
+        name: 'Automobile & Fleet',
+        shortName: 'Automobile',
+        badge: '24/7 Roadside & EV SOS',
+        accentColor: 'text-rose-600',
+        activePill: 'bg-white text-slate-900 shadow-sm border border-slate-200 font-bold',
+        inactivePill: 'text-slate-600 hover:text-slate-900',
+        heroTitle: 'Stranded on Highway or Vehicle Breakdown?',
+        heroSub: '60-Second SOS Live Auction, OBD-II Scanner, EV High-Voltage Rescue, Flat Tyre.',
+        searchPlaceholder: "Search 'Battery Jumpstart', 'EV Charging', 'Flat Tyre', 'Clutch Repair'...",
+        chips: ['🆘 60s Highway SOS', '🔋 EV High-Voltage', '🛞 Flat Tyre / Fuel', '🚨 Warning Light AI'],
+        bannerTitle: '60-Second Highway SOS',
+        bannerSub: 'Live GPS broadcast to all nearby mechanics. Average arrival in 14 minutes.',
+        cats: [
+          { title: 'Roadside Battery Jump', sub: '15-min SOS • Exide / Amaron', icon: 'fa-car-battery', bg: 'bg-rose-50', color: 'text-rose-600', count: '520 Techs' },
+          { title: 'EV Battery & Motor BMS', sub: 'Tata • Ola • Ather • MG', icon: 'fa-charging-station', bg: 'bg-emerald-50', color: 'text-emerald-600', count: '164 Techs' },
+          { title: 'Engine & Transmission', sub: 'OBD-II • Diesel & Petrol', icon: 'fa-car-side', bg: 'bg-blue-50', color: 'text-blue-600', count: '390 Techs' },
+          { title: 'Heavy Trucks & Fleet', sub: 'BS6 • Air Brakes • Injectors', icon: 'fa-truck-moving', bg: 'bg-amber-50', color: 'text-amber-600', count: '215 Techs' }
+        ]
+      },
+      electronics: {
+        name: 'Electronics & HVAC',
+        shortName: 'Electronics',
+        badge: 'Home & Office Appliances',
+        accentColor: 'text-cyan-600',
+        activePill: 'bg-white text-slate-900 shadow-sm border border-slate-200 font-bold',
+        inactivePill: 'text-slate-600 hover:text-slate-900',
+        heroTitle: 'Inverter AC Not Cooling or Board Fault?',
+        heroSub: 'Doorstep chip-level repair with Privacy Data Lock & Repair-vs-Replace AI.',
+        searchPlaceholder: "Search 'Inverter AC Gas Leak', 'Fridge Compressor', 'Laptop PCB'...",
+        chips: ['❄️ Inverter Split AC', '🧊 Refrigerator PCB', '💻 Chip-Level Laptop', '🔋 Solar / UPS'],
+        bannerTitle: 'Urban Company-Grade Repair',
+        bannerSub: 'Fixed transparent pricing, 90-day spare warranty, no hidden inspection fees.',
+        cats: [
+          { title: 'Inverter AC & HVAC', sub: 'Daikin • LG • R32 Gas Refill', icon: 'fa-snowflake', bg: 'bg-cyan-50', color: 'text-cyan-600', count: '610 Techs' },
+          { title: 'Commercial Refrigeration', sub: 'Deep Freezers • Compressors', icon: 'fa-temperature-low', bg: 'bg-blue-50', color: 'text-blue-600', count: '298 Techs' },
+          { title: 'Laptops, Servers & UPS', sub: 'Motherboard • Data Lock', icon: 'fa-laptop-code', bg: 'bg-indigo-50', color: 'text-indigo-600', count: '430 Techs' },
+          { title: 'Solar Inverters & RO', sub: 'Hybrid Inverters • Membranes', icon: 'fa-solar-panel', bg: 'bg-amber-50', color: 'text-amber-600', count: '185 Techs' }
+        ]
+      }
+    };
+
+    // =========================================================================
+    // MASTER REGISTRY OF ALL 44 OWNER APP SCREENS (100% COVERAGE)
+    // =========================================================================
+    const SCREENS = [
+      // 1. ENTRY & LOCATION (S01-S03)
+      { id: 1, group: 'Entry & Location', short: 'Splash', title: '01. Brand Splash Screen (Uploaded Screenshot Match)', desc: 'Exact match to uploaded screenshot: sleek centered UPTIME icon + "Downtime ends here." on black background, tapping transitions directly into Home.' },
+      { id: 2, group: 'Entry & Location', short: 'Location Picker', title: '02. Zomato / BigBasket Location Selector', desc: 'Interactive location screen with GPS auto-detect, search bar, saved addresses (Home, Plant, Office) and map pin.' },
+      { id: 3, group: 'Entry & Location', short: 'OTP Login Gate', title: '03. Service-Triggered Phone + 6-Digit OTP Gate', desc: 'Appears ONLY when guest books or takes service — keeps exact booking context intact.' },
+
+      // 2. HOME & CATALOG (S04-S05)
+      { id: 4, group: 'Home & Catalog', short: '3-Portal Home', title: '04. 3-Portal Home Command Hub (Zomato / UC Style)', desc: 'Location header with dropdown, search bar with mic, Ajio-style 3-Portal Switcher [Industries | Automobile | Electronics], category grids & nearby techs.' },
+      { id: 5, group: 'Home & Catalog', short: 'A-Z Catalogue', title: '05. A-to-Z Equipment & Specialist Explorer', desc: 'Alphabetical directory across 1,151+ machines, vehicles & appliances with live technician availability count.' },
+
+      // 3. FAULT & AI TRIAGE (S06-S08)
+      { id: 6, group: 'Fault & AI Triage', short: 'Report Fault', title: '06. Multi-Input Fault Report Studio (CORE-01)', desc: 'Voice input in 9 Indian languages, photo/video evidence capture, 48kHz audio sound recorder & 4 urgency tiers.' },
+      { id: 7, group: 'Fault & AI Triage', short: 'AI + 3-Path Choice', title: '07. Gemini AI Diagnosis & 3-Path Choice (v1.1)', desc: 'Diagnostic report with root cause + cost estimate (₹800–₹1,500) + Pavan’s 3-Path Choice: Free AI Copilot | ₹199 Video | ₹800+ On-Site Tech.' },
+      { id: 8, group: 'Fault & AI Triage', short: 'DIY AI Copilot', title: '08. Owner Free AI DIY Copilot (Step-by-Step)', desc: 'Interactive step-by-step self-repair instructions with safety checklist, tool list & 1-tap escalation to video or technician.' },
+
+      // 4. VIDEO CONSULT (S09-S10)
+      { id: 9, group: 'Video Consult', short: 'Consult Tiers', title: '09. Virtual Consult Tier & Specialist Picker', desc: 'Urban Company style tiers: Quick Check (₹99), Full Diagnosis (₹199 - Recommended), Extended (₹299) with live available engineers.' },
+      { id: 10, group: 'Video Consult', short: 'Agora Live Call', title: '10. Agora HD Video Call + AI AR Overlay', desc: 'Live WebRTC video room with real-time AR laser pointer annotations and automatic ₹199 deduction if physical visit is needed.' },
+
+      // 5. MATCH & BOOK (S11-S14)
+      { id: 11, group: 'Match & Book', short: 'Tech List/Map', title: '11. Smart Technician Matching (60% Skill + 40% Dist)', desc: 'Zomato-style card listing of top-rated technicians with skill match %, distance, verified badges, transparent rates & Google Map toggle.' },
+      { id: 12, group: 'Match & Book', short: 'Tech Profile', title: '12. Technician Full Profile & Polygon NFT Badges', desc: 'Inspect government KYC, NCVT certification, Polygon blockchain skill badges, tools carried & verified owner reviews.' },
+      { id: 13, group: 'Match & Book', short: 'Negotiate & Book', title: '13. AI Price Negotiation & Booking Confirmation', desc: 'Transparent counter-offer slider within AI fair-price band, site address confirmation & ₹49 per-job micro-insurance shield.' },
+      { id: 14, group: 'Match & Book', short: '60s SOS Auction', title: '14. 60-Second Emergency SOS Live Auction', desc: 'Emergency highway/factory breakdown broadcast with pulsing 60s countdown and live competing technician ETA bids.' },
+
+      // 6. TRACK & VERIFY (S15-S18)
+      { id: 15, group: 'Track & Verify', short: 'Live GPS Map', title: '15. Uber-Style Live GPS Tracking', desc: 'Live map tracking with moving technician marker, estimated arrival countdown, 5-stage job stepper & quick call/chat triggers.' },
+      { id: 16, group: 'Track & Verify', short: 'In-App Chat', title: '16. Real-Time Chat & 9-Language Translation (CORE-04)', desc: 'Direct in-app messaging with en-route technician, auto-translated in 9 languages, quick location pins, and voice notes.' },
+      { id: 17, group: 'Track & Verify', short: '6-Digit OTP+GPS', title: '17. Dual-Factor 6-Digit OTP + 500m PostGIS Lock', desc: 'Fraud-proof arrival screen showing bold 6-digit OTP paired with PostGIS <500m geofence verification before job start.' },
+      { id: 18, group: 'Track & Verify', short: 'Live Repair Steps', title: '18. Live In-Progress Repair & Parts Approval', desc: 'Track live progress of technician checklist with photos and approve extra spare part quotes directly from phone.' },
+
+      // 7. JOBS & HISTORY (S19-S21)
+      { id: 19, group: 'Jobs & History', short: 'Job History', title: '19. Job History & Filter Ledger', desc: 'Filter jobs by Active, Completed, or Warranty Covered with itemized bills and 1-tap certificate download.' },
+      { id: 20, group: 'Jobs & History', short: 'SHA-256 Cert', title: '20. Job Details & SHA-256 Tamper-Proof Certificate', desc: 'Complete repair timeline, before/after photo slider, itemized GST bill & cryptographic SHA-256 warranty certificate.' },
+      { id: 21, group: 'Jobs & History', short: 'Rate & Tip', title: '21. Rate & Review Technician Screen', desc: 'Star rating, skill compliments (Punctual, Master Fixer, Clean Work), optional appreciation tip & warranty activation.' },
+
+      // 8. ASSETS & DIGITAL TWIN (S22-S26)
+      { id: 22, group: 'Assets & Twin', short: 'My Assets Hub', title: '22. My Assets Hub (Machines | Vehicles | Devices)', desc: 'Central inventory of factory machines, fleet vehicles & appliances with live health scores and AMC countdowns.' },
+      { id: 23, group: 'Assets & Twin', short: 'Add Asset OCR', title: '23. Quick Add Asset & Nameplate OCR Scanner', desc: 'Register a machine, car RC, or appliance in 10 seconds using AI camera scan of the serial nameplate or QR code.' },
+      { id: 24, group: 'Assets & Twin', short: 'Asset Details', title: '24. Asset Details, Uptime % & Service Ledger', desc: 'Lifetime repair history, MTBF uptime percentage, linked warranty status & total maintenance spend analysis.' },
+      { id: 25, group: 'Assets & Twin', short: 'Digital Twin', title: '25. IoT Digital Twin & Failure Prediction Timeline', desc: 'Circular health meter (94%), vibration/heat component sub-gauges, AI wear prediction dates & preventive savings meter.' },
+      { id: 26, group: 'Assets & Twin', short: 'Component Telemetry', title: '26. Deep Component Health & Vibration FFT Spectrogram', desc: 'Drilldown telemetry into specific bearing/motor: 24h harmonic wave chart, temperature decay curve & useful life countdown.' },
+
+      // 9. INDUSTRY LABS (S27-S29)
+      { id: 27, group: 'Industry Labs', short: 'Industrial Lab', title: '27. Industrial Lab: Epidemic & Silent Killer Radar', desc: 'Batch model defect alerts (ELEC-U01), power/vibration Silent Killer warnings (ELEC-U02) & multi-plant MSME dashboard.' },
+      { id: 28, group: 'Industry Labs', short: 'Automobile Lab', title: '28. Automobile Lab: Warning AI, Mood & Pre-Purchase', desc: 'Dashboard Warning Light camera scanner, Vehicle Mood Score, 50-point Used-Car Pre-Purchase Scan & Challan tools.' },
+      { id: 29, group: 'Industry Labs', short: 'Electronics Lab', title: '29. Electronics Lab: Repair-vs-Replace & Data Lock', desc: 'AI Repair-vs-Buy-New calculator, Technician Data-Privacy Lock, Smart Home diagnostics & E-Waste recycling value.' },
+
+      // 10. SHIELD & INSURANCE (S30-S33)
+      { id: 30, group: 'Shield & Insurance', short: 'Insurance & AMC', title: '30. Uptime Shield: Micro-Insurance & AMC Plans', desc: 'Manage Equipment/Device Shield policies, per-job protection & scheduled Annual Maintenance Contracts.' },
+      { id: 31, group: 'Shield & Insurance', short: 'Warranty Vault', title: '31. OCR Warranty Vault & Expiry Alerts', desc: 'Scan paper GST bills via OCR to auto-track manufacturer & per-job repair warranties before they expire.' },
+      { id: 32, group: 'Shield & Insurance', short: 'File Claim Form', title: '32. File Insurance Incident Claim Form', desc: 'Interactive claim filing: Select incident type, upload damage photos & GST bill, enter estimated loss for instant AI assessment.' },
+      { id: 33, group: 'Shield & Insurance', short: 'Claim Tracker', title: '33. 5-Stage AI Insurance Claim Live Tracker', desc: 'Live claim status stepper: Filed → AI Review → Evidence Assessed → Insurer Approval → Instant UPI Settlement.' },
+
+      // 11. MARKETPLACE & SPARES (S34-S37)
+      { id: 34, group: 'Market & Spares', short: 'Spare Parts Store', title: '34. OEM Spare Parts & Rare Part Request Market', desc: 'Buy verified bearings, contactors, EV filters & AC PCBs with compatibility check + custom part request form.' },
+      { id: 35, group: 'Market & Spares', short: 'Product Details', title: '35. Spare Part Details & Compatibility Verification', desc: 'Multi-angle photos, OEM authenticity seal, guaranteed equipment fit checker, GST input tax credit & Add to Cart.' },
+      { id: 36, group: 'Market & Spares', short: 'Refurbished Store', title: '36. Certified Refurbished Store (Grade A+)', desc: 'Technician-inspected refurbished motors, oscilloscopes & appliances with 6-month Uptime Guarantee.' },
+      { id: 37, group: 'Market & Spares', short: 'Cart & Delivery', title: '37. Spare Parts Cart & Express Site Delivery', desc: 'Manage cart quantities, apply MSME GST input credit & schedule express delivery straight to job site.' },
+
+      // 12. PAY, WIKI & PROFILE (S38-S44)
+      { id: 38, group: 'Pay & Profile', short: 'Razorpay Escrow', title: '38. Razorpay Payment & Escrow Checkout', desc: 'Pay via UPI (PhonePe/GPay), Cards, NetBanking or Wallet — held safely in escrow until job completion.' },
+      { id: 39, group: 'Pay & Profile', short: 'Wallet & Carbon', title: '39. Wallet & CO₂ Carbon Credits Ledger', desc: 'Uptime Wallet ledger, instant UPI topup & verified kg CO₂ saved by repairing instead of discarding.' },
+      { id: 40, group: 'Pay & Profile', short: 'Pro Pass Plans', title: '40. Uptime Pro Subscription Plans (PLT-02)', desc: 'MSME Factory & Fleet Pro membership: Zero commission fees, priority 15-min technician SLA & 4 free video consults.' },
+      { id: 41, group: 'Pay & Profile', short: 'Repair Wiki', title: '41. Crowdsourced Repair Wiki & Error Directory', desc: 'Searchable library of Fanuc alarms, OBD-II fault codes & AC error codes extracted from verified repairs.' },
+      { id: 42, group: 'Pay & Profile', short: 'Wiki Article', title: '42. Wiki Fault Article & Step-by-Step Fix Guide', desc: 'Deep-dive fault solution: Root causes, multimeter test points, safety procedures, community upvotes & 1-tap tech dispatch.' },
+      { id: 43, group: 'Pay & Profile', short: 'Notifications', title: '43. Dedicated Notifications & Alerts Center', desc: 'Top bell icon hub: Job progress alerts, technician arrival updates, IoT anomaly warnings, and invoice delivery.' },
+      { id: 44, group: 'Pay & Profile', short: 'Owner Account', title: '44. Owner Profile, Saved Sites & Settings', desc: 'Manage plant/home addresses, GST business billing, emergency SOS contacts, language preference & offline sync.' }
+    ];
+
+    const GROUPS = ['All 44', 'Entry & Location', 'Home & Catalog', 'Fault & AI Triage', 'Video Consult', 'Match & Book', 'Track & Verify', 'Jobs & History', 'Assets & Twin', 'Industry Labs', 'Shield & Insurance', 'Market & Spares', 'Pay & Profile'];
+    let selectedGroup = 'All 44';
+
+    // =========================================================================
+    // RENDER INDIVIDUAL SCREEN HTML (1..44) - MODERN WHITE THEME
+    // =========================================================================
+    function renderScreenHTML(id) {
+      const p = portalThemes[currentPortal];
+
+      switch (id) {
+        // SCREEN 01: BRAND SPLASH SCREEN (EXACT UPLOADED SCREENSHOT MATCH)
+        case 1:
+          return `
+            <div onclick="goScreen(4)" class="h-full bg-black flex flex-col justify-between items-center text-center p-6 cursor-pointer relative select-none">
+              <div class="h-8"></div>
+              <div class="flex items-center justify-center gap-4">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-[20px] sm:rounded-[24px] flex items-center justify-center p-2.5 shadow-2xl shrink-0">
+                  <svg class="w-full h-full" viewBox="0 0 100 100" fill="none">
+                    <path d="M22 22 V 54 C 22 72, 78 72, 78 54 V 22" stroke="#0284C7" stroke-width="13" stroke-linecap="round" fill="none" />
+                    <path d="M50 32 L50 56 M44 38 L56 38" stroke="#0F172A" stroke-width="8" stroke-linecap="round" />
+                    <circle cx="72" cy="28" r="13" stroke="#16A34A" stroke-width="7" fill="none" stroke-dasharray="9 7" />
+                    <path d="M16 66 C 30 84, 70 82, 84 50" stroke="#38BDF8" stroke-width="5" stroke-linecap="round" fill="none" />
+                  </svg>
+                </div>
+                <div class="w-[1.5px] h-12 bg-white/40"></div>
+                <div class="text-left">
+                  <h1 class="text-2xl sm:text-3xl font-extrabold tracking-[0.14em] text-white leading-none font-display">UPTIME</h1>
+                  <p class="text-[9px] sm:text-[10px] font-bold text-white/90 tracking-[0.22em] mt-1.5 uppercase font-mono">Downtime ends here.</p>
+                </div>
+              </div>
+              <div class="pb-6">
+                <span class="text-[10px] font-mono text-white/40 tracking-wider">TAP ANYWHERE TO ENTER</span>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 02: ZOMATO / BIGBASKET STYLE LOCATION & ADDRESS SELECTOR
+        case 2:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-arrow-left"></i>
+                  </button>
+                  <h2 class="text-base font-extrabold text-slate-900">Select Location</h2>
+                </div>
+                <span class="text-[10px] font-mono text-slate-400">Bengaluru</span>
+              </div>
+
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search area, street name, pincode..." class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white transition-all font-medium" />
+              </div>
+
+              <!-- GPS Auto-Detect Button -->
+              <button onclick="setLocation('GPS Location', 'Peenya 4th Phase, Bangalore', 'Peenya Industrial Area, Bengaluru, Karnataka 560058'); goScreen(4);" class="w-full p-3.5 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 flex items-center justify-between text-left transition-all">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-full bg-rose-600 text-white flex items-center justify-center text-sm shadow-xs">
+                    <i class="fa-solid fa-crosshairs"></i>
+                  </div>
+                  <div>
+                    <div class="text-xs font-bold text-rose-700">Use Current GPS Location</div>
+                    <div class="text-[11px] text-rose-600/80">Peenya 4th Phase, Bengaluru (Accurate to 8m)</div>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-rose-400"></i>
+              </button>
+
+              <!-- Saved Addresses List (BigBasket style) -->
+              <div class="space-y-2.5 pt-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Saved Addresses</span>
+                  <button class="text-xs font-bold text-blue-600 hover:text-blue-700">+ Add New</button>
+                </div>
+
+                <div onclick="setLocation('Home', 'Peenya 4th Phase', 'Plot 42, 4th Phase, Peenya Industrial Area, Bengaluru, 560058'); goScreen(4);" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 hover:shadow-sm cursor-pointer space-y-1.5 transition-all">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-[10px]">🏠 HOME</span>
+                      <span class="text-xs font-bold text-slate-900">Peenya Residence</span>
+                    </div>
+                    <span class="text-[11px] font-bold text-emerald-600">Active</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600">Plot 42, 4th Phase, Near TVS Cross, Peenya, Bengaluru 560058</p>
+                </div>
+
+                <div onclick="setLocation('Factory', 'KIADB Industrial Area', 'Unit 12, Precision Engineering Yard, KIADB Peenya, Bengaluru'); goScreen(4);" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 hover:shadow-sm cursor-pointer space-y-1.5 transition-all">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-bold text-[10px]">🏭 FACTORY</span>
+                      <span class="text-xs font-bold text-slate-900">MSME Unit #4</span>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-slate-600">Unit 12, Precision Engineering Yard, KIADB Industrial Area, Bengaluru</p>
+                </div>
+
+                <div onclick="setLocation('Office', 'Indiranagar 100ft Rd', 'Level 3, Tech Park Towers, 100ft Road, Indiranagar, Bengaluru'); goScreen(4);" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 hover:shadow-sm cursor-pointer space-y-1.5 transition-all">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px]">🏢 OFFICE</span>
+                      <span class="text-xs font-bold text-slate-900">Headquarters</span>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-slate-600">Level 3, Tech Park Towers, 100ft Road, Indiranagar, Bengaluru 560038</p>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 03: SERVICE-TRIGGERED PHONE + OTP AUTH SCREEN
+        case 3:
+          return `
+            <div class="p-5 space-y-4">
+              <div class="text-center space-y-1 pt-2">
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mx-auto mb-2 border border-blue-100">
+                  <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2 class="text-lg font-extrabold text-slate-900">Owner Verification</h2>
+                <p class="text-xs text-slate-500">Sign in to confirm service bookings & escrow protection</p>
+              </div>
+
+              <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                <div>
+                  <label class="text-[11px] font-bold text-slate-700 block mb-1">Mobile Number</label>
+                  <div class="flex gap-2">
+                    <span class="px-3 py-2.5 rounded-xl bg-white border border-slate-200 font-bold text-xs text-slate-700">+91</span>
+                    <input type="tel" value="98450 67890" class="flex-1 px-3 py-2.5 rounded-xl bg-white border border-slate-200 font-semibold text-xs text-slate-900" />
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <label class="text-[11px] font-bold text-slate-700">Enter 6-Digit OTP</label>
+                    <span class="text-[10px] text-blue-600 font-bold">Resend in 24s</span>
+                  </div>
+                  <div class="grid grid-cols-6 gap-1.5 text-center font-bold text-sm">
+                    <input value="4" class="py-2 rounded-xl bg-white border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="8" class="py-2 rounded-xl bg-white border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="2" class="py-2 rounded-xl bg-white border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="9" class="py-2 rounded-xl bg-white border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="1" class="py-2 rounded-xl bg-white border border-blue-500 text-blue-600 text-center font-extrabold" />
+                    <input value="6" class="py-2 rounded-xl bg-white border border-blue-500 text-blue-600 text-center font-extrabold" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="text-[11px] font-bold text-slate-700 block mb-1">Registered Owner / Plant Name</label>
+                  <input type="text" value="Pavan Sharma (MSME Unit #4)" class="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900" />
+                </div>
+              </div>
+
+              <button onclick="confirmServiceLogin()" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i>
+                <span>Verify OTP & Unlock Full Services</span>
+              </button>
+
+              <div class="text-center pt-2">
+                <button onclick="goScreen(4)" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
+                  ← Continue browsing as Guest
+                </button>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 04: 3-PORTAL HOME COMMAND HUB (URBAN COMPANY / AJIO / ZOMATO STYLE)
+        case 4:
+          return `
+            <div class="p-4 space-y-4">
+              <!-- Search Bar -->
+              <div onclick="goScreen(5)" class="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200/80 cursor-pointer flex items-center justify-between border border-slate-200/80 transition-all shadow-xs">
+                <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                  <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                  <span class="text-xs text-slate-500 truncate font-medium">${p.searchPlaceholder}</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button onclick="event.stopPropagation(); goScreen(6);" class="w-7 h-7 rounded-full bg-white text-rose-600 flex items-center justify-center text-xs shadow-xs" title="Voice Search">
+                    <i class="fa-solid fa-microphone"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 3-Portal Switcher -->
+              <div class="p-1 rounded-2xl bg-slate-100 border border-slate-200/80 grid grid-cols-3 gap-1 text-[11px] font-bold">
+                <button onclick="setPortal('industrial')" class="py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${currentPortal==='industrial' ? p.activePill : p.inactivePill}">
+                  <span>🏭</span>
+                  <span>Industries</span>
+                </button>
+                <button onclick="setPortal('automobile')" class="py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${currentPortal==='automobile' ? p.activePill : p.inactivePill}">
+                  <span>🚗</span>
+                  <span>Automobile</span>
+                </button>
+                <button onclick="setPortal('electronics')" class="py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${currentPortal==='electronics' ? p.activePill : p.inactivePill}">
+                  <span>⚡</span>
+                  <span>Electronics</span>
+                </button>
+              </div>
+
+              <!-- Hero Banner -->
+              <div class="rounded-2xl p-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md relative overflow-hidden">
+                <div class="relative z-10 space-y-2 max-w-[280px]">
+                  <span class="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[9px] font-bold uppercase tracking-wider">
+                    ${p.badge}
+                  </span>
+                  <h3 class="text-sm font-extrabold leading-tight text-white">${p.heroTitle}</h3>
+                  <p class="text-[11px] text-slate-300 leading-normal">${p.heroSub}</p>
+                  <div class="pt-1 flex items-center gap-2">
+                    <button onclick="requireServiceAuth(11, 'Book Emergency Technician')" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs flex items-center gap-1.5">
+                      <span>Book Tech</span>
+                      <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                    <button onclick="goScreen(7)" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs">
+                      Free AI Triage
+                    </button>
+                  </div>
+                </div>
+                <div class="absolute -right-4 -bottom-6 w-32 h-32 rounded-full bg-blue-600/20 blur-xl pointer-events-none"></div>
+              </div>
+
+              <!-- Quick Resolution Shortcuts -->
+              <div class="grid grid-cols-3 gap-2">
+                <div onclick="goScreen(6)" class="p-3 rounded-2xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-sm cursor-pointer space-y-1.5 transition-all text-center">
+                  <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-base mx-auto">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                  </div>
+                  <div class="text-[11px] font-extrabold text-slate-900">AI Sound Triage</div>
+                  <div class="text-[9px] text-slate-500">Record noise</div>
+                </div>
+
+                <div onclick="requireServiceAuth(9, 'Start Video Consultation')" class="p-3 rounded-2xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-sm cursor-pointer space-y-1.5 transition-all text-center">
+                  <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-base mx-auto">
+                    <i class="fa-solid fa-video"></i>
+                  </div>
+                  <div class="text-[11px] font-extrabold text-slate-900">Video Call</div>
+                  <div class="text-[9px] text-blue-600 font-bold">₹199 Consult</div>
+                </div>
+
+                <div onclick="requireServiceAuth(11, 'Book Emergency Technician')" class="p-3 rounded-2xl bg-white border border-slate-200 hover:border-rose-300 hover:shadow-sm cursor-pointer space-y-1.5 transition-all text-center">
+                  <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-base mx-auto">
+                    <i class="fa-solid fa-truck-fast"></i>
+                  </div>
+                  <div class="text-[11px] font-extrabold text-slate-900">On-Site Tech</div>
+                  <div class="text-[9px] text-slate-500">18-min dispatch</div>
+                </div>
+              </div>
+
+              <!-- Categories Matrix -->
+              <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Top Service Categories</h3>
+                  <button onclick="goScreen(5)" class="text-xs font-bold text-blue-600 hover:text-blue-700">See All 1,151+ →</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                  ${p.cats.map(c => `
+                    <div onclick="goScreen(5)" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 hover:shadow-sm cursor-pointer flex items-center gap-3 transition-all">
+                      <div class="w-11 h-11 rounded-2xl ${c.bg} ${c.color} flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid ${c.icon}"></i>
+                      </div>
+                      <div class="min-w-0">
+                        <div class="text-xs font-bold text-slate-900 truncate leading-snug">${c.title}</div>
+                        <div class="text-[10px] text-slate-500 truncate">${c.sub}</div>
+                        <div class="text-[9px] font-bold text-emerald-600 mt-0.5">${c.count}</div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Nearby Master Techs -->
+              <div class="space-y-2.5 pt-1">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Verified Master Engineers Nearby</h3>
+                    <p class="text-[10px] text-slate-500">Peenya & West Bangalore Cluster</p>
+                  </div>
+                  <span class="text-[10px] font-mono text-emerald-600 font-bold">● 24 Online</span>
+                </div>
+
+                <div onclick="requireServiceAuth(12, 'View Tech Profile & Book')" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:shadow-sm cursor-pointer space-y-2.5 transition-all">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-base flex items-center justify-center shrink-0 shadow-xs">
+                        RK
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-1.5">
+                          <h4 class="text-xs font-extrabold text-slate-900">Rajesh Kumar</h4>
+                          <span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold border border-blue-200">Level 3 Master</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Fanuc CNC Spindle & Siemens S7 PLC Specialist</p>
+                        <div class="flex items-center gap-2 text-[10px] text-slate-600 font-medium mt-0.5">
+                          <span class="text-amber-600 font-bold">★ 4.9 (428 jobs)</span>
+                          <span>•</span>
+                          <span>1.8 km away</span>
+                          <span>•</span>
+                          <span class="text-emerald-600 font-bold">14 min ETA</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                      <div class="text-xs font-extrabold text-slate-900">₹850</div>
+                      <div class="text-[9px] text-slate-400">base charge</div>
+                    </div>
+                  </div>
+
+                  <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-[10px] font-medium text-slate-500">Govt NCVT Verified • Polygon NFT Badge #482</span>
+                    <button class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px]">Book Now</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 05: A-TO-Z EQUIPMENT & SPECIALIST EXPLORER
+        case 5:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-arrow-left"></i>
+                  </button>
+                  <h2 class="text-base font-extrabold text-slate-900">A-to-Z Machine Catalog</h2>
+                </div>
+                <span class="text-[10px] font-mono text-blue-600 font-bold">1,151+ Models</span>
+              </div>
+
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Filter equipment model or brand..." class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600" />
+              </div>
+
+              <div class="space-y-2.5">
+                <div onclick="goScreen(6)" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 hover:shadow-sm cursor-pointer flex items-center justify-between transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm">
+                      <i class="fa-solid fa-gears"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-900">CNC Vertical Machining Center (VMC)</div>
+                      <div class="text-[10px] text-slate-500">Fanuc 0i-MF • Haas VF-2 • Mazak VCN</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] font-bold text-emerald-600 block">38 Techs</span>
+                    <span class="text-[9px] text-slate-400">14 min ETA</span>
+                  </div>
+                </div>
+
+                <div onclick="goScreen(6)" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 hover:shadow-sm cursor-pointer flex items-center justify-between transition-all">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm">
+                      <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-slate-900">IBR Steam Boilers & Thermic Heaters</div>
+                      <div class="text-[10px] text-slate-500">Thermax Combloc • Forbes Marshall</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] font-bold text-emerald-600 block">19 Techs</span>
+                    <span class="text-[9px] text-slate-400">22 min ETA</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 06: MULTI-INPUT FAULT REPORT STUDIO (CORE-01)
+        case 6:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-arrow-left"></i>
+                  </button>
+                  <h2 class="text-base font-extrabold text-slate-900">Fault Report Studio</h2>
+                </div>
+                <span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">AI Triage</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-purple-50 border border-purple-200 space-y-2">
+                <span class="text-xs font-bold text-purple-900 flex items-center gap-1.5">
+                  <i class="fa-solid fa-microphone text-purple-600"></i> Speak in 9 Languages
+                </span>
+                <div class="p-3 bg-white rounded-xl border border-purple-100 flex items-center gap-3">
+                  <button class="w-9 h-9 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm shadow-xs animate-pulse">
+                    <i class="fa-solid fa-microphone"></i>
+                  </button>
+                  <div class="text-[11px] text-slate-600 italic">"Spindle 4000 RPM ke baad tezi se vibrate aur overheat ho rahi hai..."</div>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-800">Attach Damage Evidence</label>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-500 cursor-pointer space-y-1">
+                    <i class="fa-solid fa-camera text-blue-600 text-lg"></i>
+                    <div class="text-[10px] font-bold text-slate-700">Photo (3/5)</div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-500 cursor-pointer space-y-1">
+                    <i class="fa-solid fa-video text-rose-600 text-lg"></i>
+                    <div class="text-[10px] font-bold text-slate-700">Video (15s)</div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-500 cursor-pointer space-y-1">
+                    <i class="fa-solid fa-waveform-lines text-emerald-600 text-lg"></i>
+                    <div class="text-[10px] font-bold text-slate-700">48kHz Audio</div>
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(7)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2">
+                <span>Run Gemini 3.8 AI Diagnostic</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          `;
+
+        // SCREEN 07: GEMINI AI DIAGNOSIS + 3-PATH OWNER CHOICE (PAVAN'S V1.1)
+        case 7:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(6)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-arrow-left"></i>
+                  </button>
+                  <h2 class="text-base font-extrabold text-slate-900">AI Diagnostic Report</h2>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">97.8% Confidence</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <span class="text-[10px] font-bold uppercase text-purple-700">Root Cause Identified</span>
+                <h3 class="text-sm font-extrabold text-slate-900 mt-0.5">Spindle Bearing Race Degradation</h3>
+                <p class="text-[11px] text-slate-600">Harmonic peak at 4,210 Hz indicates inner race spalling. Decouple machine before thermal seizure.</p>
+                <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-200">
+                  <span class="text-slate-500">Estimated Cost:</span>
+                  <span class="font-extrabold text-slate-900">₹800 – ₹1,450 (Labor)</span>
+                </div>
+              </div>
+
+              <div class="space-y-2.5">
+                <div class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Choose Resolution Path</div>
+
+                <div onclick="goScreen(8)" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 cursor-pointer space-y-1 transition-all">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-emerald-700 flex items-center gap-1.5"><i class="fa-solid fa-robot"></i> Option 1: DIY AI Copilot</span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold">100% FREE</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Self-inspection steps with interactive safety checklist & tool requirements.</p>
+                </div>
+
+                <div onclick="requireServiceAuth(9, 'Start Video Consultation')" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer space-y-1 transition-all">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-700 flex items-center gap-1.5"><i class="fa-solid fa-video"></i> Option 2: Live Video Consult</span>
+                    <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold">₹199</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Talk to Level-3 Master Engineer via Agora HD. ₹199 auto-deducted if visit required.</p>
+                </div>
+
+                <div onclick="requireServiceAuth(11, 'Book Emergency Technician')" class="p-3.5 rounded-2xl bg-blue-50/60 border-2 border-blue-600 cursor-pointer space-y-1 transition-all">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-blue-600"></i> Option 3: Book Certified Technician</span>
+                    <span class="px-2 py-0.5 rounded bg-blue-600 text-white text-[10px] font-bold">RECOMMENDED</span>
+                  </div>
+                  <p class="text-[11px] text-slate-700">Top-rated specialist dispatched to your plant in 14 minutes with Escrow Warranty.</p>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 08: OWNER FREE DIY AI COPILOT
+        case 8:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(7)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">DIY AI Copilot</h2>
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Step-by-Step</span>
+              </div>
+
+              <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2 text-xs text-amber-800">
+                <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm"></i>
+                <span class="font-medium">LOTO Protocol: Turn off main isolator switch before touching spindle.</span>
+              </div>
+
+              <div class="space-y-2.5">
+                <div class="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">Step 1: Check Spindle Belt Tension</span>
+                    <i class="fa-regular fa-circle-check text-emerald-600 text-sm"></i>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Deflection should not exceed 8mm under 5kg thumb pressure.</p>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-white border border-slate-200 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">Step 2: Inspect Lubrication Manifold</span>
+                    <span class="text-[10px] text-amber-600 font-bold">Action Needed</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Oil sight glass is below 20%. Refill VG 32 spindle oil.</p>
+                </div>
+              </div>
+
+              <button onclick="requireServiceAuth(11, 'Book Certified Technician')" class="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-xs">
+                Escalate to On-Site Technician (₹850)
+              </button>
+            </div>
+          `;
+
+        // SCREEN 09: VIRTUAL CONSULT TIER & SPECIALIST PICKER
+        case 9:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Virtual Video Consult</h2>
+                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Level 3 Master</span>
+              </div>
+
+              <div class="space-y-2.5">
+                <div onclick="requireServiceAuth(10, 'Connect Quick Call (₹99)')" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 cursor-pointer space-y-1 transition-all">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900">Quick Check (10 Mins)</span>
+                    <span class="text-xs font-extrabold text-blue-600">₹99</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Triage fault code, safety check, and determine if physical parts are required.</p>
+                </div>
+
+                <div onclick="requireServiceAuth(10, 'Connect Full Diagnosis (₹199)')" class="p-3.5 rounded-2xl bg-blue-50/60 border-2 border-blue-600 cursor-pointer space-y-1 transition-all">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-900">Full Diagnosis (20 Mins)</span>
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[9px] font-bold">POPULAR</span>
+                      <span class="text-xs font-extrabold text-blue-700">₹199</span>
+                    </div>
+                  </div>
+                  <p class="text-[11px] text-slate-600">Live AR guidance, multitester probing instructions & 100% fee credit on visit.</p>
+                </div>
+              </div>
+
+              <button onclick="requireServiceAuth(10, 'Connect Video Consultation')" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Connect with Master Engineer Now
+              </button>
+            </div>
+          `;
+
+        // SCREEN 10: AGORA LIVE HD VIDEO CALL + AI AR OVERLAY
+        case 10:
+          return `
+            <div class="h-full bg-slate-900 text-white flex flex-col justify-between p-4 relative">
+              <div class="flex items-center justify-between z-10">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                  <span class="text-xs font-bold">HD Call • 04:12</span>
+                </div>
+                <div class="px-2.5 py-1 rounded-full bg-white/10 text-[10px] font-mono">₹199 Escrow Credit</div>
+              </div>
+
+              <div class="my-auto text-center space-y-3 relative">
+                <div class="w-48 h-48 rounded-full border-2 border-dashed border-emerald-400 mx-auto flex items-center justify-center relative">
+                  <i class="fa-solid fa-arrows-to-dot text-emerald-400 text-3xl animate-ping"></i>
+                  <span class="absolute bottom-2 bg-emerald-500/90 text-slate-950 font-bold text-[9px] px-2 py-0.5 rounded-full">Probe Terminal #3</span>
+                </div>
+                <div class="bg-black/60 backdrop-blur-md rounded-2xl p-3 max-w-[280px] mx-auto text-left text-xs space-y-1">
+                  <div class="text-[10px] text-emerald-400 font-bold uppercase">Engineer Suggestion</div>
+                  <div>"Turn selector switch to 400V AC and check continuity between L1 and Ground."</div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-4 z-10 pb-4">
+                <button class="w-11 h-11 rounded-full bg-white/20 text-white flex items-center justify-center text-sm"><i class="fa-solid fa-microphone"></i></button>
+                <button class="w-11 h-11 rounded-full bg-white/20 text-white flex items-center justify-center text-sm"><i class="fa-solid fa-camera-rotate"></i></button>
+                <button onclick="goScreen(4)" class="w-12 h-12 rounded-full bg-rose-600 text-white flex items-center justify-center text-base"><i class="fa-solid fa-phone-slash"></i></button>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 11: SMART TECHNICIAN MATCH LIST & MAP (60% SKILL + 40% DIST)
+        case 11:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                  <h2 class="text-base font-extrabold text-slate-900">Matching Specialists</h2>
+                </div>
+                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">60% Skill • 40% Dist</span>
+              </div>
+
+              <div onclick="requireServiceAuth(12, 'View Profile & Hire')" class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 hover:shadow-sm cursor-pointer space-y-3 transition-all">
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold text-base flex items-center justify-center shrink-0">RK</div>
+                    <div>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-extrabold text-slate-900">Rajesh Kumar</span>
+                        <i class="fa-solid fa-circle-check text-blue-600 text-xs"></i>
+                      </div>
+                      <div class="text-[10px] text-slate-500">12 yrs exp • Fanuc & Siemens VMC</div>
+                      <div class="flex items-center gap-2 text-[10px] mt-0.5">
+                        <span class="font-bold text-amber-600">★ 4.9 (428)</span>
+                        <span>•</span>
+                        <span class="text-slate-600">1.8 km</span>
+                        <span>•</span>
+                        <span class="font-bold text-emerald-600">14 min ETA</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs font-extrabold text-slate-900">₹850</div>
+                    <div class="text-[9px] text-slate-400">Fixed Visit</div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                  <span>96% AI Skill Match</span>
+                  <button class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold">Select</button>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 12: TECHNICIAN FULL PROFILE & POLYGON NFT BADGES
+        case 12:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(11)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <span class="text-xs font-bold text-slate-900">Technician Profile</span>
+                <span class="text-xs text-blue-600 font-bold">Share</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 text-center space-y-2">
+                <div class="w-16 h-16 rounded-2xl bg-blue-600 text-white font-bold text-2xl flex items-center justify-center mx-auto shadow-sm">RK</div>
+                <h3 class="text-base font-extrabold text-slate-900">Rajesh Kumar</h3>
+                <p class="text-xs text-slate-500">Master Plant & Heavy Machinery Technician</p>
+                <div class="flex items-center justify-center gap-3 text-xs pt-1">
+                  <span class="font-bold text-amber-600">★ 4.9 (428 reviews)</span>
+                  <span>•</span>
+                  <span class="text-emerald-600 font-bold">Govt Aadhaar KYC</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <span class="text-xs font-bold text-slate-800">Polygon Blockchain Badges</span>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="p-2.5 rounded-xl bg-purple-50 border border-purple-200 flex items-center gap-2">
+                    <i class="fa-solid fa-certificate text-purple-600"></i>
+                    <div>
+                      <div class="font-bold text-purple-900 text-[11px]">Fanuc CNC Master</div>
+                      <div class="text-[9px] text-purple-700 font-mono">NFT #4821</div>
+                    </div>
+                  </div>
+                  <div class="p-2.5 rounded-xl bg-blue-50 border border-blue-200 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-blue-600"></i>
+                    <div>
+                      <div class="font-bold text-blue-900 text-[11px]">Siemens S7 PLC</div>
+                      <div class="text-[9px] text-blue-700 font-mono">NFT #1094</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="requireServiceAuth(13, 'Proceed to Book Rajesh Kumar')" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Confirm & Book Specialist (₹850)
+              </button>
+            </div>
+          `;
+
+        // SCREEN 13: AI PRICE NEGOTIATION & BOOKING CONFIRMATION
+        case 13:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(12)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Booking Summary</h2>
+                <span class="text-[10px] font-mono text-emerald-600 font-bold">AI Fair-Price</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-600">Initial Inspection & Diagnosis</span>
+                  <span class="font-extrabold text-slate-900">₹850</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-600">Per-Job Micro-Insurance Shield (₹10k)</span>
+                  <span class="font-extrabold text-blue-600">+ ₹49</span>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900">Total Payable in Escrow</span>
+                  <span class="text-base font-extrabold text-slate-900">₹899</span>
+                </div>
+              </div>
+
+              <button onclick="goScreen(15)" class="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs shadow-md">
+                Lock Escrow & Dispatch Technician →
+              </button>
+            </div>
+          `;
+
+        // SCREEN 14: 60-SECOND EMERGENCY SOS LIVE AUCTION
+        case 14:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-rose-600">Emergency SOS Auction</h2>
+                <span class="text-[10px] font-mono text-slate-400">Broadcasting</span>
+              </div>
+
+              <div class="w-32 h-32 rounded-full border-4 border-rose-600 flex flex-col items-center justify-center mx-auto shadow-lg relative my-2">
+                <span class="text-3xl font-extrabold text-rose-600 font-mono">42s</span>
+                <span class="text-[9px] font-bold text-slate-500 uppercase">Remaining</span>
+              </div>
+
+              <div class="text-xs font-bold text-slate-800">Broadcasting to 18 Nearby Specialists...</div>
+
+              <div class="space-y-2 text-left">
+                <div class="p-3 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-xs">
+                  <span class="text-xs font-bold text-slate-900">Tech #1 (Peenya Gate)</span>
+                  <span class="text-xs font-extrabold text-emerald-600">8 Mins ETA (₹950)</span>
+                </div>
+              </div>
+
+              <button onclick="goScreen(15)" class="w-full py-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md">
+                Accept Fastest Bid (8 Mins) →
+              </button>
+            </div>
+          `;
+
+        // SCREEN 15: UBER-STYLE LIVE GPS TRACKING
+        case 15:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Technician En Route</h2>
+                <span class="text-[10px] font-mono text-emerald-600 font-bold">Live GPS</span>
+              </div>
+
+              <div class="rounded-2xl bg-slate-100 border border-slate-200 h-44 relative overflow-hidden flex items-center justify-center">
+                <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:12px_12px]"></div>
+                <div class="absolute left-32 top-12 flex flex-col items-center">
+                  <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md animate-bounce">
+                    <i class="fa-solid fa-motorcycle"></i>
+                  </div>
+                  <span class="text-[9px] font-bold text-slate-800 bg-white px-2 py-0.5 rounded-full shadow-xs mt-1">11 Mins</span>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="text-xs font-extrabold text-slate-900">Rajesh Kumar</span>
+                    <p class="text-[10px] text-slate-500">Hero Splendor • KA-02-EE-4821</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button class="w-9 h-9 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-phone"></i></button>
+                    <!-- Triggers S16 In-App Chat! -->
+                    <button onclick="goScreen(16)" class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs" title="Open Chat"><i class="fa-solid fa-message"></i></button>
+                  </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span class="text-slate-500">ETA:</span>
+                  <span class="font-extrabold text-blue-600">10:04 AM (11 Mins)</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="goScreen(16)" class="py-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 font-bold text-xs flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-comments"></i> In-App Chat
+                </button>
+                <button onclick="goScreen(17)" class="py-3 rounded-xl bg-slate-900 text-white font-bold text-xs">
+                  Arrival OTP →
+                </button>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 16: IN-APP CHAT & 9-LANGUAGE TRANSLATION (CORE-04 - NEW DEDICATED SCREEN!)
+        case 16:
+          return `
+            <div class="h-full flex flex-col justify-between p-4 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(15)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                  <div>
+                    <h2 class="text-xs font-extrabold text-slate-900">Rajesh Kumar (Tech)</h2>
+                    <span class="text-[9px] text-emerald-600 font-bold">Auto-Translating (HI ⇄ EN)</span>
+                  </div>
+                </div>
+                <button class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-phone"></i></button>
+              </div>
+
+              <div class="flex-1 overflow-y-auto space-y-2.5 text-xs">
+                <div class="p-3 rounded-2xl bg-slate-100 text-slate-800 max-w-[85%] rounded-tl-none space-y-1">
+                  <div class="text-[9px] text-slate-400 font-mono">10:02 AM • Hindi (Original)</div>
+                  <div>"Bhaiya main TVS cross ke paas pahunch gaya hoon. Gate number 2 kahan hai?"</div>
+                  <div class="pt-1 border-t border-slate-200/80 text-[10px] text-blue-600 font-medium">Translated: "Bro I reached near TVS cross. Where is Gate #2?"</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-blue-600 text-white max-w-[85%] ml-auto rounded-tr-none">
+                  Take the right turn after TVS showroom. Security guard will open Gate #2 for you.
+                </div>
+                <div class="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] flex items-center gap-2">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                  <span>Technician entered 500m geofence radius.</span>
+                </div>
+              </div>
+
+              <div class="flex gap-2 pt-2 border-t border-slate-100 shrink-0">
+                <input type="text" placeholder="Type message in your language..." class="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none" />
+                <button class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-microphone"></i></button>
+                <button class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-paper-plane"></i></button>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 17: DUAL-FACTOR 6-DIGIT OTP + 500M POSTGIS LOCK
+        case 17:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(15)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Arrival Verification</h2>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Secure Gate</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <span class="text-xs text-slate-500 font-medium">Share this OTP with technician upon arrival</span>
+                <div class="text-3xl font-extrabold tracking-widest text-blue-600 font-mono py-2 bg-white rounded-xl border border-blue-200">
+                  482196
+                </div>
+                <p class="text-[10px] text-slate-400">Valid for 15 minutes • Prevents unauthorized job initiation</p>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-blue-50 border border-blue-200 text-left text-xs text-blue-900 flex items-start gap-2.5">
+                <i class="fa-solid fa-location-crosshairs text-blue-600 text-base mt-0.5"></i>
+                <div>
+                  <div class="font-bold">PostGIS Proximity Lock Active</div>
+                  <div class="text-[11px] text-blue-800">Technician must be physically within 500m of your plant for OTP acceptance.</div>
+                </div>
+              </div>
+
+              <button onclick="goScreen(18)" class="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs shadow-md">
+                Simulate OTP Verified → Go to Job Progress
+              </button>
+            </div>
+          `;
+
+        // SCREEN 18: LIVE IN-PROGRESS REPAIR & PARTS APPROVAL
+        case 18:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Repair In Progress</h2>
+                <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Stage 3 of 4</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+                <div class="flex items-center gap-2 text-xs text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> LOTO Electrical Isolation Completed</div>
+                <div class="flex items-center gap-2 text-xs text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Spindle Disassembly & Runout Measured</div>
+                <div class="flex items-center gap-2 text-xs text-blue-600 font-bold"><i class="fa-solid fa-spinner animate-spin"></i> Installing New Angular Contact Bearing</div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-amber-50 border border-amber-300 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-amber-900">Replacement Part Required</span>
+                  <span class="text-xs font-extrabold text-amber-900">₹640</span>
+                </div>
+                <p class="text-[11px] text-amber-800">SKF 7010 Angular Contact Bearing race cracked. Technician requests approval to replace.</p>
+                <div class="flex gap-2 pt-1">
+                  <button class="flex-1 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs">Approve & Add to Bill</button>
+                  <button class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold">Decline</button>
+                </div>
+              </div>
+
+              <button onclick="goScreen(20)" class="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-md">
+                View Completed Job & Certificate →
+              </button>
+            </div>
+          `;
+
+        // SCREEN 19: OWNER JOB HISTORY LEDGER
+        case 19:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h2 class="text-base font-extrabold text-slate-900">Job History</h2>
+                <span class="text-xs font-bold text-blue-600">3 Total</span>
+              </div>
+
+              <div class="flex gap-1.5 text-xs font-bold">
+                <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white">All Jobs</button>
+                <button class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600">Active</button>
+                <button class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600">Completed</button>
+              </div>
+
+              <div class="space-y-2.5">
+                <div onclick="goScreen(20)" class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer space-y-2 transition-all">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-mono text-slate-500">UPT-2026-0941</span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[10px]">COMPLETED</span>
+                  </div>
+                  <h4 class="text-xs font-extrabold text-slate-900">Mazak VMC Spindle Bearing Replacement</h4>
+                  <p class="text-[11px] text-slate-500">Tech: Rajesh Kumar • Peenya Unit #4</p>
+                  <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-100">
+                    <span class="font-extrabold text-slate-900">₹1,490</span>
+                    <span class="text-blue-600 font-bold">View Certificate →</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 20: JOB DETAILS & SHA-256 TAMPER-PROOF CERTIFICATE
+        case 20:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(19)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Repair Certificate</h2>
+                <span class="text-xs text-blue-600 font-bold"><i class="fa-solid fa-download"></i> PDF</span>
+              </div>
+
+              <div class="p-5 rounded-3xl bg-slate-900 text-white space-y-3 relative overflow-hidden shadow-lg">
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] font-mono tracking-widest text-emerald-400 font-bold uppercase">Cryptographic Repair Proof</span>
+                  <span class="px-2 py-0.5 rounded-full bg-white/10 text-[9px] font-mono">SHA-256</span>
+                </div>
+                <div>
+                  <h3 class="text-base font-extrabold text-white">Zero-Downtime Warranty</h3>
+                  <p class="text-xs text-slate-300">Valid until Dec 10, 2026 (30 Days Active)</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-black/50 border border-white/10 font-mono text-[9px] text-slate-400 break-all">
+                  SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+                </div>
+              </div>
+
+              <button onclick="goScreen(21)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Rate & Review Specialist →
+              </button>
+            </div>
+          `;
+
+        // SCREEN 21: RATE & REVIEW SPECIALIST
+        case 21:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(20)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Rate Specialist</h2>
+                <span class="text-xs text-slate-400">Skip</span>
+              </div>
+
+              <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white font-bold text-xl flex items-center justify-center mx-auto shadow-sm">RK</div>
+              <h3 class="text-sm font-extrabold text-slate-900">How was Rajesh Kumar's service?</h3>
+              <p class="text-xs text-slate-500">Your feedback maintains verified engineer quality</p>
+
+              <div class="flex justify-center gap-2 text-2xl text-amber-400 py-1">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              </div>
+
+              <button onclick="goScreen(4)" class="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs shadow-md mt-4">
+                Submit Review & Return to Home
+              </button>
+            </div>
+          `;
+
+        // SCREEN 22: MY ASSETS HUB (MACHINES | VEHICLES | DEVICES)
+        case 22:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h2 class="text-base font-extrabold text-slate-900">My Assets Vault</h2>
+                <button onclick="requireServiceAuth(23, 'Add New Asset')" class="text-xs font-bold text-blue-600">+ Add Asset</button>
+              </div>
+
+              <div class="space-y-3">
+                <div onclick="goScreen(25)" class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer space-y-2 transition-all">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold text-slate-900">Mazak VCN-530C (VMC)</span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold">96% HEALTH</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Location: Peenya Unit #4 • Spindle Hours: 4,120h</p>
+                  <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Next AMC: Jan 15, 2027</span>
+                    <span class="text-blue-600 font-bold">Open Digital Twin →</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 23: QUICK ADD ASSET & NAMEPLATE OCR SCANNER
+        case 23:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(22)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Add Asset via OCR</h2>
+                <span class="text-xs font-bold text-blue-600">Help</span>
+              </div>
+
+              <div class="rounded-2xl bg-slate-900 text-white h-48 flex flex-col items-center justify-center relative p-4 text-center">
+                <div class="w-40 h-28 border-2 border-dashed border-emerald-400 rounded-xl flex items-center justify-center">
+                  <span class="text-[10px] text-emerald-400 font-bold">Align Nameplate Here</span>
+                </div>
+                <span class="text-[10px] text-slate-400 mt-2">Auto-reads Model No, Serial No & Power Rating</span>
+              </div>
+
+              <button onclick="goScreen(22)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Save Asset to Vault
+              </button>
+            </div>
+          `;
+
+        // SCREEN 24: ASSET DETAILS & SERVICE LEDGER
+        case 24:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(22)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Asset Service Ledger</h2>
+                <span class="text-xs font-bold text-emerald-600">99.2% Uptime</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
+                <div class="text-xs font-bold text-slate-900">Mazak VCN-530C Service Timeline</div>
+                <div class="text-[11px] text-slate-500">Total Services: 6 • Lifetime Spend: ₹12,800</div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 25: IOT DIGITAL TWIN & FAILURE PREDICTION TIMELINE
+        case 25:
+          return `
+            <div class="p-4 space-y-4 text-center">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(22)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">IoT Digital Twin</h2>
+                <span class="text-[10px] font-mono text-emerald-600 font-bold">Live Sensors</span>
+              </div>
+
+              <div class="w-32 h-32 rounded-full border-8 border-emerald-500 border-t-slate-200 flex flex-col items-center justify-center mx-auto shadow-sm">
+                <span class="text-3xl font-extrabold text-slate-900">94%</span>
+                <span class="text-[10px] font-bold text-emerald-600 uppercase">Health Score</span>
+              </div>
+
+              <!-- Component Telemetry Drilldown Trigger (Opens S26!) -->
+              <div class="grid grid-cols-2 gap-2 text-left text-xs pt-2">
+                <div onclick="goScreen(26)" class="p-3 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer shadow-xs space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-900">Spindle Bearings</span>
+                    <i class="fa-solid fa-chart-line text-blue-600"></i>
+                  </div>
+                  <div class="text-[10px] text-amber-600 font-bold">Vibration: 1.2 mm/s</div>
+                  <div class="text-[9px] text-slate-400">View FFT telemetry →</div>
+                </div>
+                <div onclick="goScreen(26)" class="p-3 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer shadow-xs space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-900">Main Motor VFD</span>
+                    <i class="fa-solid fa-chart-line text-blue-600"></i>
+                  </div>
+                  <div class="text-[10px] text-emerald-600 font-bold">Temp: 48.2 °C</div>
+                  <div class="text-[9px] text-slate-400">View thermal curve →</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 26: DEEP COMPONENT HEALTH & VIBRATION FFT TELEMETRY (NEW DEDICATED SCREEN!)
+        case 26:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(25)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <div>
+                  <h2 class="text-base font-extrabold text-slate-900">Spindle Bearing Telemetry</h2>
+                  <span class="text-[10px] text-slate-500 font-mono">Component ID: SPN-7010-01</span>
+                </div>
+                <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Warning Level</span>
+              </div>
+
+              <!-- 24H Vibration Wave Chart Simulation -->
+              <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-400 font-mono">48kHz Vibration FFT Spectrum</span>
+                  <span class="text-emerald-400 font-mono font-bold">Peak: 4,210 Hz</span>
+                </div>
+                <div class="h-28 flex items-end justify-between gap-1 pt-4 px-2">
+                  <div class="w-2 bg-blue-500 rounded-t h-[30%]"></div>
+                  <div class="w-2 bg-blue-500 rounded-t h-[45%]"></div>
+                  <div class="w-2 bg-blue-500 rounded-t h-[25%]"></div>
+                  <div class="w-2 bg-blue-500 rounded-t h-[60%]"></div>
+                  <div class="w-2 bg-rose-500 rounded-t h-[95%] animate-pulse"></div>
+                  <div class="w-2 bg-blue-500 rounded-t h-[50%]"></div>
+                  <div class="w-2 bg-blue-500 rounded-t h-[35%]"></div>
+                  <div class="w-2 bg-blue-500 rounded-t h-[40%]"></div>
+                  <div class="w-2 bg-blue-500 rounded-t h-[20%]"></div>
+                </div>
+                <div class="text-[10px] text-slate-400 text-center font-mono">Resonance Harmonic Spike detected at 4,210 Hz</div>
+              </div>
+
+              <!-- Remaining Useful Life Metric -->
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span class="text-slate-500 text-[10px] block">Remaining Useful Life (RUL)</span>
+                  <span class="text-sm font-extrabold text-amber-600">42 Machine Hours</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span class="text-slate-500 text-[10px] block">Lubrication Viscosity</span>
+                  <span class="text-sm font-extrabold text-slate-900">62% (Degraded)</span>
+                </div>
+              </div>
+
+              <button onclick="requireServiceAuth(11, 'Book Spindle Bearing Specialist')" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Schedule Overhaul Before Failure (₹850)
+              </button>
+            </div>
+          `;
+
+        // SCREEN 27: INDUSTRIAL WORLD-FIRST LAB
+        case 27:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Industrial Lab</h2>
+                <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">World-First</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-purple-50 border border-purple-200 space-y-1.5">
+                <div class="flex items-center gap-2 text-xs font-bold text-purple-900">
+                  <i class="fa-solid fa-triangle-exclamation text-purple-600"></i>
+                  <span>Epidemic Batch Recall Radar</span>
+                </div>
+                <p class="text-[11px] text-purple-800">4 other plants in Peenya reported drive failure on Siemens Sinamics S120 (Batch 2024-Q2). Proactive firmware patch recommended.</p>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-1.5">
+                <div class="flex items-center gap-2 text-xs font-bold text-amber-900">
+                  <i class="fa-solid fa-wave-square text-amber-600"></i>
+                  <span>Silent Killer Vibration Alert</span>
+                </div>
+                <p class="text-[11px] text-amber-800">High-frequency harmonic resonance detected at 4,120 Hz. Potential spindle seizure within 48 machine hours.</p>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 28: AUTOMOBILE WORLD-FIRST LAB
+        case 28:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Automobile Lab</h2>
+                <span class="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">AI Diagnostics</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-extrabold text-slate-900">Dashboard Warning Light AI</span>
+                  <i class="fa-solid fa-camera text-rose-600 text-sm"></i>
+                </div>
+                <p class="text-[11px] text-slate-500">Scan any instrument cluster light with your camera for instant diagnostic meaning & safe driving distance.</p>
+                <button class="w-full py-2 rounded-xl bg-rose-50 text-rose-700 font-bold text-xs">Scan Cluster Warning</button>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 29: ELECTRONICS WORLD-FIRST LAB
+        case 29:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Electronics Lab</h2>
+                <span class="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-full">Smart AI</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-extrabold text-slate-900">Repair-vs-Replace Calculator</span>
+                  <span class="text-xs font-bold text-emerald-600">Saves ₹14,000</span>
+                </div>
+                <p class="text-[11px] text-slate-500">AI compares repair cost vs buying new with energy efficiency payback analysis.</p>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 30: INSURANCE & AMC PROTECTION HUB
+        case 30:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Uptime Shield & AMC</h2>
+                <button onclick="goScreen(32)" class="text-xs font-bold text-blue-600">File Claim</button>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-extrabold text-blue-900">Annual Maintenance Contract (AMC)</span>
+                  <span class="text-xs font-bold text-blue-700">₹4,999/yr</span>
+                </div>
+                <p class="text-[11px] text-blue-800">Quarterly preventive checkups, 24/7 priority emergency dispatch & zero inspection fees.</p>
+              </div>
+
+              <!-- Triggers S32 File Incident Claim Form! -->
+              <div onclick="goScreen(32)" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-bold text-slate-900">Report Equipment Breakdown Claim</div>
+                  <div class="text-[10px] text-slate-500">Instant AI evidence submission & fast payout</div>
+                </div>
+                <i class="fa-solid fa-arrow-right text-xs text-blue-600"></i>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 31: OCR WARRANTY VAULT & EXPIRY ALERTS
+        case 31:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(30)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Warranty Vault</h2>
+                <button class="text-xs font-bold text-blue-600">+ Scan Bill</button>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900">Daikin 1.5 Ton Split AC</span>
+                  <span class="text-[10px] font-bold text-emerald-600">Active</span>
+                </div>
+                <p class="text-[11px] text-slate-500">Compressor warranty expires in 184 days</p>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 32: FILE INSURANCE INCIDENT CLAIM FORM (NEW DEDICATED SCREEN!)
+        case 32:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(30)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">File Incident Claim</h2>
+                <span class="text-[10px] font-mono text-blue-600 font-bold">Policy #UPT-SHIELD</span>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="text-[11px] font-bold text-slate-700 block mb-1">Incident Category</label>
+                  <select class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-medium">
+                    <option>Electrical Power Surge / Phase Failure</option>
+                    <option>Mechanical Collision / Spindle Jam</option>
+                    <option>Overheating & Thermal Coil Burnout</option>
+                    <option>Accidental Water Ingress</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-[11px] font-bold text-slate-700 block mb-1">Upload Damage Photos & Invoice</label>
+                  <div class="grid grid-cols-2 gap-2 text-center">
+                    <div class="p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 cursor-pointer space-y-1">
+                      <i class="fa-solid fa-camera text-blue-600 text-base"></i>
+                      <div class="text-[10px] font-bold text-slate-700">Add Machine Photos</div>
+                    </div>
+                    <div class="p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 cursor-pointer space-y-1">
+                      <i class="fa-solid fa-file-invoice text-emerald-600 text-base"></i>
+                      <div class="text-[10px] font-bold text-slate-700">Upload GST Invoice</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="text-[11px] font-bold text-slate-700 block mb-1">Estimated Repair / Loss Amount</label>
+                  <input type="text" value="₹14,500" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-900" />
+                </div>
+              </div>
+
+              <button onclick="goScreen(33)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Submit Claim for AI Instant Review →
+              </button>
+            </div>
+          `;
+
+        // SCREEN 33: 5-STAGE AI CLAIM TRACKER
+        case 33:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(30)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">AI Insurance Claim</h2>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Instant Payout</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+                <div class="text-xs font-bold text-slate-900">Claim #CLM-8921: Spindle Motor Surge</div>
+                <div class="space-y-2 text-xs">
+                  <div class="flex items-center gap-2 text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> 1. Photos Submitted</div>
+                  <div class="flex items-center gap-2 text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> 2. AI Evidence Verified</div>
+                  <div class="flex items-center gap-2 text-blue-600 font-bold"><i class="fa-solid fa-spinner animate-spin"></i> 3. Insurer Approval (92%)</div>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 34: OEM SPARE PARTS & RARE PART REQUEST MARKET
+        case 34:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h2 class="text-base font-extrabold text-slate-900">OEM Spare Parts</h2>
+                <button onclick="goScreen(37)" class="text-xs font-bold text-blue-600">Cart (2)</button>
+              </div>
+
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search genuine part number, brand..." class="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs" />
+              </div>
+
+              <div class="space-y-2.5">
+                <!-- Part Item 1 (Click opens S35 Product Details!) -->
+                <div onclick="goScreen(35)" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer flex items-center justify-between transition-all">
+                  <div>
+                    <div class="text-xs font-bold text-slate-900">SKF 7010 CD/P4A Angular Bearing</div>
+                    <div class="text-[10px] text-slate-500">OEM Genuine • 100% Fit Guarantee</div>
+                    <div class="text-xs font-extrabold text-slate-900 mt-1">₹640</div>
+                  </div>
+                  <span class="text-xs text-blue-600 font-bold">View Specs →</span>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 35: SPARE PART DETAILS & COMPATIBILITY CHECKER (NEW DEDICATED SCREEN!)
+        case 35:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(34)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <span class="text-xs font-bold text-slate-900">Part Specification</span>
+                <span class="text-xs text-blue-600 font-bold"><i class="fa-solid fa-share-nodes"></i></span>
+              </div>
+
+              <!-- Part Hero View -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                <div class="w-20 h-20 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mx-auto shadow-xs text-blue-600 text-3xl">
+                  <i class="fa-solid fa-circle-notch animate-spin-slow"></i>
+                </div>
+                <h3 class="text-sm font-extrabold text-slate-900">SKF 7010 CD/P4A High-Precision Bearing</h3>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">✓ 100% Verified OEM Seal</span>
+                <div class="text-lg font-extrabold text-slate-900">₹640 <span class="text-xs text-slate-400 font-normal">incl. 18% GST</span></div>
+              </div>
+
+              <!-- Guaranteed Machine Compatibility -->
+              <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1.5 text-xs text-emerald-900">
+                <div class="font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                  <span>Guaranteed Machine Fit: Mazak VCN-530C</span>
+                </div>
+                <p class="text-[11px] text-emerald-800">Also compatible with Haas VF-2, Fanuc Robodrill α-D21MiB5.</p>
+              </div>
+
+              <!-- Technical Specs Table -->
+              <div class="p-3 rounded-2xl bg-white border border-slate-200 text-xs space-y-1.5">
+                <div class="flex justify-between text-slate-600"><span>Bore Diameter</span><span class="font-bold text-slate-900">50 mm</span></div>
+                <div class="flex justify-between text-slate-600"><span>Outer Diameter</span><span class="font-bold text-slate-900">80 mm</span></div>
+                <div class="flex justify-between text-slate-600"><span>Limiting Speed</span><span class="font-bold text-slate-900">22,000 RPM (Oil)</span></div>
+                <div class="flex justify-between text-slate-600"><span>Precision Class</span><span class="font-bold text-slate-900">ISO Class 4 (ABEC 7)</span></div>
+              </div>
+
+              <div class="flex gap-2">
+                <button onclick="requireServiceAuth(37, 'Add to Cart')" class="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs">
+                  Add to Cart
+                </button>
+                <button onclick="requireServiceAuth(37, 'Buy Now')" class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                  Buy Now (Express Site Delivery)
+                </button>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 36: CERTIFIED REFURBISHED STORE (GRADE A+)
+        case 36:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Certified Refurbished</h2>
+                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Grade A+ (6 Mo Warranty)</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
+                <div class="text-xs font-extrabold text-slate-900">Siemens 3-Phase Induction Motor 7.5kW</div>
+                <div class="text-[11px] text-slate-500">Rewound, new SKF bearings, 40-point tested</div>
+                <div class="flex items-center justify-between pt-1">
+                  <span class="text-sm font-extrabold text-slate-900">₹8,400 <span class="text-xs text-slate-400 line-through">₹18,000</span></span>
+                  <button onclick="requireServiceAuth(37, 'Buy Refurbished Motor')" class="px-3 py-1.5 rounded-xl bg-blue-600 text-white font-bold text-xs">Buy Now</button>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 37: SPARE PARTS CART & EXPRESS SITE DELIVERY
+        case 37:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(34)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Cart & Delivery</h2>
+                <span class="text-xs font-bold text-blue-600">2 Items</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2 text-xs">
+                <div class="flex justify-between"><span>SKF 7010 Bearing x 1</span><span class="font-bold">₹640</span></div>
+                <div class="flex justify-between"><span>VG 32 Spindle Oil (5L) x 1</span><span class="font-bold">₹850</span></div>
+                <div class="flex justify-between text-emerald-600"><span>Express Dispatch</span><span class="font-bold">FREE</span></div>
+                <div class="pt-2 border-t border-slate-100 flex justify-between font-extrabold text-sm">
+                  <span>Total</span><span>₹1,490</span>
+                </div>
+              </div>
+
+              <button onclick="requireServiceAuth(38, 'Checkout Cart')" class="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-md">
+                Proceed to Escrow Payment →
+              </button>
+            </div>
+          `;
+
+        // SCREEN 38: RAZORPAY PAYMENT & ESCROW CHECKOUT
+        case 38:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Payment & Escrow</h2>
+                <span class="text-[10px] font-bold text-blue-600">Razorpay</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2.5">
+                <div class="text-xs font-bold text-slate-800">Select Payment Method</div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs font-bold cursor-pointer">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen text-blue-600"></i>
+                    <span>UPI (Google Pay, PhonePe, Paytm)</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                </div>
+              </div>
+
+              <button onclick="goScreen(20)" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Pay ₹899 via UPI
+              </button>
+            </div>
+          `;
+
+        // SCREEN 39: WALLET & CO2 CARBON CREDITS
+        case 39:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Wallet & Carbon</h2>
+                <span class="text-xs font-bold text-emerald-600">Pro</span>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white space-y-2">
+                <span class="text-[10px] font-mono tracking-widest text-blue-200 uppercase">Available Balance</span>
+                <div class="text-2xl font-extrabold">₹4,250.00</div>
+                <button class="px-3 py-1 rounded-lg bg-white text-blue-700 text-xs font-bold">+ Add Money</button>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1">
+                <span class="text-xs font-bold text-emerald-900">🌱 340 kg CO₂ Saved</span>
+                <p class="text-[11px] text-emerald-800">You prevented 340 kg of industrial e-waste by choosing repair over disposal.</p>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 40: UPTIME PRO PASS SUBSCRIPTION PLANS (PLT-02 - NEW DEDICATED SCREEN!)
+        case 40:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Uptime Pro Membership</h2>
+                <span class="text-[10px] font-mono text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded-full">MSME Plan</span>
+              </div>
+
+              <div class="p-5 rounded-3xl bg-slate-900 text-white space-y-3 relative overflow-hidden shadow-lg">
+                <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[9px] font-bold uppercase">Plant & Fleet Pro Pass</span>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-2xl font-extrabold">₹999</span>
+                  <span class="text-xs text-slate-400">/ month</span>
+                </div>
+                <div class="space-y-1.5 text-xs text-slate-200 pt-1">
+                  <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Zero platform convenience fees on all bookings</div>
+                  <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Guaranteed 15-minute emergency technician arrival SLA</div>
+                  <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 4 Free Level-3 HD Video Consultations included monthly</div>
+                  <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Real-time IoT Digital Twin sensor sync & predictive alert</div>
+                </div>
+              </div>
+
+              <button onclick="requireServiceAuth(38, 'Subscribe to Pro Pass')" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Activate Uptime Pro (30-Day Free Trial) →
+              </button>
+            </div>
+          `;
+
+        // SCREEN 41: CROWDSOURCED REPAIR WIKI & ERROR DIRECTORY
+        case 41:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-base font-extrabold text-slate-900">Repair Wiki & Alarms</h2>
+                <span class="text-xs text-blue-600 font-bold">Free Knowledge</span>
+              </div>
+
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search alarm code (e.g., Fanuc 401, Daikin E4)..." class="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs" />
+              </div>
+
+              <!-- Wiki Item 1 (Click opens S42 Wiki Article Solution!) -->
+              <div onclick="goScreen(42)" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 cursor-pointer space-y-1 transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-900">Fanuc 401: V-Ready Off Alarm</span>
+                  <span class="text-[10px] font-bold text-blue-600">42 Solutions</span>
+                </div>
+                <p class="text-[11px] text-slate-500">Servo amplifier magnetic contactor failed to close. Check MCC coil & emergency circuit.</p>
+                <span class="text-[10px] text-blue-600 font-bold">View Step-by-Step Fix →</span>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 42: WIKI FAULT ARTICLE & STEP-BY-STEP FIX GUIDE (NEW DEDICATED SCREEN!)
+        case 42:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button onclick="goScreen(41)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                <span class="text-xs font-bold text-slate-900">Wiki Solution</span>
+                <span class="text-xs font-mono text-emerald-600 font-bold">428 Upvotes</span>
+              </div>
+
+              <div class="space-y-1">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-bold">FANUC 0i-MF • ALARM 401</span>
+                <h3 class="text-sm font-extrabold text-slate-900">Servo Alarm 401: VRDY OFF Fix Protocol</h3>
+              </div>
+
+              <!-- Root Causes -->
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+                <div class="font-bold text-slate-900">Confirmed Root Causes:</div>
+                <div class="text-[11px] text-slate-600">• 24V DC auxiliary coil voltage dropped below 20.4V</div>
+                <div class="text-[11px] text-slate-600">• Optical cable between CNC and amplifier loose or contaminated</div>
+                <div class="text-[11px] text-slate-600">• Emergency stop line open circuit on operator panel</div>
+              </div>
+
+              <!-- Multimeter Test Points -->
+              <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 space-y-1.5 text-xs text-amber-900">
+                <div class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-600"></i> Multimeter Check Point:</div>
+                <p class="text-[11px] text-amber-800">Measure across terminal CX1A pin 1 & 2. Should read exactly 24V DC when CNC power is ON.</p>
+              </div>
+
+              <button onclick="requireServiceAuth(11, 'Book Fanuc Specialist')" class="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Still Having Trouble? Dispatch Fanuc Tech (₹850)
+              </button>
+            </div>
+          `;
+
+        // SCREEN 43: DEDICATED NOTIFICATIONS & ALERTS CENTER (NEW DEDICATED SCREEN!)
+        case 43:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <button onclick="goScreen(4)" class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                  <h2 class="text-base font-extrabold text-slate-900">Notifications</h2>
+                </div>
+                <button class="text-xs text-blue-600 font-bold">Mark all read</button>
+              </div>
+
+              <div class="flex gap-1.5 text-xs font-bold">
+                <button class="px-3 py-1.5 rounded-xl bg-blue-600 text-white">All (4)</button>
+                <button class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600">Jobs</button>
+                <button class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600">IoT Alerts</button>
+              </div>
+
+              <div class="space-y-2.5">
+                <!-- Notification 1 -->
+                <div onclick="goScreen(15)" class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200 cursor-pointer space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                      <i class="fa-solid fa-motorcycle text-blue-600"></i> Technician Rajesh is En Route
+                    </span>
+                    <span class="text-[10px] text-slate-400">2m ago</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600">ETA 11 mins to Peenya Unit #4. Tap to track on live GPS.</p>
+                </div>
+
+                <!-- Notification 2 -->
+                <div onclick="goScreen(26)" class="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200 cursor-pointer space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                      <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Vibration Anomaly Detected
+                    </span>
+                    <span class="text-[10px] text-slate-400">18m ago</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600">Mazak VMC Spindle vibration crossed 1.2 mm/s threshold.</p>
+                </div>
+
+                <!-- Notification 3 -->
+                <div onclick="goScreen(20)" class="p-3.5 rounded-2xl bg-white border border-slate-200 cursor-pointer space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <i class="fa-solid fa-certificate text-emerald-600"></i> Warranty Certificate Issued
+                    </span>
+                    <span class="text-[10px] text-slate-400">2h ago</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">SHA-256 Warranty Certificate for Job #0941 is now active.</p>
+                </div>
+              </div>
+            </div>
+          `;
+
+        // SCREEN 44: OWNER PROFILE, SITES & SETTINGS
+        case 44:
+          return `
+            <div class="p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h2 class="text-base font-extrabold text-slate-900">Owner Account</h2>
+                <button onclick="toggleAuthState()" class="text-xs font-bold text-rose-600">Sign Out</button>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold text-lg flex items-center justify-center shadow-xs">
+                  P
+                </div>
+                <div>
+                  <h3 class="text-sm font-extrabold text-slate-900">Pavan Sharma</h3>
+                  <p class="text-xs text-slate-500">+91 98450 67890 • MSME Unit #4</p>
+                  <span class="text-[10px] font-bold text-emerald-600">✓ Verified Plant Owner</span>
+                </div>
+              </div>
+
+              <div class="p-2 rounded-2xl bg-white border border-slate-200 space-y-1 text-xs font-semibold">
+                <div onclick="goScreen(2)" class="p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2.5"><i class="fa-solid fa-location-dot text-rose-500"></i> Manage Saved Addresses</span>
+                  <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                </div>
+                <div onclick="goScreen(40)" class="p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2.5"><i class="fa-solid fa-crown text-purple-600"></i> Uptime Pro Subscription</span>
+                  <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">Pro Active</span>
+                </div>
+                <div onclick="goScreen(39)" class="p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2.5"><i class="fa-solid fa-wallet text-blue-600"></i> Uptime Wallet & Billing</span>
+                  <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                </div>
+                <div onclick="goScreen(22)" class="p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2.5"><i class="fa-solid fa-server text-purple-600"></i> Registered Machines Vault</span>
+                  <i class="fa-solid fa-chevron-right text-slate-400 text-[10px]"></i>
+                </div>
+                <div onclick="cycleLanguage()" class="p-2.5 rounded-xl hover:bg-slate-50 flex items-center justify-between cursor-pointer">
+                  <span class="flex items-center gap-2.5"><i class="fa-solid fa-language text-emerald-600"></i> Language Preferences (9)</span>
+                  <span class="font-mono text-slate-500 text-[10px]" id="profileLangText">EN</span>
+                </div>
+              </div>
+            </div>
+          `;
+
+        default:
+          return `<div class="p-6 text-center text-slate-500">Screen S${String(id).padStart(2,'0')}</div>`;
+      }
+    }
+
+    // =========================================================================
+    // UI NAVIGATION & INTERACTION LOGIC
+    // =========================================================================
+    function goScreen(id) {
+      currentScreen = id;
+      updateUI();
+    }
+
+    function prevScreen() {
+      if (currentScreen > 1) {
+        currentScreen--;
+        updateUI();
+      }
+    }
+
+    function nextScreen() {
+      if (currentScreen < SCREENS.length) {
+        currentScreen++;
+        updateUI();
+      }
+    }
+
+    function setPortal(portalKey) {
+      currentPortal = portalKey;
+      updateUI();
+    }
+
+    function setLocation(tag, title, address) {
+      selectedLocation = { tag, title, address };
+      document.getElementById('activeLocationLabel').textContent = tag;
+      document.getElementById('activeLocationAddress').textContent = address;
+    }
+
+    function cycleLanguage() {
+      langIdx = (langIdx + 1) % languages.length;
+      const l = languages[langIdx];
+      const code = l.split(' ')[0];
+      document.getElementById('langCode').textContent = code;
+      const profL = document.getElementById('profileLangText');
+      if (profL) profL.textContent = code;
+    }
+
+    function setDisplayMode(mode) {
+      displayMode = mode;
+      const pContainer = document.getElementById('phoneModeContainer');
+      const gContainer = document.getElementById('gridModeContainer');
+      const pBtn = document.getElementById('modePhoneBtn');
+      const gBtn = document.getElementById('modeGridBtn');
+
+      if (mode === 'phone') {
+        pContainer.classList.remove('hidden');
+        gContainer.classList.add('hidden');
+        pBtn.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow-sm flex items-center gap-1.5';
+        gBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
+      } else {
+        pContainer.classList.add('hidden');
+        gContainer.classList.remove('hidden');
+        gBtn.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 font-bold shadow-sm flex items-center gap-1.5';
+        pBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5';
+        renderGridMode();
+      }
+    }
+
+    function requireServiceAuth(targetScreenId, actionLabel) {
+      if (isAuthenticated) {
+        goScreen(targetScreenId);
+      } else {
+        pendingScreenAfterAuth = targetScreenId;
+        document.getElementById('pendingActionLabel').textContent = `Action: ${actionLabel}`;
+        document.getElementById('serviceAuthOverlay').classList.remove('hidden');
+      }
+    }
+
+    function closeAuthOverlay() {
+      document.getElementById('serviceAuthOverlay').classList.add('hidden');
+      pendingScreenAfterAuth = null;
+    }
+
+    function confirmServiceLogin() {
+      isAuthenticated = true;
+      ownerName = document.getElementById('modalOwnerName').value || 'Pavan Sharma';
+      syncAuthUI();
+      closeAuthOverlay();
+      if (pendingScreenAfterAuth) {
+        goScreen(pendingScreenAfterAuth);
+      } else {
+        goScreen(4);
+      }
+    }
+
+    function toggleAuthState() {
+      isAuthenticated = !isAuthenticated;
+      if (!isAuthenticated) {
+        ownerName = 'Guest Explorer';
+      } else {
+        ownerName = 'Pavan Sharma';
+      }
+      syncAuthUI();
+      updateUI();
+    }
+
+    function syncAuthUI() {
+      const badge = document.getElementById('guestBadge');
+      const label = document.getElementById('guestLabel');
+      const dot = document.getElementById('guestDot');
+      const btn = document.getElementById('guestToggleBtn');
+      const avatar = document.getElementById('headerAvatarText');
+
+      if (isAuthenticated) {
+        badge.className = 'px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] font-medium flex items-center gap-2';
+        label.className = 'text-emerald-800 font-bold';
+        label.textContent = `Logged In: ${ownerName}`;
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+        btn.textContent = 'Logout';
+        avatar.textContent = ownerName.charAt(0).toUpperCase();
+      } else {
+        badge.className = 'px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] font-medium flex items-center gap-2';
+        label.className = 'text-amber-800 font-semibold';
+        label.textContent = 'Guest Mode (Free Browse)';
+        dot.className = 'w-2 h-2 rounded-full bg-amber-500 pulse-dot';
+        btn.textContent = 'Login';
+        avatar.textContent = 'G';
+      }
+    }
+
+    function buildTopBars() {
+      const mBar = document.getElementById('moduleFilterBar');
+      mBar.innerHTML = GROUPS.map(g => `
+        <button onclick="setFilterGroup('${g}')" class="px-3 py-1 rounded-full whitespace-nowrap transition-all ${selectedGroup===g ? 'bg-slate-900 text-white font-bold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+          ${g}
+        </button>
+      `).join('');
+
+      const sBar = document.getElementById('screenJumpBar');
+      const filtered = selectedGroup === 'All 44' ? SCREENS : SCREENS.filter(s => s.group === selectedGroup);
+      sBar.innerHTML = filtered.map(s => `
+        <button onclick="goScreen(${s.id})" class="px-2.5 py-1 rounded-lg whitespace-nowrap transition-all ${currentScreen===s.id ? 'bg-blue-600 text-white font-bold' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}">
+          S${String(s.id).padStart(2,'0')} • ${s.short}
+        </button>
+      `).join('');
+    }
+
+    function setFilterGroup(grp) {
+      selectedGroup = grp;
+      buildTopBars();
+      if (displayMode === 'grid') renderGridMode();
+    }
+
+    function renderGridMode() {
+      const mount = document.getElementById('allScreensGridMount');
+      const filtered = selectedGroup === 'All 44' ? SCREENS : SCREENS.filter(s => s.group === selectedGroup);
+      const groupsPresent = Array.from(new Set(filtered.map(s => s.group)));
+
+      mount.innerHTML = groupsPresent.map(grp => {
+        const items = filtered.filter(s => s.group === grp);
+        return `
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+              <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider">${grp} (${items.length} Screens)</h3>
+              <span class="text-xs font-mono text-slate-500">Click any card to open in phone mode</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              ${items.map(s => `
+                <div onclick="goScreen(${s.id}); setDisplayMode('phone');" class="rounded-[28px] bg-white border-2 ${currentScreen===s.id ? 'border-blue-600 ring-2 ring-blue-100' : 'border-slate-200 hover:border-blue-400'} overflow-hidden flex flex-col cursor-pointer transition-all shadow-sm hover:shadow-md">
+                  <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-mono font-extrabold text-blue-600">S${String(s.id).padStart(2,'0')}</span>
+                    <span class="text-xs font-bold text-slate-900 truncate max-w-[180px]">${s.short}</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                  </div>
+                  <div class="flex-1 max-h-[440px] overflow-y-auto no-scrollbar pointer-events-none bg-white">
+                    ${renderScreenHTML(s.id)}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateUI() {
+      buildTopBars();
+      const meta = SCREENS.find(s => s.id === currentScreen) || SCREENS[0];
+      document.getElementById('phoneViewport').innerHTML = renderScreenHTML(currentScreen);
+
+      const topBar = document.getElementById('appTopHeader');
+      const botNav = document.getElementById('appBottomNav');
+      const phoneStatus = document.getElementById('phoneStatusBar');
+
+      if (currentScreen === 1) {
+        topBar.classList.add('hidden');
+        botNav.classList.add('hidden');
+        phoneStatus.className = 'h-11 px-7 flex items-center justify-between text-[11px] text-white font-bold z-30 shrink-0 bg-black';
+      } else {
+        topBar.classList.remove('hidden');
+        botNav.classList.remove('hidden');
+        phoneStatus.className = 'h-11 px-7 flex items-center justify-between text-[11px] text-slate-800 font-bold z-30 shrink-0 bg-white';
+      }
+
+      // Automobile SOS FAB visibility
+      const sosFab = document.getElementById('autoSosFab');
+      if (currentPortal === 'automobile' && currentScreen === 4) {
+        sosFab.classList.remove('hidden');
+        sosFab.classList.add('flex');
+      } else {
+        sosFab.classList.add('hidden');
+        sosFab.classList.remove('flex');
+      }
+
+      // Highlight active bottom nav item
+      const navMap = {
+        home: [2,4,5,6,7,8,9,10,11,12,13,14,27,28,29],
+        jobs: [15,16,17,18,19,20,21],
+        assets: [22,23,24,25,26],
+        market: [30,31,32,33,34,35,36,37],
+        profile: [3,38,39,40,41,42,43,44]
+      };
+      Object.keys(navMap).forEach(k => {
+        const el = document.getElementById('bnav-' + k);
+        if (el) {
+          el.className = navMap[k].includes(currentScreen)
+            ? 'flex flex-col items-center gap-1 text-blue-600 transition-colors'
+            : 'flex flex-col items-center gap-1 text-slate-400 hover:text-slate-700 transition-colors';
+        }
+      });
+
+      // Inspector panel updates
+      document.getElementById('inspectorBadge').textContent = `SCREEN ${String(meta.id).padStart(2,'0')} / 44`;
+      document.getElementById('inspectorModule').textContent = meta.group;
+      document.getElementById('inspectorTitle').textContent = meta.title;
+      document.getElementById('inspectorDesc').textContent = meta.desc;
+    }
+
+    // Initialize UI on S01 Splash screen
+    syncAuthUI();
+    updateUI();
+  </script>
+</body>
+</html>
+"""
+
+with open("F:/uptime/design-system/index.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+with open("F:/uptime/design-system/dist/index.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+print(f"SUCCESS: Generated Complete 44-Screen Modern Light Theme UPTIME Owner App ({len(html_code)} bytes)")

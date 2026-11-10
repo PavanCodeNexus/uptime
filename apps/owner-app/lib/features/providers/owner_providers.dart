@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/network/dio_client.dart';
 import '../models/owner_models.dart';
 
-// ── Theme Mode Provider (Dark / Light) ────────────────────────────────────
+// ── Theme Mode Provider (Clean White Default — Urban Company / Zomato Style) ──
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
-  ThemeMode build() => ThemeMode.dark; // Modern SaaS Dark Glass default
+  ThemeMode build() => ThemeMode.light; // Modern Clean White default
 
   void toggle() {
     state = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
@@ -15,6 +15,37 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 
 final themeModeProvider =
     NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+
+// ── Zomato / BigBasket Top Location Address State ─────────────────────────
+class SelectedLocation {
+  final String label;
+  final String addressLine;
+  final String areaCluster;
+  final String etaBadge;
+
+  const SelectedLocation({
+    required this.label,
+    required this.addressLine,
+    required this.areaCluster,
+    required this.etaBadge,
+  });
+}
+
+class SelectedLocationNotifier extends Notifier<SelectedLocation> {
+  @override
+  SelectedLocation build() => const SelectedLocation(
+        label: 'Peenya Factory Unit #4',
+        addressLine: 'Plot 42-B, Peenya Industrial Area Stage IV, Bengaluru 560058',
+        areaCluster: 'Peenya Industrial Cluster',
+        etaBadge: '12 mins SLA',
+      );
+
+  void selectLocation(SelectedLocation loc) => state = loc;
+}
+
+final selectedLocationProvider =
+    NotifierProvider<SelectedLocationNotifier, SelectedLocation>(
+        SelectedLocationNotifier.new);
 
 // ── Selected Industry State ───────────────────────────────────────────────
 class SelectedIndustryNotifier extends Notifier<String> {

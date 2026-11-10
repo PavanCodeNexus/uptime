@@ -1,11 +1,24 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uptime_owner_app/app.dart';
 import 'package:uptime_owner_app/core/utils/format_utils.dart';
 import 'package:uptime_owner_app/features/providers/owner_providers.dart';
+import 'package:uptime_owner_app/features/screens/owner_44_screens_catalog.dart';
 
 void main() {
   group('UPTIME Owner App Unit & Widget Tests', () {
+    test('Complete 44-Screen Owner App catalog has all 44 screens and Clean White default theme', () {
+      expect(kOwner44Screens.length, 44);
+      expect(kOwner44Screens.first.code, 'S01');
+      expect(kOwner44Screens.last.code, 'S44');
+
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      expect(container.read(themeModeProvider), ThemeMode.light);
+      expect(container.read(selectedLocationProvider).label, 'Peenya Factory Unit #4');
+    });
+
     test('Formats Indian Rupees (INR) with lakhs/thousands separators', () {
       expect(FormatUtils.formatInr(850), '₹850');
       expect(FormatUtils.formatInr(1240), '₹1,240');

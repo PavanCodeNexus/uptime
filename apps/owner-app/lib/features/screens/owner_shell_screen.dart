@@ -6,6 +6,7 @@ import '../../core/utils/format_utils.dart';
 import '../../shared/widgets/common_widgets.dart';
 import '../models/owner_models.dart';
 import '../providers/owner_providers.dart';
+import 'owner_44_screens_catalog.dart';
 
 class OwnerRootScreen extends ConsumerStatefulWidget {
   const OwnerRootScreen({super.key});
@@ -19,6 +20,7 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
   final _otpCtrl = TextEditingController(text: '123456');
   String _selectedIndustry = 'INDUSTRIAL';
   bool _otpSent = false;
+  bool _guestModeExploring = false;
   int _navIndex = 0;
 
   static const _navItems = [
@@ -40,14 +42,25 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(ownerAuthProvider);
-    final user = authState.valueOrNull;
+    final authUser = authState.valueOrNull;
 
-    if (user == null) {
+    if (authUser == null && !_guestModeExploring) {
       return _buildProLoginScreen(context, authState.isLoading);
     }
 
+    final user = authUser ??
+        const OwnerUser(
+          id: 0,
+          fullName: 'Guest Explorer (Tap to Sign In)',
+          phone: '9876543210',
+          email: 'guest@uptime.in',
+          industryPreference: 'INDUSTRIAL',
+          city: 'Peenya & Electronic City, Bengaluru',
+        );
+
     final selectedIndustry = ref.watch(selectedIndustryProvider);
     final selectedLang = ref.watch(selectedLanguageProvider);
+    final selectedLocation = ref.watch(selectedLocationProvider);
     final themeMode = ref.watch(themeModeProvider);
     final cartItems = ref.watch(cartProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -72,63 +85,88 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
 
         return Scaffold(
           appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(68),
+            preferredSize: const Size.fromHeight(72),
             child: Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0A1224) : UptimeTheme.blue900,
+                color: isDark ? const Color(0xFF0A1224) : Colors.white,
                 border: Border(
                   bottom: BorderSide(
-                    color: accent.withValues(alpha: 0.45),
-                    width: 1.5,
+                    color: isDark ? accent.withValues(alpha: 0.45) : const Color(0xFFE2E8F0),
+                    width: 1.2,
                   ),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SafeArea(
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [UptimeTheme.teal500, UptimeTheme.blue500],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        'U↑',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          color: UptimeTheme.dark,
-                          fontSize: 16,
+                    // Zomato / BigBasket Top Location Address Selector (Replaces Top Logo)
+                    Expanded(
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () => showZomatoLocationPickerSheet(context, ref),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE11D48).withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.location_on_rounded,
+                                  color: Color(0xFFE11D48),
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Flexible(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            selectedLocation.label,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: isDark ? Colors.white : UptimeTheme.dark,
+                                              fontSize: 14.5,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          Icons.keyboard_arrow_down_rounded,
+                                          size: 18,
+                                          color: isDark ? Colors.white70 : UptimeTheme.dark,
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      selectedLocation.addressLine,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: isDark ? Colors.white60 : UptimeTheme.gray500,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'U P T I M E',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2.2,
-                          ),
-                        ),
-                        Text(
-                          AppConfig.tagline,
-                          style: const TextStyle(
-                            color: UptimeTheme.teal500,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
                     if (isDesktop) ...[
                       IndustryChip(
                         industry: 'INDUSTRIAL',
@@ -147,8 +185,40 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
                         selected: selectedIndustry == 'ELECTRONICS',
                         onTap: () => ref.read(selectedIndustryProvider.notifier).select('ELECTRONICS'),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                     ],
+                    // All 44 Screens Directory Pill
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        minimumSize: const Size(0, 36),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const OwnerAll44ScreensBrowser(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.apps_rounded, size: 16),
+                      label: const Text('44 Screens', style: TextStyle(fontSize: 12)),
+                    ),
+                    const SizedBox(width: 6),
+                    // Notification Bell (Opens S43 Dedicated Notifications Center)
+                    IconButton(
+                      tooltip: 'Notifications & IoT Alerts (S43)',
+                      icon: Icon(
+                        Icons.notifications_active_outlined,
+                        color: isDark ? Colors.white : UptimeTheme.dark,
+                      ),
+                      onPressed: () {
+                        openOwnerDedicatedScreen(
+                          context,
+                          ref,
+                          kOwner44Screens[42], // S43 Notifications
+                        );
+                      },
+                    ),
                     // 9-Language Selector (PLT-07 / ELEC-U04)
                     PopupMenuButton<String>(
                       tooltip: 'Universal Language Switcher (9 Indian Languages)',
@@ -167,19 +237,21 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: isDark ? Colors.white.withValues(alpha: 0.1) : UptimeTheme.gray100,
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: Colors.white24),
+                          border: Border.all(
+                            color: isDark ? Colors.white24 : const Color(0xFFE2E8F0),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.translate_rounded, color: UptimeTheme.teal500, size: 15),
-                            const SizedBox(width: 6),
+                            const Icon(Icons.translate_rounded, color: UptimeTheme.teal600, size: 15),
+                            const SizedBox(width: 5),
                             Text(
                               selectedLang.split(' ').first,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: isDark ? Colors.white : UptimeTheme.dark,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -188,19 +260,15 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    // AI Chatbot Assistant Button (PLT-04)
-                    IconButton(
-                      tooltip: 'UPTIME Gemini AI Assistant',
-                      icon: const Icon(Icons.smart_toy_outlined, color: UptimeTheme.teal500),
-                      onPressed: () => _openAiAssistantSheet(context),
-                    ),
                     // Shopping Cart Button
                     Stack(
                       children: [
                         IconButton(
                           tooltip: 'Spare Parts Cart',
-                          icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                          icon: Icon(
+                            Icons.shopping_bag_outlined,
+                            color: isDark ? Colors.white : UptimeTheme.dark,
+                          ),
                           onPressed: () => setState(() => _navIndex = 4),
                         ),
                         if (cartItems.isNotEmpty)
@@ -227,20 +295,20 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
                     ),
                     // Dark / Light Mode Toggle
                     IconButton(
-                      tooltip: 'Switch Dark / Light Theme',
+                      tooltip: 'Switch Clean White / Dark Theme',
                       icon: Icon(
                         themeMode == ThemeMode.dark
                             ? Icons.light_mode_outlined
                             : Icons.dark_mode_outlined,
-                        color: Colors.amberAccent,
+                        color: isDark ? Colors.amberAccent : UptimeTheme.dark,
                       ),
                       onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
                     ),
                     const SizedBox(width: 4),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: UptimeTheme.teal500,
-                        foregroundColor: UptimeTheme.dark,
+                        backgroundColor: UptimeTheme.blue700,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       ),
                       onPressed: () => _openFaultTriageStudio(context),
@@ -449,53 +517,27 @@ class _OwnerRootScreenState extends ConsumerState<OwnerRootScreen> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [UptimeTheme.teal500, UptimeTheme.blue500],
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Text(
-                                    'U↑',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w900,
-                                      color: UptimeTheme.dark,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                const Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'U P T I M E',
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 2.5,
-                                        ),
-                                      ),
-                                      Text(
-                                        AppConfig.tagline,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                          color: UptimeTheme.teal500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            UptimeExactSplashLockup(
+                              onExploreApp: () => setState(() => _guestModeExploring = true),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 10),
+                            Center(
+                              child: Text(
+                                AppConfig.tagline,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: UptimeTheme.teal600,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: () => setState(() => _guestModeExploring = true),
+                              icon: const Icon(Icons.explore_outlined, size: 18),
+                              label: const Text('Explore All 44 Screens as Guest →'),
+                            ),
+                            const SizedBox(height: 14),
                             const Text(
                               'Owner Command Sign In (India-First OTP)',
                               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
