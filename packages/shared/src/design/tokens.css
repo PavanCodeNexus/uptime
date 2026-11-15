@@ -1,0 +1,119 @@
+/*
+ * UPTIME design tokens, from docs/DESIGN.md section 3 (colors) and 4 (typography).
+ * Light is the default. Dark follows the system setting, and an explicit choice
+ * (data-theme="light" or "dark" on <html>) always wins.
+ * Components use these tokens through the Tailwind preset, never raw hex values.
+ */
+:root {
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-2: #F1F5F9;
+  --line: #E2E8F0;
+  --line-strong: #CBD5E1;
+  --fg: #0F172A;
+  --fg-2: #334155;
+  --fg-muted: #64748B;
+
+  --brand: #1A3C6E;
+  --brand-ink: #1A3C6E;
+  --brand-soft: #DBEAFE;
+  --on-brand: #FFFFFF;
+
+  --accent: #00D4AA;
+  --accent-ink: #00705B;
+  --accent-soft: #CCFBF1;
+  --on-accent: #04261F;
+
+  --success: #15803D;
+  --success-fill: #16A34A;
+  --success-soft: #DCFCE7;
+  --warning: #B45309;
+  --warning-fill: #D97706;
+  --warning-soft: #FEF3C7;
+  --danger: #B91C1C;
+  --danger-fill: #DC2626;
+  --danger-soft: #FEE2E2;
+  --info: #1D4ED8;
+  --info-soft: #DBEAFE;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1220;
+    --surface: #131D31;
+    --surface-2: #1A2540;
+    --line: #25324D;
+    --line-strong: #34456A;
+    --fg: #F1F5F9;
+    --fg-2: #CBD5E1;
+    --fg-muted: #94A3B8;
+    --brand-ink: #8DB4F0;
+    --brand-soft: #172B4D;
+    --accent-ink: #2EE6C1;
+    --accent-soft: #0C3B38;
+    --success: #4ADE80;
+    --success-soft: #12351F;
+    --warning: #FBBF24;
+    --warning-soft: #3B2A0A;
+    --danger: #F87171;
+    --danger-soft: #3F1616;
+    --info: #7FB0FF;
+    --info-soft: #172B4D;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0B1220;
+  --surface: #131D31;
+  --surface-2: #1A2540;
+  --line: #25324D;
+  --line-strong: #34456A;
+  --fg: #F1F5F9;
+  --fg-2: #CBD5E1;
+  --fg-muted: #94A3B8;
+  --brand-ink: #8DB4F0;
+  --brand-soft: #172B4D;
+  --accent-ink: #2EE6C1;
+  --accent-soft: #0C3B38;
+  --success: #4ADE80;
+  --success-soft: #12351F;
+  --warning: #FBBF24;
+  --warning-soft: #3B2A0A;
+  --danger: #F87171;
+  --danger-soft: #3F1616;
+  --info: #7FB0FF;
+  --info-soft: #172B4D;
+  color-scheme: dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible keyboard focus everywhere (docs/DESIGN.md section 10). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
