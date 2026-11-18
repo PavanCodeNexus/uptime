@@ -54,8 +54,10 @@ Phase 0 setup (done), 1 sign-in (done), 2 owner reports a fault, 3 technician KY
 9. Admin cannot list all technicians or disputes. List endpoints have no paging.
 10. OTPs and refresh tokens live in server memory; the dev database resets on restart.
 
-## Contract details to confirm with `npm run check:backend`
+## Contract details (confirmed on 2026-11-15 with `npm run check:backend`, all passed)
 
-1. New-user flag in the login reply: `newUser` (expected, Lombok + Jackson) or `isNewUser`. The code accepts both.
-2. Status for a bad or expired token: 401 or empty 403. The client refreshes on both.
-3. Exact job and AI field names. Types in `packages/shared/src/types/models.ts` were written from the Java source.
+1. New-user flag in the login reply is `newUser`.
+2. A bad, missing or expired token gets an empty HTTP 403 (not 401). The http client refreshes on an empty 403, so this is handled.
+3. A refresh token works once; the second use gets 401.
+4. Job and AI field names match `packages/shared/src/types/models.ts`. A new job starts as `CREATED`. The create-job reply has `job` and `arrivalOtpPlaintextForOwner`.
+5. CORS allows ports 3000, 3001 and 3002.

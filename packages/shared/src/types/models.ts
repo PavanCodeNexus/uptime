@@ -142,8 +142,9 @@ export interface CreateJobRequest {
   problemCategory?: string;
   urgency?: string;
   resolutionPath?: ResolutionPath;
-  ownerLat: number;
-  ownerLng: number;
+  /** Leave both out when the owner did not share a location; the backend then uses a default point. */
+  ownerLat?: number;
+  ownerLng?: number;
   ownerAddress?: string;
   ownerCity?: string;
   estimatedCostMin?: number;
@@ -242,8 +243,11 @@ export interface CopilotStep {
   title: string;
   instruction: string;
   safetyWarning: string;
+  toolNeeded?: string;
+  expectedResult?: string;
   canResolveNow: boolean;
   suggestEscalationToVideo: boolean;
+  fallbackUsed?: boolean;
 }
 
 /** WebSocket payload on /topic/job/{id}/location and the REST fallback GET /tracking/{id}. */

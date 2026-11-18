@@ -1,4 +1,4 @@
-# UPTIME frontend: setup and running (Phases 0 and 1)
+# UPTIME frontend: setup and running (Phases 0, 1 and 2)
 
 Phase 0 gives you three web apps that start, look right, and prove they can talk to your backend.
 They show one "Backend connection" screen each. The real screens start in Phase 1.
@@ -49,7 +49,7 @@ The backend's dev database is in memory, so it starts empty and forgets everythi
 | Command | What it tells you |
 |---------|-------------------|
 | `npm run check:backend` | **Run this once with the backend running and paste the output to Claude.** It confirms three details that can only be seen by running the code. |
-| `npm test` | 37 small tests of the shared code (formatting, error messages, token refresh, sign-in logic). |
+| `npm test` | 44 small tests of the shared code (formatting, error messages, token refresh, sign-in logic). |
 | `npm run typecheck` | TypeScript checks all four packages for mistakes. |
 | `npm run build` | Builds all three apps the way a deployment would. |
 
@@ -90,3 +90,15 @@ These are the backend's dev-only defaults. Reload the page: owner and technician
 
 A teammate added `src/types/AllTypes.ts`, `api.types.ts`, `constants/apiRoutes.ts` and `utils/formatters.ts`. They are untouched and sit
 next to the web-app code. `src/index.ts` re-exports only the names that do not clash with the web-app types.
+
+## Phase 2: owner reports a fault (what to try)
+
+Sign in to the owner app (http://localhost:3000), then:
+
+1. **Report a fault**: pick an industry, type the equipment and the problem (at least 10 letters), choose urgency, type your city (or press "Use my location").
+2. Press **Get AI first look**. The dev backend returns a fixed sample, so you will see a "Sample data" badge.
+3. Choose **Book a technician** or **Fix it with AI Copilot**, then press the main button. You land on the job page.
+4. On the job page you see the progress line, details, cost estimate and your **arrival code** (saved on this device only).
+   - Copilot jobs show step-by-step cards and a "Book a technician" button.
+   - Technician jobs show how many verified technicians match. The list stays empty until a technician is verified (Phase 3).
+5. **My jobs** lists everything you reported.
