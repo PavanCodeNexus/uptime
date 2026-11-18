@@ -61,3 +61,8 @@ Phase 0 setup (done), 1 sign-in (done), 2 owner reports a fault, 3 technician KY
 3. A refresh token works once; the second use gets 401.
 4. Job and AI field names match `packages/shared/src/types/models.ts`. A new job starts as `CREATED`. The create-job reply has `job` and `arrivalOtpPlaintextForOwner`.
 5. CORS allows ports 3000, 3001 and 3002.
+
+## Phase 3 notes
+- Technicians reach level 2 by admin action (document review, then "Set level"). DigiLocker, selfie, skill test, video proof and references are deferred to Phase 6.
+- The admin finds a technician by number because the backend has no list-all endpoint.
+- Uploaded files are sent as base64 but the backend does not keep them; the admin sees number and issuer only.

@@ -1,7 +1,11 @@
-import { AdminLoginPage, BackendStatusPage, RequireAuth, SignedInHome } from '@uptime/shared';
+import { AdminLoginPage, BackendStatusPage, RequireAuth } from '@uptime/shared';
 import { Link, Route, Routes } from 'react-router-dom';
 import { http } from './lib/api';
 import { env } from './lib/env';
+import { AdminLayout } from './components/AdminLayout';
+import KycQueuePage from './pages/KycQueuePage';
+import OverviewPage from './pages/OverviewPage';
+import TechniciansPage from './pages/TechniciansPage';
 
 function NotFound() {
   return (
@@ -20,13 +24,16 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<AdminLoginPage showDevHint={env.isDev} />} />
       <Route
-        path="/"
         element={
           <RequireAuth>
-            <SignedInHome appName="Admin app" nextUp="Next up, Phase 3: review technician documents." />
+            <AdminLayout />
           </RequireAuth>
         }
-      />
+      >
+        <Route path="/" element={<OverviewPage />} />
+        <Route path="/kyc" element={<KycQueuePage />} />
+        <Route path="/technicians" element={<TechniciansPage />} />
+      </Route>
       <Route
         path="/status"
         element={
