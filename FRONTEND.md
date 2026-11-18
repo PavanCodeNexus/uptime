@@ -49,7 +49,7 @@ The backend's dev database is in memory, so it starts empty and forgets everythi
 | Command | What it tells you |
 |---------|-------------------|
 | `npm run check:backend` | **Run this once with the backend running and paste the output to Claude.** It confirms three details that can only be seen by running the code. |
-| `npm test` | 44 small tests of the shared code (formatting, error messages, token refresh, sign-in logic). |
+| `npm test` | 49 small tests of the shared code (formatting, error messages, token refresh, sign-in logic). |
 | `npm run typecheck` | TypeScript checks all four packages for mistakes. |
 | `npm run build` | Builds all three apps the way a deployment would. |
 
@@ -102,3 +102,19 @@ Sign in to the owner app (http://localhost:3000), then:
    - Copilot jobs show step-by-step cards and a "Book a technician" button.
    - Technician jobs show how many verified technicians match. The list stays empty until a technician is verified (Phase 3).
 5. **My jobs** lists everything you reported.
+
+## Phase 3: technician sign-up and admin review (what to try)
+
+You need the backend running, plus `npm run dev:tech` and `npm run dev:admin` in two more terminals.
+
+1. Open http://localhost:3001. Sign in with a new phone number (OTP `123456`), choose a name. You land on Home.
+2. Open **Verification**. You are level 0. Upload a document (pick "ITI / NCVT certificate"; a file is optional in dev). Note: for Aadhaar type only the last 4 digits.
+3. Open **Profile and skills**. Save a short bio and add a skill (for example Automobile, "Engine diagnostics").
+4. On Home press **Use my location** and allow the browser prompt, then **Go online**. A yellow note says you need level 2.
+5. Open http://localhost:3002 and sign in: `admin@uptime.in`, `UptimeAdmin@2026`, code `123456`.
+6. **Document review**: you see the document with "Technician #N". Press **Approve**.
+7. **Set level**: type that number N, press Find, choose Level 2 and status verified, Save.
+8. Back in the technician app, wait about 20 seconds or reload Verification. It now says level 2 and the yellow note on Home disappears.
+9. Report a fault in the owner app (port 3000). On the job page the match panel should now count your technician.
+
+Not in this phase: face check, trade skill test, references (Phase 6). The backend does not store uploaded files, so the admin cannot preview them yet.

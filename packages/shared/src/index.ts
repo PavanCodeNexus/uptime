@@ -10,6 +10,7 @@ export * from './lib/format';
 export * from './api/health';
 export * from './api/auth';
 export * from './api/jobs';
+export * from './api/technicians';
 export * from './lib/arrivalCode';
 export * from './auth/session';
 export * from './auth/AuthProvider';
