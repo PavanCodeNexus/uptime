@@ -17,6 +17,12 @@ export function TechLayout() {
             <NavLink to="/" end className={link}>
               Home
             </NavLink>
+            <NavLink to="/jobs" className={link}>
+              My jobs
+            </NavLink>
+            <NavLink to="/earnings" className={link}>
+              Earnings
+            </NavLink>
             <NavLink to="/profile" className={link}>
               Profile and skills
             </NavLink>

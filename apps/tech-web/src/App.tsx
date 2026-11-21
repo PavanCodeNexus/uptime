@@ -3,7 +3,10 @@ import { Link, Route, Routes } from 'react-router-dom';
 import { TechLayout } from './components/TechLayout';
 import { http } from './lib/api';
 import { env } from './lib/env';
+import EarningsPage from './pages/EarningsPage';
 import HomePage from './pages/HomePage';
+import JobsPage from './pages/JobsPage';
+import JobWorkPage from './pages/JobWorkPage';
 import ProfilePage from './pages/ProfilePage';
 import VerificationPage from './pages/VerificationPage';
 
@@ -34,6 +37,9 @@ export default function App() {
         }
       >
         <Route path="/" element={<HomePage />} />
+        <Route path="/jobs" element={<JobsPage />} />
+        <Route path="/jobs/:id" element={<JobWorkPage />} />
+        <Route path="/earnings" element={<EarningsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/verification" element={<VerificationPage />} />
       </Route>

@@ -49,7 +49,7 @@ The backend's dev database is in memory, so it starts empty and forgets everythi
 | Command | What it tells you |
 |---------|-------------------|
 | `npm run check:backend` | **Run this once with the backend running and paste the output to Claude.** It confirms three details that can only be seen by running the code. |
-| `npm test` | 49 small tests of the shared code (formatting, error messages, token refresh, sign-in logic). |
+| `npm test` | 53 small tests of the shared code (formatting, error messages, token refresh, sign-in logic). |
 | `npm run typecheck` | TypeScript checks all four packages for mistakes. |
 | `npm run build` | Builds all three apps the way a deployment would. |
 
@@ -118,3 +118,18 @@ You need the backend running, plus `npm run dev:tech` and `npm run dev:admin` in
 9. Report a fault in the owner app (port 3000). On the job page the match panel should now count your technician.
 
 Not in this phase: face check, trade skill test, references (Phase 6). The backend does not store uploaded files, so the admin cannot preview them yet.
+
+## Phases 4 to 7: the whole job, pay, rate, go live
+
+Run backend, `npm run dev:owner`, `npm run dev:tech`, `npm run dev:admin`. Use the technician and admin you set up in Phase 3 (level 2).
+
+1. Owner (3000): sign in, report a fault with "Book a technician". Note the job number (e.g. JOB number shown, or the id in the address bar `/jobs/1`).
+2. Technician (3001): **My jobs** > type the job id > Find job > Accept this job.
+3. Press **I am on my way**. Allow location. In the owner page a location card appears (sample point until the technician's phone sends one).
+4. Technician: **I have arrived**. Then enter the owner's 6-digit arrival code (shown on the owner's job page). Press **Verify and start**.
+   On your own computer you are not within 500 m of the job, so use the **Test mode** button, which uses the job's own location.
+5. Technician: add a part (optional), enter labour charge and a note, **Mark job complete**.
+6. Owner: the job shows **Payment**. Press Pay (test mode), then rate the technician. Technician rates the owner.
+7. Technician **Earnings** shows the totals.
+
+Live deployment steps are in `docs/GO_LIVE.md`.
