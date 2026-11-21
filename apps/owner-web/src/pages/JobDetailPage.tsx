@@ -10,6 +10,7 @@ import {
   matchingApi,
   Notice,
   SampleBadge,
+  TrackingCard,
   spacedCode,
   StatusBadge,
   StatusTracker,
@@ -19,7 +20,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { PayCard, RateCard } from '../components/PayAndRate';
 import { http } from '../lib/api';
+import { env } from '../lib/env';
 
 const FINISHED = ['COMPLETED', 'CANCELLED'];
 
@@ -211,9 +214,14 @@ export default function JobDetailPage() {
           {job.technicianId && (
             <section className="rounded-xl border border-line bg-surface p-5">
               <h2 className="text-base font-semibold">Your technician</h2>
-              <p className="mt-1 text-sm text-fg-2">Technician #{job.technicianId} is assigned to this job. Live tracking arrives in the next phase.</p>
+              <p className="mt-1 text-sm text-fg-2">Technician #{job.technicianId} is assigned to this job.</p>
             </section>
           )}
+          {['EN_ROUTE', 'ARRIVED'].includes(status) && (
+            <TrackingCard http={http} jobId={job.id} destLat={job.ownerLat} destLng={job.ownerLng} mapsKey={env.googleMapsKey} active />
+          )}
+          {status === 'COMPLETED' && <PayCard job={job} />}
+          {status === 'COMPLETED' && <RateCard jobId={job.id} />}
           <section className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-5" aria-labelledby="det-h">
             <h2 id="det-h" className="text-base font-semibold">
               Details

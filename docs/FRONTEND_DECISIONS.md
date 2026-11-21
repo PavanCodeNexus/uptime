@@ -66,3 +66,11 @@ Phase 0 setup (done), 1 sign-in (done), 2 owner reports a fault, 3 technician KY
 - Technicians reach level 2 by admin action (document review, then "Set level"). DigiLocker, selfie, skill test, video proof and references are deferred to Phase 6.
 - The admin finds a technician by number because the backend has no list-all endpoint.
 - Uploaded files are sent as base64 but the backend does not keep them; the admin sees number and issuer only.
+
+## Phases 4 to 7 notes
+- Technician finds a job by number (backend has no open-jobs list). Accepting needs level 2.
+- Live tracking: the technician page sends STOMP frames to `/app/job/{id}/location` over the raw WebSocket at `/ws/websocket`;
+  the owner polls `GET /tracking/{id}` every 4 s. Without a Google Maps key a plain location card with a Google Maps link is shown.
+- Payment runs in Razorpay test mode: create-order then verify with the backend's test values. The real checkout needs live keys.
+- Invoice amount and blind rating results come from backend stubs; the screens say so.
+- Deployment: `docs/GO_LIVE.md` (Render + Vercel). `vercel.json` in each app.
