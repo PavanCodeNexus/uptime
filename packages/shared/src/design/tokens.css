@@ -118,3 +118,62 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Figma Design System utility primitives */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.shadow-xs {
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+}
+
+@keyframes uptime-pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.55;
+  }
+}
+.pulse-live {
+  animation: uptime-pulse-dot 1.8s infinite ease-in-out;
+}
+
+@keyframes uptime-watermark-drift {
+  0% { opacity: 0.14; }
+  50% { opacity: 0.22; }
+  100% { opacity: 0.14; }
+}
+.kyc-watermark {
+  animation: uptime-watermark-drift 4s infinite ease-in-out;
+}
+
+/* Admin NOC 24/7 Wall Dark Mode overrides */
+.theme-dark .console-shell {
+  background-color: #0B1120 !important;
+  border-color: #1E293B !important;
+  color: #F8FAFC !important;
+}
+.theme-dark .console-canvas {
+  background-color: #070C18 !important;
+  color: #F8FAFC !important;
+}
+.theme-dark .console-card {
+  background-color: #111827 !important;
+  border-color: #1E293B !important;
+  color: #F8FAFC !important;
+}
+.theme-dark .text-slate-900 { color: #F8FAFC !important; }
+.theme-dark .text-slate-800 { color: #F1F5F9 !important; }
+.theme-dark .text-slate-700 { color: #CBD5E1 !important; }
+.theme-dark .text-slate-600 { color: #94A3B8 !important; }
+.theme-dark .bg-slate-50 { background-color: #0F172A !important; }
+.theme-dark .bg-slate-100 { background-color: #1E293B !important; }
+.theme-dark .border-slate-200,
+.theme-dark .border-slate-100 { border-color: #1E293B !important; }

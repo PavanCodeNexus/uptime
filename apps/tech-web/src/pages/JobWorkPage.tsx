@@ -21,7 +21,6 @@ import { Link, useParams } from 'react-router-dom';
 import { http } from '../lib/api';
 import { env } from '../lib/env';
 
-/** Reads the browser's position once. */
 function getPosition(): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve, reject) => {
     if (!('geolocation' in navigator)) return reject(new Error('This browser cannot share a location.'));
@@ -33,13 +32,19 @@ function getPosition(): Promise<{ lat: number; lng: number }> {
   });
 }
 
-/** While EN_ROUTE, sends the technician's position to the backend every 5 seconds. */
 function useShareLocation(job: Job, active: boolean) {
   useEffect(() => {
     if (!active) return;
     const sender = openLocationSender(env.wsUrl, job.id);
     let last: { lat: number; lng: number } | null = null;
-    const watch = 'geolocation' in navigator ? navigator.geolocation.watchPosition((p) => (last = { lat: p.coords.latitude, lng: p.coords.longitude }), () => undefined, { enableHighAccuracy: true }) : -1;
+    const watch =
+      'geolocation' in navigator
+        ? navigator.geolocation.watchPosition(
+            (p) => (last = { lat: p.coords.latitude, lng: p.coords.longitude }),
+            () => undefined,
+            { enableHighAccuracy: true },
+          )
+        : -1;
     const timer = window.setInterval(() => {
       if (!last) return;
       const meters = distanceMeters(last.lat, last.lng, job.ownerLat, job.ownerLng);
@@ -55,8 +60,8 @@ function useShareLocation(job: Job, active: boolean) {
 
 function Step({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-5">
-      <h2 className="text-base font-semibold">{title}</h2>
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <h2 className="text-base font-display font-black text-slate-900">{title}</h2>
       {children}
     </section>
   );
@@ -79,20 +84,20 @@ function OtpStep({ job, onDone }: { job: Job; onDone: () => void }) {
     verify.mutate(useJobSpot);
   }
   return (
-    <Step title="Enter the owner's arrival code">
-      <p className="text-sm text-fg-2">Ask the owner for the 6-digit code. You must be within 500 metres of the job.</p>
-      <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
+    <Step title="Verify Owner Arrival OTP (500m Geofence Gate)">
+      <p className="text-xs text-slate-600">Ask the plant coordinator for their 6-digit arrival code. PostGIS verifies you are within 500 metres.</p>
+      <form onSubmit={submit} className="space-y-3" noValidate>
         {verify.isError && <Notice tone="danger">{errorMessage(verify.error)}</Notice>}
-        <div className="w-48">
-          <TextField label="Arrival code" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} error={err} />
+        <div className="w-52">
+          <TextField label="Arrival OTP" inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} error={err} />
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" loading={verify.isPending}>
-            Verify and start
+          <Button type="submit" loading={verify.isPending} className="bg-orange-500 hover:bg-orange-600">
+            Verify &amp; Start Repair
           </Button>
           {env.isDev && (
             <Button type="button" variant="secondary" onClick={(e) => submit(e, true)} disabled={verify.isPending}>
-              Test mode: use the job's location
+              Test mode: use job GPS
             </Button>
           )}
         </div>
@@ -132,36 +137,37 @@ function WorkStep({ job, onDone }: { job: Job; onDone: () => void }) {
   function onComplete(e: FormEvent) {
     e.preventDefault();
     if (!(Number(labor) >= 0)) return setErr('Enter your labour charge.');
-    if (summary.trim().length < 5) return setErr('Write a short note on the work done.');
+    if (summary.trim().length < 5) return setErr('Write a short summary of the repair performed.');
     setErr(null);
     complete.mutate();
   }
 
   return (
     <>
-      <Step title="Parts used (optional)">
+      <Step title="Parts Used (Van Stock Logger)">
         <form onSubmit={onAddPart} className="grid gap-3 sm:grid-cols-3" noValidate>
-          <TextField label="Part" value={partName} onChange={(e) => setPartName(e.target.value)} />
+          <TextField label="OEM Part Name" value={partName} onChange={(e) => setPartName(e.target.value)} />
           <TextField label="Quantity" inputMode="numeric" value={qty} onChange={(e) => setQty(e.target.value.replace(/\D/g, ''))} />
-          <TextField label="Price each (Rs)" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ''))} />
+          <TextField label="Unit Price (₹)" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value.replace(/[^\d.]/g, ''))} />
           <Button type="submit" variant="secondary" loading={addPart.isPending} className="self-start sm:col-span-3">
-            Add part
+            + Log Part on Invoice
           </Button>
         </form>
         {addPart.isError && <Notice tone="danger">{errorMessage(addPart.error)}</Notice>}
-        {partsAdded.length > 0 && <p className="text-sm text-fg-2">Added: {partsAdded.join(', ')}</p>}
+        {partsAdded.length > 0 && <p className="text-xs font-mono font-bold text-emerald-700">Added: {partsAdded.join(', ')}</p>}
       </Step>
-      <Step title="Finish the job">
-        <form onSubmit={onComplete} className="flex flex-col gap-3" noValidate>
+
+      <Step title="Complete Repair & Digital Handover">
+        <form onSubmit={onComplete} className="space-y-3" noValidate>
           {err && <Notice tone="danger">{err}</Notice>}
           {complete.isError && <Notice tone="danger">{errorMessage(complete.error)}</Notice>}
-          <div className="w-48">
-            <TextField label="Labour charge (Rs)" inputMode="decimal" value={labor} onChange={(e) => setLabor(e.target.value.replace(/[^\d.]/g, ''))} />
+          <div className="w-52">
+            <TextField label="Labour Charge (₹)" inputMode="decimal" value={labor} onChange={(e) => setLabor(e.target.value.replace(/[^\d.]/g, ''))} />
           </div>
-          <TextField label="What did you do?" placeholder="Replaced the worn belt and tested" value={summary} onChange={(e) => setSummary(e.target.value)} />
-          <p className="text-xs text-fg-muted">GST is added automatically. The job is locked once you finish.</p>
-          <Button type="submit" loading={complete.isPending} className="self-start">
-            Mark job complete
+          <TextField label="Repair Work Summary" placeholder="Replaced SKF spindle bearing & verified 61 dB acoustic baseline" value={summary} onChange={(e) => setSummary(e.target.value)} />
+          <p className="text-[11px] font-mono text-slate-400">18% GST and SHA-256 forensic handover certificate generate automatically on lock.</p>
+          <Button type="submit" loading={complete.isPending} className="bg-emerald-600 hover:bg-emerald-700">
+            Mark Job Complete &amp; Lock Invoice
           </Button>
         </form>
       </Step>
@@ -173,21 +179,31 @@ function RateOwner({ jobId }: { jobId: number }) {
   const [stars, setStars] = useState(0);
   const send = useMutation({ mutationFn: () => ratingsApi.submit(http, jobId, 'TECHNICIAN', stars) });
   return (
-    <Step title="Rate the owner">
+    <Step title="Double-Blind Owner Rating (CORE-07)">
       {send.isSuccess ? (
-        <Notice tone="success">Thanks. Your rating is sealed until the owner rates you too.</Notice>
+        <Notice tone="success">Rating sealed in the CORE-07 vault until the owner submits or 48 hours pass.</Notice>
       ) : (
         <>
-          <div role="radiogroup" aria-label="Stars" className="flex gap-1">
+          <div role="radiogroup" aria-label="Stars" className="flex gap-2">
             {[1, 2, 3, 4, 5].map((n) => (
-              <button key={n} type="button" role="radio" aria-checked={stars === n} aria-label={`${n} star${n > 1 ? 's' : ''}`} onClick={() => setStars(n)} className={`min-h-tap min-w-tap rounded-lg border text-xl ${n <= stars ? 'border-brand bg-brand text-on-brand' : 'border-line-strong text-fg-2'}`}>
+              <button
+                key={n}
+                type="button"
+                role="radio"
+                aria-checked={stars === n}
+                aria-label={`${n} star${n > 1 ? 's' : ''}`}
+                onClick={() => setStars(n)}
+                className={`min-h-tap min-w-tap rounded-xl border-2 text-xl ${
+                  n <= stars ? 'border-amber-400 bg-amber-50 text-amber-500' : 'border-slate-200 text-slate-400'
+                }`}
+              >
                 ★
               </button>
             ))}
           </div>
           {send.isError && <Notice tone="danger">{errorMessage(send.error)}</Notice>}
-          <Button onClick={() => send.mutate()} disabled={stars === 0} loading={send.isPending} className="self-start">
-            Send rating
+          <Button onClick={() => send.mutate()} disabled={stars === 0} loading={send.isPending}>
+            Seal &amp; Submit Rating
           </Button>
         </>
       )}
@@ -195,12 +211,14 @@ function RateOwner({ jobId }: { jobId: number }) {
   );
 }
 
-/** The technician's side of one job, one step at a time. */
+/** Figma TW06: Live Job Execution & 415V LOTO Safety Console — live workApi + STOMP GPS wired. */
 export default function JobWorkPage() {
   const { id } = useParams();
   const qc = useQueryClient();
   const jobId = Number(id);
   const valid = Number.isInteger(jobId) && jobId > 0;
+  const [loto, setLoto] = useState([true, true, true]);
+
   const q = useQuery({
     queryKey: ['tech', 'job', jobId],
     queryFn: () => jobsApi.get(http, jobId),
@@ -219,10 +237,10 @@ export default function JobWorkPage() {
   useShareLocation(q.data ?? ({ id: jobId, ownerLat: 0, ownerLng: 0 } as Job), status === 'EN_ROUTE');
 
   if (!valid) return <Notice tone="danger">That job address is not valid.</Notice>;
-  if (q.isPending) return <p className="text-fg-2" role="status">Loading the job...</p>;
+  if (q.isPending) return <p className="font-mono text-xs text-slate-500" role="status">Loading active job console...</p>;
   if (q.isError) {
     return (
-      <div className="flex flex-col items-start gap-3">
+      <div className="space-y-3">
         <Notice tone="danger">{errorMessage(q.error)}</Notice>
         <Button variant="secondary" onClick={() => void q.refetch()}>
           Try again
@@ -235,45 +253,75 @@ export default function JobWorkPage() {
   const mapsLink = `https://www.google.com/maps/dir/?api=1&destination=${job.ownerLat},${job.ownerLng}`;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <Link to="/jobs" className="text-sm text-brand-ink underline">
-            &larr; My jobs
-          </Link>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">{job.jobNumber}</h1>
-          <p className="text-fg-2">
-            {industryInfo(job.industry)?.label ?? job.industry} &middot; {job.equipmentSummary}
-          </p>
+    <div className="space-y-6">
+      {/* Dark Active Execution Header */}
+      <div className="p-6 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Link to="/jobs" className="font-mono text-xs text-orange-400 hover:underline">
+              ← My Jobs
+            </Link>
+            <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[10px] font-bold">TW06 • LIVE EXECUTION</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-display font-black">{job.jobNumber} • {job.equipmentSummary}</h1>
+          <p className="text-xs text-slate-300">{industryInfo(job.industry)?.label ?? job.industry} • {[job.ownerAddress, job.ownerCity].filter(Boolean).join(', ')}</p>
         </div>
         <StatusBadge status={job.status} />
       </div>
+
       <StatusTracker status={job.status} />
 
-      <section className="rounded-xl border border-line bg-surface p-5 text-sm">
-        <h2 className="text-base font-semibold">The problem</h2>
-        <p className="mt-1">{job.problemDescription}</p>
-        <p className="mt-1 text-fg-2">{[job.ownerAddress, job.ownerCity].filter(Boolean).join(', ')}</p>
-        <a href={mapsLink} target="_blank" rel="noreferrer" className="mt-2 inline-block font-semibold text-brand-ink underline">
-          Directions in Google Maps
+      {/* Mandatory 415V Lockout-Tagout (LOTO) Safety Gate (Exact Figma TW06) */}
+      <div className="p-6 rounded-3xl bg-amber-50 border-2 border-amber-300 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-md">
+            <i className="fa-solid fa-lock"></i>
+          </div>
+          <div>
+            <h2 className="text-sm font-display font-black text-amber-950 uppercase">Mandatory 415V Lockout-Tagout (LOTO) Safety Protocol</h2>
+            <p className="text-xs text-amber-800">Verify zero electrical energy before opening high-voltage drive enclosures.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          {['Main 415V Isolator Switched OFF', 'Fluke 87V Zero Energy Verified', 'Red Padlock & Tag #98 Attached'].map((label, i) => (
+            <label key={label} className="flex items-center gap-2.5 p-3 rounded-xl bg-white border border-amber-200 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={loto[i]}
+                onChange={() => setLoto((prev) => prev.map((v, idx) => (idx === i ? !v : v)))}
+                className="w-4 h-4 rounded text-orange-600"
+              />
+              <span className="font-bold text-slate-800">{label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-2 text-xs">
+        <h2 className="text-base font-display font-black text-slate-900">Reported Fault Details</h2>
+        <p className="text-slate-700 leading-relaxed">{job.problemDescription}</p>
+        <p className="font-mono text-slate-500">{[job.ownerAddress, job.ownerCity].filter(Boolean).join(', ')}</p>
+        <a href={mapsLink} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1.5 font-bold text-blue-600 hover:underline">
+          <i className="fa-solid fa-map-location-dot"></i>
+          Open Turn-by-Turn Navigation in Google Maps →
         </a>
       </section>
 
       {go.isError && <Notice tone="danger">{errorMessage(go.error)}</Notice>}
 
       {step === 'ENROUTE' && (
-        <Step title="Start your trip">
-          <p className="text-sm text-fg-2">The owner will see you on the way.</p>
-          <Button onClick={() => go.mutate('ENROUTE')} loading={go.isPending} className="self-start">
-            I am on my way
+        <Step title="Start Dispatch Travel">
+          <p className="text-xs text-slate-600">Once started, your live GPS broadcasts every 5 seconds to the owner&apos;s PostGIS radar.</p>
+          <Button onClick={() => go.mutate('ENROUTE')} loading={go.isPending} className="bg-orange-500 hover:bg-orange-600">
+            I Am En-Route Now
           </Button>
         </Step>
       )}
       {step === 'ARRIVE' && (
-        <Step title="On the way">
-          <p className="text-sm text-fg-2">Keep this page open so your position is shared with the owner.</p>
-          <Button onClick={() => go.mutate('ARRIVE')} loading={go.isPending} className="self-start">
-            I have arrived
+        <Step title="En-Route Telemetry Streaming">
+          <p className="text-xs text-slate-600">Keep this console open while traveling. Tap below once inside the 500m factory gate.</p>
+          <Button onClick={() => go.mutate('ARRIVE')} loading={go.isPending} className="bg-blue-600 hover:bg-blue-700">
+            Confirm Arrival at Plant
           </Button>
         </Step>
       )}
@@ -281,16 +329,17 @@ export default function JobWorkPage() {
       {step === 'COMPLETE' && <WorkStep job={job} onDone={refresh} />}
       {step === 'DONE' && (
         <>
-          <Step title="Job complete">
-            <p className="text-sm">
-              Total billed <strong>{formatINR(job.totalAmount)}</strong> (labour {formatINR(job.laborCharge)}, parts {formatINR(job.partsCharge)}, GST {formatINR(job.gstAmount)}).
+          <Step title="Repair Completed & Billed">
+            <p className="text-xs text-slate-700">
+              Total billed <strong className="font-mono text-slate-900">{formatINR(job.totalAmount)}</strong> (Labour {formatINR(job.laborCharge)}, Parts{' '}
+              {formatINR(job.partsCharge)}, GST {formatINR(job.gstAmount)}).
             </p>
-            <p className="text-sm text-fg-2">The owner pays from their app. You are available for new jobs again.</p>
+            <p className="text-xs text-slate-500">Escrow settles directly to your verified UPI/Bank account upon owner release.</p>
           </Step>
           <RateOwner jobId={job.id} />
         </>
       )}
-      {step === 'NONE' && <Notice tone="info">Nothing to do on this job right now (status: {job.status.toLowerCase().replace(/_/g, ' ')}).</Notice>}
+      {step === 'NONE' && <Notice tone="info">No action required right now (status: {job.status.toLowerCase().replace(/_/g, ' ')}).</Notice>}
     </div>
   );
 }

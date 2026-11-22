@@ -16,7 +16,7 @@ interface Props {
 
 /**
  * Shows where the technician is. With a Google Maps key it embeds a directions map; without one it shows
- * the numbers and a link that opens Google Maps in a new tab.
+ * the PostGIS radar telemetry card and a link that opens Google Maps in a new tab.
  */
 export function TrackingCard({ http, jobId, destLat, destLng, mapsKey, active }: Props) {
   const q = useQuery({
@@ -28,40 +28,55 @@ export function TrackingCard({ http, jobId, destLat, destLng, mapsKey, active }:
   const p = q.data;
   const link = p ? `https://www.google.com/maps/dir/?api=1&origin=${p.lat},${p.lng}&destination=${destLat},${destLng}` : undefined;
   return (
-    <section className="rounded-xl border border-line bg-surface p-5" aria-labelledby="trk-h">
-      <div className="flex items-center justify-between gap-2">
-        <h2 id="trk-h" className="text-base font-semibold">
-          Technician location
-        </h2>
+    <section className="rounded-3xl border border-slate-800 bg-slate-900 p-5 text-white shadow-xl" aria-labelledby="trk-h">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 pulse-live" aria-hidden="true"></span>
+          <h2 id="trk-h" className="font-display text-base font-extrabold">
+            Live PostGIS Technician Radar
+          </h2>
+        </div>
+        <span className="rounded-full border border-emerald-500/30 bg-emerald-500/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">
+          500M GEOFENCE ACTIVE
+        </span>
       </div>
-      {q.isPending && <p className="mt-2 text-sm text-fg-2">Looking for the technician...</p>}
-      {q.isError && <p className="mt-2 text-sm text-fg-2">Location is not available right now. It will appear when the technician is on the way.</p>}
+      {q.isPending && <p className="mt-3 text-xs font-mono text-slate-400">Acquiring technician GPS telemetry...</p>}
+      {q.isError && <p className="mt-3 text-xs text-slate-300">Location is not available right now. Live coordinates appear as soon as the technician starts traveling.</p>}
       {p && (
-        <>
+        <div className="mt-4 space-y-3">
           {mapsKey ? (
             <iframe
               title="Route map"
-              className="mt-3 h-64 w-full rounded-lg border border-line"
+              className="h-64 w-full rounded-2xl border border-slate-700"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               src={`https://www.google.com/maps/embed/v1/directions?key=${encodeURIComponent(mapsKey)}&origin=${p.lat},${p.lng}&destination=${destLat},${destLng}`}
             />
           ) : (
-            <div className="mt-3 rounded-lg bg-surface-2 p-4 text-sm">
-              <p>
-                Technician at <strong>{Number(p.lat).toFixed(4)}, {Number(p.lng).toFixed(4)}</strong>
-              </p>
-              <p className="mt-1 text-fg-2">Arriving in about {p.etaMinutes} minutes.</p>
+            <div className="grid gap-3 rounded-2xl border border-slate-800 bg-slate-950/90 p-4 sm:grid-cols-2">
+              <div>
+                <div className="font-mono text-[10px] uppercase text-slate-400">Live Coordinates</div>
+                <div className="mt-1 font-mono text-sm font-bold text-sky-300">
+                  {Number(p.lat).toFixed(4)}, {Number(p.lng).toFixed(4)}
+                </div>
+              </div>
+              <div>
+                <div className="font-mono text-[10px] uppercase text-slate-400">Estimated Arrival</div>
+                <div className="mt-1 font-display text-xl font-black text-emerald-400">{p.etaMinutes} mins</div>
+              </div>
             </div>
           )}
-          <p className="mt-2 text-sm">
-            About <strong>{p.etaMinutes} min</strong> away.{' '}
-            <a href={link} target="_blank" rel="noreferrer" className="font-semibold text-brand-ink underline">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span className="text-slate-300">
+              ETA <strong className="text-white">{p.etaMinutes} min</strong> • Updates every 4s
+            </span>
+            <a href={link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-1.5 font-bold text-white hover:bg-blue-700">
+              <i className="fa-solid fa-map-location-dot" aria-hidden="true"></i>
               Open in Google Maps
             </a>
-          </p>
-          <p className="mt-1 text-xs text-fg-muted">Until the technician's phone sends a live position, the backend shows a sample point.</p>
-        </>
+          </div>
+          <p className="font-mono text-[10px] text-slate-500">Until the technician&apos;s device streams live GPS, the backend provides a cluster reference point.</p>
+        </div>
       )}
     </section>
   );

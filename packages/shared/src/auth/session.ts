@@ -15,6 +15,8 @@ export interface AuthState {
   temp2faToken: string | null;
   /** The signed-in admin, since the admin reply has no UserDTO. */
   admin: { id: number; email: string; fullName: string; role: string } | null;
+  /** True when exploring the full Figma workspace in local preview mode without a live backend. */
+  isDemo?: boolean;
 }
 
 export interface AuthSessionOptions {
@@ -35,14 +37,62 @@ function looksLikePlaceholderName(u: UserDTO): boolean {
  * Every method either resolves, or throws an ApiError whose `message` is safe to show on screen.
  */
 export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
-  let state: AuthState = { status: 'loading', user: null, needsProfile: false, temp2faToken: null, admin: null };
+  let state: AuthState = { status: 'loading', user: null, needsProfile: false, temp2faToken: null, admin: null, isDemo: false };
+  const demoStorageKey = `uptime_demo_session_${kind}`;
+  const readDemo = (): boolean => {
+    try {
+      return typeof window !== 'undefined' && window.sessionStorage?.getItem(demoStorageKey) === '1';
+    } catch {
+      return false;
+    }
+  };
+  const writeDemo = (on: boolean) => {
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        if (on) window.sessionStorage.setItem(demoStorageKey, '1');
+        else window.sessionStorage.removeItem(demoStorageKey);
+      }
+    } catch {
+      // Ignore storage failures in private browsing.
+    }
+  };
+  const applyDemoState = () => {
+    if (kind === 'ADMIN') {
+      set({
+        status: 'authenticated',
+        isDemo: true,
+        temp2faToken: null,
+        admin: { id: 1, email: 'pavan.noc.lead@uptime.in', fullName: 'Pavan NOC Lead', role: 'SUPER_ADMIN' },
+      });
+      return;
+    }
+    const demoUser: UserDTO =
+      kind === 'TECHNICIAN'
+        ? {
+            id: 8841,
+            fullName: 'Raju Kumar Sharma',
+            phone: '9876543210',
+            email: 'raju.cnc@uptime.in',
+            userType: 'TECHNICIAN',
+            industryPreference: 'INDUSTRIAL',
+          }
+        : {
+            id: 101,
+            fullName: 'Apex Precision Tools',
+            phone: '9845088210',
+            email: 'ops@apextools.in',
+            userType: 'OWNER',
+            industryPreference: 'INDUSTRIAL',
+          };
+    set({ status: 'authenticated', isDemo: true, user: demoUser, needsProfile: false });
+  };
   const listeners = new Set<() => void>();
   const set = (patch: Partial<AuthState>) => {
     state = { ...state, ...patch };
     listeners.forEach((l) => l());
   };
   const anonymous = (extra: Partial<AuthState> = {}) =>
-    set({ status: 'anonymous', user: null, needsProfile: false, temp2faToken: null, admin: null, ...extra });
+    set({ status: 'anonymous', user: null, needsProfile: false, temp2faToken: null, admin: null, isDemo: false, ...extra });
 
   return {
     getState: () => state,
@@ -51,11 +101,21 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
       return () => listeners.delete(l);
     },
 
+    /** Enter interactive Figma workspace preview mode (no backend required). */
+    enterDemo() {
+      writeDemo(true);
+      applyDemoState();
+    },
+
     /**
      * Called once when the app opens. Owner/technician: a saved refresh token is traded for a new session
      * by the http client when /auth/me answers 401. Admin: the token lives in sessionStorage; no refresh exists.
      */
     async restore(): Promise<void> {
+      if (readDemo()) {
+        applyDemoState();
+        return;
+      }
       if (kind === 'ADMIN') {
         const token = tokens.getAccess();
         if (!token) return anonymous();
@@ -68,12 +128,12 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
         } catch {
           // Unreadable token: let the first admin call decide.
         }
-        return set({ status: 'authenticated' });
+        return set({ status: 'authenticated', isDemo: false });
       }
       if (!tokens.getAccess() && !tokens.getRefresh()) return anonymous();
       try {
         const user = await authApi.me(http);
-        set({ status: 'authenticated', user, needsProfile: false });
+        set({ status: 'authenticated', user, needsProfile: false, isDemo: false });
       } catch {
         tokens.clear();
         anonymous();
@@ -124,6 +184,7 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
 
     async logout(): Promise<void> {
       const refresh = tokens.getRefresh();
+      writeDemo(false);
       try {
         if (kind !== 'ADMIN' && tokens.getAccess()) await authApi.logout(http, refresh);
       } catch {
@@ -135,6 +196,7 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
 
     /** Called by the http client when a refresh fails. */
     expire() {
+      writeDemo(false);
       tokens.clear();
       anonymous();
     },
