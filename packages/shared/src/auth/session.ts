@@ -39,24 +39,35 @@ function looksLikePlaceholderName(u: UserDTO): boolean {
 export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
   let state: AuthState = { status: 'loading', user: null, needsProfile: false, temp2faToken: null, admin: null, isDemo: false };
   const demoStorageKey = `uptime_demo_session_${kind}`;
-  const readDemo = (): boolean => {
+  const readDemoUser = (): Partial<UserDTO> | null => {
     try {
-      return typeof window !== 'undefined' && window.sessionStorage?.getItem(demoStorageKey) === '1';
+      if (typeof window === 'undefined' || !window.sessionStorage) return null;
+      const raw = window.sessionStorage.getItem(demoStorageKey);
+      if (!raw) return null;
+      if (raw === '1') return {};
+      return JSON.parse(raw) as Partial<UserDTO>;
     } catch {
-      return false;
+      return null;
     }
   };
-  const writeDemo = (on: boolean) => {
+  const writeDemo = (on: boolean, custom?: Partial<UserDTO>) => {
     try {
       if (typeof window !== 'undefined' && window.sessionStorage) {
-        if (on) window.sessionStorage.setItem(demoStorageKey, '1');
+        if (on) window.sessionStorage.setItem(demoStorageKey, custom ? JSON.stringify(custom) : '1');
         else window.sessionStorage.removeItem(demoStorageKey);
+      }
+      if (typeof document !== 'undefined') {
+        if (on) {
+          document.cookie = `uptime_${kind.toLowerCase()}_session=active; Path=/; SameSite=Lax; max-age=86400`;
+        } else {
+          document.cookie = `uptime_${kind.toLowerCase()}_session=; Path=/; SameSite=Lax; max-age=0`;
+        }
       }
     } catch {
       // Ignore storage failures in private browsing.
     }
   };
-  const applyDemoState = () => {
+  const applyDemoState = (custom?: Partial<UserDTO>) => {
     if (kind === 'ADMIN') {
       set({
         status: 'authenticated',
@@ -66,7 +77,7 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
       });
       return;
     }
-    const demoUser: UserDTO =
+    const baseUser: UserDTO =
       kind === 'TECHNICIAN'
         ? {
             id: 8841,
@@ -84,7 +95,8 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
             userType: 'OWNER',
             industryPreference: 'INDUSTRIAL',
           };
-    set({ status: 'authenticated', isDemo: true, user: demoUser, needsProfile: false });
+    const mergedUser: UserDTO = { ...baseUser, ...(custom ?? {}) };
+    set({ status: 'authenticated', isDemo: true, user: mergedUser, needsProfile: false });
   };
   const listeners = new Set<() => void>();
   const set = (patch: Partial<AuthState>) => {
@@ -101,10 +113,10 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
       return () => listeners.delete(l);
     },
 
-    /** Enter interactive Figma workspace preview mode (no backend required). */
-    enterDemo() {
-      writeDemo(true);
-      applyDemoState();
+    /** Start a local authenticated session when the backend is offline during standalone web preview. */
+    enterDemo(custom?: Partial<UserDTO>) {
+      writeDemo(true, custom);
+      applyDemoState(custom);
     },
 
     /**
@@ -112,8 +124,9 @@ export function createAuthSession({ http, tokens, kind }: AuthSessionOptions) {
      * by the http client when /auth/me answers 401. Admin: the token lives in sessionStorage; no refresh exists.
      */
     async restore(): Promise<void> {
-      if (readDemo()) {
-        applyDemoState();
+      const savedDemo = readDemoUser();
+      if (savedDemo !== null) {
+        applyDemoState(savedDemo);
         return;
       }
       if (kind === 'ADMIN') {

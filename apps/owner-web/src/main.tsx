@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '@uptime/shared';
 import App from './App';
 import { session } from './lib/api';
+import { OwnerStoreProvider } from './store/ownerStore';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -15,9 +16,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider session={session}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <OwnerStoreProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </OwnerStoreProvider>
       </AuthProvider>
     </QueryClientProvider>
   </React.StrictMode>,
