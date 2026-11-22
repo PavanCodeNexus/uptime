@@ -3,3 +3,163 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --admin-olive: #7D885E;
+  --admin-olive-dark: #5B6443;
+  --admin-olive-soft: #F3F5EE;
+  --admin-black: #050506;
+  --admin-brass: #D9A53A;
+  --admin-brass-dark: #9B711C;
+  --admin-brass-soft: #FBF6EA;
+  --admin-canvas: #FAFAF8;
+  --admin-surface: #FFFFFF;
+  --admin-border: #E8E8E2;
+  --admin-muted: #64675F;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--admin-canvas);
+    color: var(--admin-black);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Premium architectural cards & transitions */
+.admin-card {
+  background: #FFFFFF;
+  border: 1px solid #E8E8E2;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 2px rgba(5, 5, 6, 0.03), 0 8px 24px -12px rgba(5, 5, 6, 0.05);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 240ms ease;
+}
+
+.admin-card-interactive:hover {
+  transform: translateY(-2px);
+  border-color: #D5D6CC;
+  box-shadow: 0 12px 32px -12px rgba(5, 5, 6, 0.09);
+}
+
+/* Smooth entrance & route transitions */
+@keyframes adminFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes adminDrawLine {
+  0% {
+    stroke-dashoffset: 1600;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes adminBarRise {
+  0% {
+    transform: scaleY(0);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes adminDonutSpin {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes adminPulseSoft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.25);
+  }
+}
+
+.animate-fade-up {
+  animation: adminFadeUp 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-stagger-1 {
+  animation: adminFadeUp 420ms cubic-bezier(0.22, 1, 0.36, 1) 50ms both;
+}
+.animate-stagger-2 {
+  animation: adminFadeUp 420ms cubic-bezier(0.22, 1, 0.36, 1) 110ms both;
+}
+.animate-stagger-3 {
+  animation: adminFadeUp 420ms cubic-bezier(0.22, 1, 0.36, 1) 170ms both;
+}
+.animate-stagger-4 {
+  animation: adminFadeUp 420ms cubic-bezier(0.22, 1, 0.36, 1) 230ms both;
+}
+
+.animate-draw-line {
+  stroke-dasharray: 1600;
+  stroke-dashoffset: 0;
+  animation: adminDrawLine 950ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-bar-rise {
+  transform-origin: bottom;
+  animation: adminBarRise 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-donut {
+  transform-origin: center;
+  animation: adminDonutSpin 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-pulse-soft {
+  animation: adminPulseSoft 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-stagger-1,
+  .animate-stagger-2,
+  .animate-stagger-3,
+  .animate-stagger-4,
+  .animate-draw-line,
+  .animate-bar-rise,
+  .animate-donut,
+  .animate-pulse-soft {
+    animation: none !important;
+    transition: none !important;
+  }
+}
