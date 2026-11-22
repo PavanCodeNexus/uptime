@@ -1,311 +1,242 @@
-import { Button, canAcceptJobs, errorMessage, formatINR, Notice, techApi, useAuth, type Technician } from '@uptime/shared';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { http } from '../lib/api';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTechStore } from '../store/techStore';
 
-const DEMO_TECH: Technician = {
-  id: 8841,
-  userId: 8841,
-  fullName: 'Raju Kumar Sharma',
-  phone: '9876543210',
-  industryType: 'INDUSTRIAL',
-  kycStatus: 'VERIFIED',
-  verificationLevel: 2,
-  verificationStatus: 'VERIFIED',
-  isProvisional: false,
-  provisionalCompletedJobs: 5,
-  isOnline: true,
-  isAvailable: true,
-  isOnJob: false,
-  fatigueScore: 18,
-  consecutiveJobsCount: 2,
-  hoursWorkedToday: 5.5,
-  isFatigueRestricted: false,
-  currentLat: 13.0285,
-  currentLng: 77.5197,
-  ratingAvg: 4.9,
-  ratingCount: 142,
-  jobsCompleted: 142,
-  walletBalance: 12450,
-  totalEarned: 284500,
-  serviceRadiusKm: 15,
-  experienceYears: 9,
-  upiId: 'raju.cnc@okhdfcbank',
-};
-
-const WEEKLY_BARS = [
-  { day: 'Mon', pct: 60, active: false },
-  { day: 'Tue', pct: 75, active: false },
-  { day: 'Wed', pct: 50, active: false },
-  { day: 'Thu', pct: 90, active: true },
-  { day: 'Fri', pct: 95, active: true },
-  { day: 'Sat', pct: 30, active: false },
-  { day: 'Sun', pct: 12, active: false },
+const WEEKLY_EARNINGS = [
+  { day: 'Mon', base: 3400, bonus: 600 },
+  { day: 'Tue', base: 4800, bonus: 900 },
+  { day: 'Wed', base: 3100, bonus: 400 },
+  { day: 'Thu', base: 5600, bonus: 1100 },
+  { day: 'Fri', base: 6200, bonus: 1400 },
+  { day: 'Sat', base: 4400, bonus: 750 },
+  { day: 'Sun', base: 4200, bonus: 800 },
 ];
 
-/** Figma TW05: Field Specialist Command Cockpit — live techApi wired with seamless Demo mode fallback. */
 export default function HomePage() {
-  const { isDemo } = useAuth();
-  const qc = useQueryClient();
-  const me = useQuery({ queryKey: ['tech', 'me'], queryFn: () => techApi.me(http), enabled: !isDemo });
-  const [demoTech, setDemoTech] = useState<Technician>(DEMO_TECH);
-  const [locNote, setLocNote] = useState<string | null>(null);
+  const { online, toggleOnline, shiftHours, availableBalanceInr, jobs, profile, acceptJob, declineJob } = useTechStore();
+  const navigate = useNavigate();
 
-  const setOnline = useMutation({
-    mutationFn: async (on: boolean) => {
-      if (isDemo) {
-        const updated = { ...demoTech, isOnline: on, isAvailable: on };
-        setDemoTech(updated);
-        return updated;
-      }
-      return techApi.setAvailability(http, on, on);
-    },
-    onSuccess: (t) => {
-      if (!isDemo) qc.setQueryData(['tech', 'me'], t);
-    },
-  });
+  const incoming = jobs.filter((j) => j.status === 'INCOMING');
+  const activeJobs = jobs.filter((j) => j.status === 'ACCEPTED' || j.status === 'ARRIVED' || j.status === 'IN_PROGRESS');
+  const maxDay = Math.max(...WEEKLY_EARNINGS.map((d) => d.base + d.bonus));
 
-  const setLoc = useMutation({
-    mutationFn: async ({ lat, lng }: { lat: number; lng: number }) => {
-      if (isDemo) {
-        const updated = { ...demoTech, currentLat: lat, currentLng: lng };
-        setDemoTech(updated);
-        return updated;
-      }
-      return techApi.setLocation(http, lat, lng);
-    },
-    onSuccess: (t) => {
-      if (!isDemo) qc.setQueryData(['tech', 'me'], t);
-      setLocNote('GPS coordinates synced to PostGIS dispatch radar.');
-    },
-  });
-
-  function shareLocation() {
-    setLocNote(null);
-    if (!('geolocation' in navigator)) return setLocNote('This browser cannot share GPS location.');
-    navigator.geolocation.getCurrentPosition(
-      (p) => setLoc.mutate({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      () => setLocNote('Location permission denied. Enable browser location to match nearby emergency dispatches.'),
-      { timeout: 10000 },
-    );
+  function handleAccept(id: string) {
+    acceptJob(id);
+    navigate(`/jobs/${id}`);
   }
-
-  if (!isDemo && me.isPending) return <p className="font-mono text-xs text-slate-500" role="status">Loading specialist cockpit...</p>;
-  if (!isDemo && me.isError) {
-    return (
-      <div className="space-y-3">
-        <Notice tone="danger">{errorMessage(me.error)}</Notice>
-        <Button variant="secondary" onClick={() => void me.refetch()}>
-          Try again
-        </Button>
-      </div>
-    );
-  }
-
-  const t = isDemo ? demoTech : (me.data ?? DEMO_TECH);
-  const eligible = canAcceptJobs(t);
-  const hasLocation = t.currentLat != null && t.currentLng != null;
-  const initials = (t.fullName || 'RK')
-    .split(' ')
-    .map((p) => p[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <div className="space-y-6">
-      {/* Top Specialist Dark Status Strip (Exact Figma TW05) */}
-      <section className="rounded-3xl bg-slate-900 text-white p-6 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="relative shrink-0">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center font-display font-black text-xl shadow-lg">
-              {initials}
-            </div>
-            <span
-              className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-900 ${
-                t.isOnline ? 'bg-emerald-500 pulse-live' : 'bg-slate-500'
-              }`}
-            ></span>
-          </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-display font-black">{t.fullName}</h1>
-              <span className="px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-mono font-bold">
-                L{t.verificationLevel}
-                {t.isProvisional ? '-P' : ''} SPECIALIST
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 font-mono">
-              Industrial CNC &amp; Spindle Drives • {hasLocation ? `GPS ${Number(t.currentLat).toFixed(4)}, ${Number(t.currentLng).toFixed(4)}` : 'GPS not set'}
-            </p>
+      {/* Header */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#E2EAE7] bg-white px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#0F4C4C]">
+            <span className={`h-2 w-2 rounded-full ${online ? 'bg-[#10B981]' : 'bg-slate-400'}`} />
+            {online ? 'Live Dispatch Radar Active' : 'Radar Paused'}
+          </span>
+          <h1 className="mt-2 font-display text-2xl font-bold text-[#102020] sm:text-3xl">
+            Welcome back, {profile.fullName.split(' ')[0]}
+          </h1>
+          <p className="mt-1 text-xs text-[#556868] sm:text-sm">
+            {profile.cluster} • Service radius {profile.serviceRadiusKm} km • {profile.jobsCompleted} completed repairs
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={toggleOnline}
+          className={`cursor-pointer rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
+            online
+              ? 'border border-[#E2EAE7] bg-white text-[#102020] hover:border-[#0F4C4C]'
+              : 'bg-[#10B981] text-[#052E24] hover:opacity-95'
+          }`}
+        >
+          {online ? 'Pause Duty' : 'Go Online Now'}
+        </button>
+      </div>
+
+      {/* KPI Row */}
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="tech-card tech-card-hover p-5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[#556868]">Available for IMPS</p>
+          <p className="mt-2 font-mono text-2xl font-bold text-[#0F4C4C]">
+            ₹{availableBalanceInr.toLocaleString('en-IN')}
+          </p>
+          <Link to="/earnings" className="mt-3 inline-block text-xs font-semibold text-[#D96B27] hover:underline">
+            Withdraw instantly →
+          </Link>
+        </div>
+
+        <div className="tech-card tech-card-hover p-5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[#556868]">Incoming SOS Offers</p>
+          <p className="mt-2 font-mono text-2xl font-bold text-[#D96B27]">{incoming.length}</p>
+          <p className="mt-3 text-xs text-[#556868]">{activeJobs.length} active job in progress</p>
+        </div>
+
+        <div className="tech-card tech-card-hover p-5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[#556868]">ISO Shift Fatigue</p>
+          <p className="mt-2 font-mono text-2xl font-bold text-[#102020]">{shiftHours.toFixed(1)}h / 12h</p>
+          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#EBF3F2]">
+            <div
+              className="h-full rounded-full bg-[#10B981] transition-all duration-500"
+              style={{ width: `${Math.min(100, (shiftHours / 12) * 100)}%` }}
+            />
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            type="button"
-            onClick={() => setOnline.mutate(!t.isOnline)}
-            disabled={setOnline.isPending}
-            className={`px-4 py-2.5 rounded-2xl border text-xs font-mono font-bold flex items-center gap-2 transition-all ${
-              t.isOnline
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25'
-                : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
-            }`}
-          >
-            <span className={`w-2.5 h-2.5 rounded-full ${t.isOnline ? 'bg-emerald-400' : 'bg-slate-500'}`}></span>
-            <span>{setOnline.isPending ? 'UPDATING...' : t.isOnline ? 'DISPATCH READY (ONLINE)' : 'OFFLINE — GO ONLINE'}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={shareLocation}
-            disabled={setLoc.isPending}
-            className="px-3.5 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5"
-          >
-            <i className="fa-solid fa-location-crosshairs text-sky-400"></i>
-            <span>Sync GPS</span>
-          </button>
-
-          <Link
-            to="/dispatch"
-            className="px-4 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-lg flex items-center gap-1.5 animate-pulse"
-          >
-            <i className="fa-solid fa-bell"></i>
-            <span>Incoming 60s Job</span>
-          </Link>
+        <div className="tech-card tech-card-hover p-5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[#556868]">Specialist Rating</p>
+          <p className="mt-2 font-mono text-2xl font-bold text-[#102020]">{profile.rating.toFixed(1)}★</p>
+          <p className="mt-3 text-xs text-[#0F4C4C] font-semibold">Soulbound ID: {profile.nftHash}</p>
         </div>
       </section>
 
-      {locNote && <Notice tone="info">{locNote}</Notice>}
-      {setOnline.isError && <Notice tone="danger">{errorMessage(setOnline.error)}</Notice>}
-      {setLoc.isError && <Notice tone="danger">{errorMessage(setLoc.error)}</Notice>}
-
-      {!eligible && (
-        <Notice tone="warning">
-          {t.isFatigueRestricted
-            ? 'RULE SB-00 Mandatory Rest Period active (ISO 45001). You cannot accept new dispatches until your rest lock clears.'
-            : 'Level 2 verification is required to accept emergency dispatches. '}
-          {!t.isFatigueRestricted && (
-            <Link to="/verification" className="font-bold underline">
-              Complete KYC Document Vault →
+      {/* Main Grid: Incoming SOS Radar + Active Work / Weekly Earnings Graph */}
+      <div className="grid gap-6 lg:grid-cols-12">
+        {/* Left 7 cols: Incoming SOS Dispatch Radar */}
+        <section className="space-y-4 lg:col-span-7">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold text-[#102020]">Nearby SOS Dispatch Radar</h2>
+            <Link to="/jobs" className="text-xs font-semibold text-[#0F4C4C] hover:underline">
+              View all jobs →
             </Link>
+          </div>
+
+          {!online && (
+            <div className="tech-card p-6 text-center">
+              <p className="text-sm font-bold text-[#102020]">You are currently Offline</p>
+              <p className="mt-1 text-xs text-[#556868]">Switch to On Duty to receive high-priority breakdowns nearby.</p>
+            </div>
           )}
-        </Notice>
-      )}
 
-      {/* 4 KPI Cards Row (Exact Figma TW05) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link to="/earnings" className="p-5 rounded-3xl bg-white border border-slate-200 hover:border-orange-400 shadow-sm space-y-1 transition-all">
-          <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">Wallet Balance</div>
-          <div className="text-2xl font-display font-black text-slate-900">{formatINR(t.walletBalance)}</div>
-          <div className="text-[11px] text-emerald-600 font-bold">Instant IMPS ready →</div>
-        </Link>
-
-        <Link to="/jobs" className="p-5 rounded-3xl bg-white border border-slate-200 hover:border-blue-400 shadow-sm space-y-1 transition-all">
-          <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">Jobs Completed</div>
-          <div className="text-2xl font-display font-black text-slate-900">{t.jobsCompleted}</div>
-          <div className="text-[11px] text-blue-600 font-bold">Avg repair: 42 mins</div>
-        </Link>
-
-        <Link to="/analytics" className="p-5 rounded-3xl bg-white border border-slate-200 hover:border-amber-400 shadow-sm space-y-1 transition-all">
-          <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">Specialist Rating</div>
-          <div className="text-2xl font-display font-black text-slate-900 flex items-center gap-1">
-            {t.ratingCount > 0 ? Number(t.ratingAvg).toFixed(1) : 'New'} <span className="text-amber-500 text-base">★</span>
-          </div>
-          <div className="text-[11px] text-slate-500">{t.ratingCount} verified reviews</div>
-        </Link>
-
-        <Link to="/verification" className="p-5 rounded-3xl bg-white border border-slate-200 hover:border-purple-400 shadow-sm space-y-1 transition-all">
-          <div className="text-[10px] font-mono font-bold text-slate-400 uppercase">Verification Tier</div>
-          <div className="text-2xl font-display font-black text-slate-900">
-            L{t.verificationLevel}
-            {t.isProvisional ? '-P' : ''}
-          </div>
-          <div className="text-[11px] text-emerald-600 font-bold">96.4% Acceptance Rate</div>
-        </Link>
-      </div>
-
-      {/* Active Job Banner */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white border border-blue-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-blue-500/30 text-blue-300 border border-blue-400/30 font-mono text-[10px] font-bold">
-              ACTIVE JOB IN PROGRESS
-            </span>
-            <span className="text-xs font-mono text-slate-300">#JOB-9821 • EMERGENCY CNC SPINDLE</span>
-          </div>
-          <h2 className="text-lg font-display font-black">Apex Precision Tools • Peenya Plant #1 (Bay 2)</h2>
-          <p className="text-xs text-slate-300">Issue: High-vibration spindle bearing seizure (415V). Client waiting on-site.</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-[10px] font-mono text-slate-300 uppercase">Arrival OTP</div>
-            <div className="text-xl font-mono font-black text-amber-400">8841</div>
-          </div>
-          <Link to="/active-job" className="px-5 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-lg flex items-center gap-2">
-            <span>Open LOTO Console</span>
-            <i className="fa-solid fa-arrow-right"></i>
-          </Link>
-        </div>
-      </div>
-
-      {/* 2-Column Dashboard Grid: Weekly Earnings Bar Chart + Today's Schedule */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-display font-black text-slate-900">Weekly Earnings Performance</h3>
-              <p className="text-xs text-slate-500">Gross vs Net Payouts for Current Week (₹38,450 Gross • 90% Take-Home)</p>
+          {online && incoming.length === 0 && (
+            <div className="tech-card p-6 text-center">
+              <p className="text-sm font-bold text-[#0F4C4C]">All nearby SOS offers handled</p>
+              <p className="mt-1 text-xs text-[#556868]">Listening for new breakdowns within {profile.serviceRadiusKm} km...</p>
             </div>
-            <Link to="/earnings" className="text-xs font-bold text-blue-600 hover:underline">
-              Full Financials →
-            </Link>
-          </div>
-          <div className="h-48 pt-6 flex items-end justify-between gap-3 px-2 border-b border-slate-100">
-            {WEEKLY_BARS.map((b) => (
-              <div key={b.day} className="flex-1 h-full flex flex-col justify-end items-center gap-2">
-                <div
-                  className={`w-full rounded-t-xl transition-all ${b.active ? 'bg-orange-500 shadow-md' : b.pct < 35 ? 'bg-slate-200' : 'bg-orange-400'}`}
-                  style={{ height: `${b.pct}%` }}
-                ></div>
-                <span className={`text-[10px] font-mono ${b.active ? 'text-slate-900 font-bold' : 'text-slate-400'}`}>{b.day}</span>
-              </div>
+          )}
+
+          {online &&
+            incoming.map((job) => (
+              <article key={job.id} className="tech-card tech-card-hover border-l-4 border-l-[#D96B27] p-5 space-y-3">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-[#FDF2EA] px-2.5 py-0.5 font-mono text-[10px] font-bold text-[#D96B27]">
+                        {job.urgency} • {job.etaMins} MIN ETA
+                      </span>
+                      <span className="font-mono text-[11px] text-[#556868]">{job.id}</span>
+                    </div>
+                    <h3 className="mt-1.5 font-display text-base font-bold text-[#102020]">
+                      {job.asset} — {job.plantName}
+                    </h3>
+                    <p className="text-xs text-[#556868]">
+                      {job.gateAddress} ({job.distanceKm} km away)
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono text-xl font-bold text-[#0F4C4C]">₹{job.payoutInr.toLocaleString('en-IN')}</p>
+                    <p className="text-[10px] font-mono text-[#10B981] font-semibold">Escrow Guaranteed</p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-[#F4F7F6] p-3 text-xs text-[#102020]">
+                  <p className="font-semibold text-[#0F4C4C]">AI Pre-Diagnostic Brief:</p>
+                  <p className="mt-0.5 text-[#556868]">{job.aiBrief}</p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => declineJob(job.id)}
+                    className="cursor-pointer rounded-xl border border-[#E2EAE7] px-4 py-2 text-xs font-semibold text-[#556868] hover:border-[#102020] hover:text-[#102020]"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleAccept(job.id)}
+                    className="cursor-pointer rounded-xl bg-[#D96B27] px-5 py-2 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-95"
+                  >
+                    Accept &amp; Navigate →
+                  </button>
+                </div>
+              </article>
             ))}
-          </div>
-        </div>
 
-        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-display font-black text-slate-900">Today&apos;s Schedule</h3>
-            <Link to="/availability" className="text-[10px] font-mono font-bold text-orange-600 hover:underline">
-              Calendar →
+          {/* Active Jobs Strip */}
+          {activeJobs.length > 0 && (
+            <div className="space-y-3 pt-2">
+              <h2 className="font-display text-base font-bold text-[#102020]">Active Assigned Jobs</h2>
+              {activeJobs.map((j) => (
+                <Link
+                  key={j.id}
+                  to={`/jobs/${j.id}`}
+                  className="tech-card tech-card-hover flex flex-wrap items-center justify-between gap-3 p-4"
+                >
+                  <div>
+                    <span className="rounded-full bg-[#EBF3F2] px-2.5 py-0.5 font-mono text-[10px] font-bold text-[#0F4C4C]">
+                      {j.status.replace('_', ' ')}
+                    </span>
+                    <p className="mt-1 text-sm font-bold text-[#102020]">
+                      {j.plantName} • {j.asset}
+                    </p>
+                    <p className="text-xs text-[#556868]">{j.gateAddress}</p>
+                  </div>
+                  <span className="rounded-xl bg-[#0F4C4C] px-3.5 py-2 text-xs font-bold text-white">
+                    Open Job →
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Right 5 cols: Weekly Earnings Graph */}
+        <section className="tech-card p-6 lg:col-span-5 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-display text-lg font-bold text-[#102020]">7-Day Earnings Velocity</h2>
+                <p className="text-xs text-[#556868]">Base repair payouts (Teal) + SOS SLA bonuses (Copper)</p>
+              </div>
+              <span className="font-mono text-sm font-bold text-[#0F4C4C]">₹37,650</span>
+            </div>
+
+            <div className="mt-6 grid h-48 grid-cols-7 items-end gap-2.5 border-b border-[#E2EAE7] pb-2">
+              {WEEKLY_EARNINGS.map((d, idx) => {
+                const baseH = Math.round((d.base / maxDay) * 100);
+                const bonusH = Math.round((d.bonus / maxDay) * 100);
+                return (
+                  <div key={d.day} className="flex h-full flex-col items-center justify-end gap-1" title={`${d.day}: ₹${d.base + d.bonus}`}>
+                    <div
+                      className="animate-tech-bar w-full max-w-[26px] rounded-t-md bg-[#D96B27]"
+                      style={{ height: `${bonusH}%`, animationDelay: `${idx * 60 + 80}ms` }}
+                    />
+                    <div
+                      className="animate-tech-bar w-full max-w-[26px] rounded-t-sm bg-[#0F4C4C]"
+                      style={{ height: `${baseH}%`, animationDelay: `${idx * 60}ms` }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-2 grid grid-cols-7 text-center font-mono text-[11px] text-[#556868]">
+              {WEEKLY_EARNINGS.map((d) => (
+                <span key={d.day}>{d.day}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-xl bg-[#EBF3F2] p-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold text-[#0F4C4C]">Zero-Delay Escrow Payouts</p>
+              <p className="text-[11px] text-[#556868]">Complete handover OTP to credit your balance immediately.</p>
+            </div>
+            <Link to="/earnings" className="rounded-lg bg-[#0F4C4C] px-3 py-1.5 text-xs font-bold text-white shrink-0">
+              Ledger
             </Link>
           </div>
-          <div className="space-y-3">
-            <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 text-xs space-y-1">
-              <div className="flex items-center justify-between font-bold text-blue-900">
-                <span>Apex Tools • Bay 2</span>
-                <span className="text-[10px] font-mono text-orange-600">IN PROGRESS</span>
-              </div>
-              <p className="text-[11px] text-slate-600">11:30 AM • 415V Spindle Bearing</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1 opacity-75">
-              <div className="flex items-center justify-between font-bold text-slate-700">
-                <span>Bharat Forge • Unit 3</span>
-                <span className="text-[10px] font-mono text-emerald-600">COMPLETED</span>
-              </div>
-              <p className="text-[11px] text-slate-500">09:15 AM • Hydraulic Pressure Valve</p>
-            </div>
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-              <div className="flex items-center justify-between font-bold text-slate-700">
-                <span>Kirloskar Motors • Bay 1</span>
-                <span className="text-[10px] font-mono text-slate-400">SCHEDULED</span>
-              </div>
-              <p className="text-[11px] text-slate-500">03:30 PM • 3-Phase Servo Motor Audit</p>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
     </div>
   );

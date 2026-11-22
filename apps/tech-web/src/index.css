@@ -3,3 +3,92 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --tech-pine: #0F4C4C;
+  --tech-pine-dark: #0A3535;
+  --tech-pine-soft: #EBF3F2;
+  --tech-copper: #D96B27;
+  --tech-copper-soft: #FDF2EA;
+  --tech-mint: #10B981;
+  --tech-mint-soft: #ECFDF5;
+  --tech-canvas: #F4F7F6;
+  --tech-border: #E2EAE7;
+  --tech-ink: #102020;
+  --tech-muted: #556868;
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--tech-canvas);
+    color: var(--tech-ink);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tech-card {
+  background: #FFFFFF;
+  border: 1px solid #E2EAE7;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 2px rgba(16, 32, 32, 0.03), 0 8px 24px -12px rgba(15, 76, 76, 0.06);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease;
+}
+
+.tech-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: #C7D7D2;
+  box-shadow: 0 12px 30px -12px rgba(15, 76, 76, 0.12);
+}
+
+@keyframes techFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes techBarGrow {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-tech-in {
+  animation: techFadeUp 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-tech-bar {
+  transform-origin: bottom;
+  animation: techBarGrow 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-tech-in,
+  .animate-tech-bar {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,83 +1,141 @@
-import { Button, earningsApi, errorMessage, formatINR, Notice, useAuth } from '@uptime/shared';
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { http } from '../lib/api';
+import { useState, type FormEvent } from 'react';
+import { useTechStore } from '../store/techStore';
 
-const nice = (k: string) => k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').toLowerCase().replace(/^./, (c) => c.toUpperCase());
-const looksMoney = (k: string) => /earn|amount|balance|total|payout|wallet|paid|fee/i.test(k);
-
-/** Figma TW10: Financial Command Center — live earningsApi.get wired with 90/10 & 1% Sec 194C TDS breakdown. */
 export default function EarningsPage() {
-  const { isDemo } = useAuth();
-  const q = useQuery({ queryKey: ['tech', 'earnings'], queryFn: () => earningsApi.get(http), enabled: !isDemo });
+  const { availableBalanceInr, transactions, profile, withdrawFunds } = useTechStore();
+  const [amount, setAmount] = useState('2500');
+  const [message, setMessage] = useState<{ tone: 'ok' | 'err'; text: string } | null>(null);
+
+  const totalEarned = transactions.filter((t) => t.type === 'CREDIT').reduce((s, t) => s + t.amountInr, 0);
+  const totalWithdrawn = transactions.filter((t) => t.type === 'WITHDRAWAL').reduce((s, t) => s + t.amountInr, 0);
+
+  function handleWithdraw(e: FormEvent) {
+    e.preventDefault();
+    const num = Number(amount);
+    if (!Number.isFinite(num) || num < 500) {
+      setMessage({ tone: 'err', text: 'Minimum instant IMPS withdrawal is ₹500.' });
+      return;
+    }
+    if (num > availableBalanceInr) {
+      setMessage({ tone: 'err', text: 'Withdrawal amount exceeds your available balance.' });
+      return;
+    }
+    const ok = withdrawFunds(num);
+    if (ok) {
+      setMessage({
+        tone: 'ok',
+        text: `₹${num.toLocaleString('en-IN')} transferred instantly to ${profile.upiId} via IMPS.`,
+      });
+    }
+  }
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl bg-slate-900 text-white p-6 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <span className="inline-flex rounded-full border border-[#E2EAE7] bg-white px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#0F4C4C]">
+          Escrow &amp; Instant IMPS
+        </span>
+        <h1 className="mt-2 font-display text-2xl font-bold text-[#102020] sm:text-3xl">Earnings &amp; Payouts</h1>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="tech-card p-5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[#556868]">Available Balance</p>
+          <p className="mt-2 font-mono text-2xl font-bold text-[#0F4C4C]">₹{availableBalanceInr.toLocaleString('en-IN')}</p>
+          <p className="mt-1 text-xs text-[#10B981] font-semibold">Ready for instant IMPS</p>
+        </div>
+        <div className="tech-card p-5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[#556868]">Total Credited</p>
+          <p className="mt-2 font-mono text-2xl font-bold text-[#102020]">₹{totalEarned.toLocaleString('en-IN')}</p>
+          <p className="mt-1 text-xs text-[#556868]">88% net technician share</p>
+        </div>
+        <div className="tech-card p-5">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[#556868]">Total Withdrawn</p>
+          <p className="mt-2 font-mono text-2xl font-bold text-[#D96B27]">₹{totalWithdrawn.toLocaleString('en-IN')}</p>
+          <p className="mt-1 text-xs text-[#556868]">UPI: {profile.upiId}</p>
+        </div>
+      </div>
+
+      {/* Withdraw Card */}
+      <section className="tech-card p-6 space-y-4">
         <div>
-          <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono text-[10px] font-bold">
-            TW10 • FINANCIAL COMMAND CENTER
-          </span>
-          <h1 className="mt-1 text-2xl font-display font-black">Earnings, 10% Commission &amp; 1% Sec 194C TDS</h1>
-          <p className="text-xs text-slate-400">Transparent 90/10 settlement with zero-fee T+1 IMPS bank transfers.</p>
+          <h2 className="font-display text-lg font-bold text-[#102020]">Instant IMPS / UPI Withdrawal</h2>
+          <p className="text-xs text-[#556868]">Zero payout fee for verified L2/L3 specialists. Credits in under 15 seconds.</p>
         </div>
-        <Link to="/earnings/withdraw" className="px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-display font-extrabold text-xs shadow-lg flex items-center gap-2">
-          <i className="fa-solid fa-building-columns"></i>
-          <span>Instant IMPS Withdrawal (TW11)</span>
-        </Link>
-      </div>
 
-      {/* 4 Figma Financial Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-1">
-          <div className="text-[10px] font-mono font-bold uppercase text-slate-400">Gross Earnings (MTD)</div>
-          <div className="text-2xl font-display font-black text-slate-900">₹38,450</div>
-          <div className="text-[11px] text-emerald-600 font-bold">24 settled dispatches</div>
-        </div>
-        <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-1">
-          <div className="text-[10px] font-mono font-bold uppercase text-slate-400">Platform Fee (10%)</div>
-          <div className="text-2xl font-display font-black text-rose-600">-₹3,845</div>
-          <div className="text-[11px] text-slate-500">Escrow &amp; AI Triage</div>
-        </div>
-        <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-1">
-          <div className="text-[10px] font-mono font-bold uppercase text-slate-400">Sec 194C TDS (1%)</div>
-          <div className="text-2xl font-display font-black text-amber-600">-₹384</div>
-          <div className="text-[11px] text-slate-500">Form 16A auto-filed</div>
-        </div>
-        <div className="p-5 rounded-3xl bg-emerald-50 border border-emerald-200 shadow-sm space-y-1">
-          <div className="text-[10px] font-mono font-bold uppercase text-emerald-700">Net Take-Home Payout</div>
-          <div className="text-2xl font-display font-black text-emerald-900">₹34,221</div>
-          <div className="text-[11px] font-mono font-bold text-emerald-700">Wallet Ready: ₹12,450</div>
-        </div>
-      </div>
+        {message && (
+          <div
+            className={`rounded-xl px-4 py-2.5 text-xs font-semibold ${
+              message.tone === 'ok'
+                ? 'border border-[#10B981]/40 bg-[#ECFDF5] text-[#065F46]'
+                : 'border border-red-200 bg-red-50 text-red-700'
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
 
-      {/* Live Backend Earnings Feed */}
-      {!isDemo && q.isPending && <p className="font-mono text-xs text-slate-500" role="status">Loading live earnings ledger...</p>}
-      {!isDemo && q.isError && (
-        <div className="space-y-3">
-          <Notice tone="danger">{errorMessage(q.error)}</Notice>
-          <Button variant="secondary" onClick={() => void q.refetch()}>
-            Try again
-          </Button>
+        <form onSubmit={handleWithdraw} className="flex flex-wrap items-end gap-3">
+          <div>
+            <label htmlFor="withdraw-amt" className="mb-1 block text-xs font-semibold text-[#102020]">
+              Amount (INR)
+            </label>
+            <input
+              id="withdraw-amt"
+              type="number"
+              min={500}
+              max={availableBalanceInr}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-48 rounded-xl border border-[#E2EAE7] bg-[#F4F7F6] px-3.5 py-2.5 font-mono text-sm font-bold text-[#102020] outline-none focus:border-[#0F4C4C] focus:bg-white"
+            />
+          </div>
+          <div className="flex gap-2">
+            {[2000, 5000].map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setAmount(String(Math.min(preset, availableBalanceInr)))}
+                className="cursor-pointer rounded-xl border border-[#E2EAE7] px-3 py-2.5 font-mono text-xs font-semibold text-[#0F4C4C] hover:border-[#0F4C4C]"
+              >
+                ₹{preset.toLocaleString('en-IN')}
+              </button>
+            ))}
+          </div>
+          <button
+            type="submit"
+            className="cursor-pointer rounded-xl bg-[#D96B27] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:opacity-95"
+          >
+            Withdraw to Bank
+          </button>
+        </form>
+      </section>
+
+      {/* Ledger */}
+      <section className="tech-card overflow-hidden">
+        <div className="border-b border-[#E2EAE7] px-5 py-4">
+          <h2 className="font-display text-base font-bold text-[#102020]">Payout &amp; Escrow Ledger</h2>
         </div>
-      )}
-      {!isDemo && q.isSuccess && (
-        <section className="rounded-3xl bg-white border border-slate-200 p-6 shadow-sm space-y-4">
-          <h2 className="text-sm font-display font-black text-slate-900">Live Backend Account Summary</h2>
-          <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.entries(q.data)
-              .filter(([, v]) => typeof v === 'number' || typeof v === 'string')
-              .map(([k, v]) => (
-                <div key={k} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <dt className="font-mono text-[10px] font-bold uppercase text-slate-500">{nice(k)}</dt>
-                  <dd className="mt-1 font-display text-xl font-black text-slate-900">
-                    {looksMoney(k) && !Number.isNaN(Number(v)) ? formatINR(Number(v)) : String(v)}
-                  </dd>
-                </div>
-              ))}
-          </dl>
-        </section>
-      )}
+        <ul className="divide-y divide-[#EEF3F1]">
+          {transactions.map((tx) => (
+            <li key={tx.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+              <div>
+                <p className="text-xs font-bold text-[#102020]">{tx.title}</p>
+                <p className="font-mono text-[11px] text-[#556868]">
+                  {tx.id} {tx.jobId ? `• ${tx.jobId}` : ''} • {tx.date}
+                </p>
+              </div>
+              <span
+                className={`font-mono text-sm font-bold ${
+                  tx.type === 'CREDIT' ? 'text-[#065F46]' : 'text-[#D96B27]'
+                }`}
+              >
+                {tx.type === 'CREDIT' ? '+' : '-'}₹{tx.amountInr.toLocaleString('en-IN')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }
