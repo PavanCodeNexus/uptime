@@ -6,6 +6,7 @@ import { AdminLayout } from './components/AdminLayout';
 import KycQueuePage from './pages/KycQueuePage';
 import OverviewPage from './pages/OverviewPage';
 import TechniciansPage from './pages/TechniciansPage';
+import FigmaStudioPage from './pages/FigmaStudioPage';
 
 function NotFound() {
   return (
@@ -33,6 +34,8 @@ export default function App() {
         <Route path="/" element={<OverviewPage />} />
         <Route path="/kyc" element={<KycQueuePage />} />
         <Route path="/technicians" element={<TechniciansPage />} />
+        <Route path="/studio" element={<FigmaStudioPage />} />
+        <Route path="/catalog" element={<FigmaStudioPage />} />
       </Route>
       <Route
         path="/status"

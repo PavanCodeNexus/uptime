@@ -6,6 +6,7 @@ import { env } from './lib/env';
 import JobDetailPage from './pages/JobDetailPage';
 import JobsPage from './pages/JobsPage';
 import ReportFaultPage from './pages/ReportFaultPage';
+import FigmaStudioPage from './pages/FigmaStudioPage';
 
 function NotFound() {
   return (
@@ -37,6 +38,8 @@ export default function App() {
         <Route path="/report" element={<ReportFaultPage />} />
         <Route path="/jobs" element={<JobsPage />} />
         <Route path="/jobs/:id" element={<JobDetailPage />} />
+        <Route path="/studio" element={<FigmaStudioPage />} />
+        <Route path="/catalog" element={<FigmaStudioPage />} />
       </Route>
       <Route
         path="/status"

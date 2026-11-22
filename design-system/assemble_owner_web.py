@@ -1,0 +1,1399 @@
+# -*- coding: utf-8 -*-
+import os
+import json
+
+def get_cases_js():
+    return r"""
+    function getBespokeScreenHtml(code, s) {
+      switch(code) {
+        case 'W01':
+          return `
+            <div class="space-y-6">
+              <!-- Hero Banner -->
+              <div class="rounded-3xl bg-slate-900 text-white p-8 border border-slate-800 relative overflow-hidden flex flex-col justify-between min-h-[360px]">
+                <div class="flex items-center justify-between z-10">
+                  <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono text-[11px] font-bold">15-MINUTE EMERGENCY SLA GUARANTEED</span>
+                  <span class="text-xs font-mono text-slate-400">ISO 9001:2015 CERTIFIED DISPATCH</span>
+                </div>
+                <div class="my-auto py-6 max-w-2xl space-y-3 z-10">
+                  <div class="text-3xl sm:text-4xl font-display font-black tracking-tight text-white leading-tight">
+                    Downtime Ends Here. <span class="text-[#00D4AA]">Predict. Repair. Perform.</span>
+                  </div>
+                  <p class="text-sm text-slate-300 leading-relaxed">
+                    India's first specialized on-demand engineering network for Industrial CNC Machinery, Commercial Fleets, and Power Electronics. 2,840 certified specialists available 24/7 with 100% escrow protection.
+                  </p>
+                  <div class="flex flex-wrap items-center gap-3 pt-2">
+                    <button onclick="jumpToScreen('W07')" class="px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg flex items-center gap-2">
+                      <i class="fa-solid fa-triangle-exclamation"></i>
+                      <span>Report Machine Breakdown (SOS)</span>
+                    </button>
+                    <button onclick="jumpToScreen('W06')" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs border border-white/20">
+                      <span>Open Factory Dashboard</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 z-10 font-mono text-xs">
+                  <div><div class="text-xl font-black text-emerald-400">11.4 Mins</div><div class="text-[10px] text-slate-400">Median Arrival Time</div></div>
+                  <div><div class="text-xl font-black text-indigo-400">98.4%</div><div class="text-[10px] text-slate-400">On-Time SLA Rate</div></div>
+                  <div><div class="text-xl font-black text-sky-400">2,840</div><div class="text-[10px] text-slate-400">Certified L0–L3 Techs</div></div>
+                  <div><div class="text-xl font-black text-purple-400">42.8 Tons</div><div class="text-[10px] text-slate-400">CO2 Saved (ESG)</div></div>
+                </div>
+              </div>
+
+              <!-- 3 Sector Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-5 rounded-2xl bg-white border border-slate-200 space-y-2 hover:border-purple-500 transition-all">
+                  <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg"><i class="fa-solid fa-industry"></i></div>
+                  <h3 class="text-sm font-bold text-slate-900">Industrial Machinery & CNC</h3>
+                  <p class="text-xs text-slate-500">Siemens, Fanuc, Haas, Mazak 415V CNCs, Hydraulic presses, Boilers, and Spindles.</p>
+                </div>
+                <div class="p-5 rounded-2xl bg-white border border-slate-200 space-y-2 hover:border-blue-500 transition-all">
+                  <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-truck-moving"></i></div>
+                  <h3 class="text-sm font-bold text-slate-900">Commercial Auto & EV Fleets</h3>
+                  <p class="text-xs text-slate-500">Tata, Ashok Leyland, BharatBenz BS-VI diesel & EV delivery fleets with roadside SOS.</p>
+                </div>
+                <div class="p-5 rounded-2xl bg-white border border-slate-200 space-y-2 hover:border-cyan-500 transition-all">
+                  <div class="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg"><i class="fa-solid fa-microchip"></i></div>
+                  <h3 class="text-sm font-bold text-slate-900">Cleanroom & Power Electronics</h3>
+                  <p class="text-xs text-slate-500">Server room UPS, 3-Phase transformers, SMT placement lines, and capacitor banks.</p>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W02':
+          return `
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch min-h-[520px]">
+              <div class="lg:col-span-6 rounded-3xl bg-black text-white p-8 flex flex-col justify-between border border-slate-800">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded-full bg-white/10 text-emerald-400 font-mono text-[10px] uppercase font-bold">OWNER WORKSTATION</span>
+                  <span class="text-xs text-slate-400 font-mono">SECURE HTTPS</span>
+                </div>
+                <div class="my-auto py-6 text-center space-y-3">
+                  <div class="w-24 h-24 mx-auto rounded-3xl bg-zinc-950 border border-zinc-800 flex items-center justify-center shadow-xl">
+                    <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none">
+                      <path d="M22 22 V 56 C 22 76, 78 76, 78 56 V 22" stroke="#FFFFFF" stroke-width="13" stroke-linecap="round" />
+                      <path d="M62 38 L78 18 L92 38" stroke="#00D4AA" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+                      <circle cx="50" cy="48" r="12" stroke="#38BDF8" stroke-width="6" stroke-dasharray="7 5" />
+                    </svg>
+                  </div>
+                  <div class="text-3xl font-display font-black text-white">UPTIME</div>
+                  <div class="text-[11px] font-mono tracking-[0.25em] text-[#00D4AA] font-bold">PREDICT. REPAIR. PERFORM.</div>
+                  <p class="text-xs text-slate-400 max-w-xs mx-auto">Access real-time plant diagnostics, 15m technician dispatch, and escrow ledger.</p>
+                </div>
+                <div class="pt-3 border-t border-zinc-800 text-[11px] font-mono text-slate-500 flex justify-between">
+                  <span>100% ESCROW PROTECTED</span>
+                  <span>DPDP ACT 2023</span>
+                </div>
+              </div>
+
+              <div class="lg:col-span-6 p-7 rounded-3xl bg-white border border-slate-200 flex flex-col justify-between shadow-xs">
+                <div class="space-y-4">
+                  <div>
+                    <h3 class="text-xl font-display font-extrabold text-slate-900">Sign In to Owner Portal</h3>
+                    <p class="text-xs text-slate-500 mt-1">Enter your registered business phone or email to receive a login OTP.</p>
+                  </div>
+
+                  <div class="space-y-3 pt-2">
+                    <div>
+                      <label class="block text-[11px] font-mono font-bold uppercase text-slate-500 mb-1">Mobile Number / Official Email</label>
+                      <div class="flex rounded-xl bg-slate-50 border border-slate-200 overflow-hidden text-xs">
+                        <span class="px-3 py-2.5 bg-slate-100 text-slate-600 font-bold border-r border-slate-200">+91</span>
+                        <input type="text" value="98450 88210" class="flex-1 px-3 py-2.5 bg-transparent font-semibold outline-none" />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-[11px] font-mono font-bold uppercase text-slate-500 mb-1">Password</label>
+                      <input type="password" value="••••••••••••" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono outline-none" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-2.5 pt-4">
+                  <button onclick="jumpToScreen('W04')" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2">
+                    <span>Send Secure 6-Digit OTP</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                  <div class="text-center text-xs text-slate-500">
+                    New plant or fleet? <button onclick="jumpToScreen('W03')" class="text-blue-600 font-bold hover:underline">Register your company</button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W03':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-lg font-display font-black text-slate-900">Enterprise Factory & Fleet Registration</h3>
+                  <p class="text-xs text-slate-500">Register your company for 18% GST Input Tax Credit (ITC) and guaranteed 15m SLAs.</p>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-bold">STEP 1 OF 2</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Company / Plant Name</label>
+                  <input type="text" value="Apex Precision Tools Pvt Ltd" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-semibold outline-none" />
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">GSTIN Number (for 18% ITC Invoice)</label>
+                  <input type="text" value="29AAACA1234A1Z5" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono font-bold text-indigo-700 outline-none" />
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Industrial Cluster / Location</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-semibold outline-none">
+                    <option>Peenya Industrial Cluster #4, Bengaluru</option>
+                    <option>Whitefield Auto & Logistics Corridor</option>
+                    <option>Bommasandra Heavy CNC Zone</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Plant Emergency Phone</label>
+                  <input type="text" value="+91 98450 88210" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono outline-none" />
+                </div>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center justify-between">
+                <span><i class="fa-solid fa-gift mr-2"></i>Includes 30-Day Free UPTIME Pro Pass Trial (₹999 Value • Zero Dispatch Fees)</span>
+                <span class="font-bold">FREE TRIAL</span>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2">
+                <button onclick="jumpToScreen('W02')" class="px-4 py-2 rounded-xl bg-slate-100 font-bold text-xs text-slate-700">Back to Login</button>
+                <button onclick="jumpToScreen('W04')" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-sm">Proceed to Verify Phone</button>
+              </div>
+            </div>`;
+
+        case 'W04':
+          return `
+            <div class="max-w-md mx-auto p-7 rounded-3xl bg-white border border-slate-200 space-y-5 text-center shadow-sm">
+              <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-display font-black text-slate-900">Verify Your Phone</h3>
+                <p class="text-xs text-slate-500 mt-1">We sent a 6-digit code to <span class="font-mono font-bold text-slate-800">+91 98450 88210</span></p>
+              </div>
+
+              <div class="grid grid-cols-6 gap-2 py-2">
+                ${['4', '7', '2', '9', '1', '8'].map(d => `
+                  <div class="h-12 rounded-xl bg-slate-50 border-2 border-blue-600 flex items-center justify-center font-mono text-lg font-black text-slate-900">${d}</div>
+                `).join('')}
+              </div>
+
+              <div class="text-xs text-slate-500">
+                Resend code via WhatsApp in <span class="font-mono font-bold text-blue-600">00:48</span>
+              </div>
+
+              <button onclick="jumpToScreen('W06')" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                Verify & Enter Dashboard
+              </button>
+            </div>`;
+
+        case 'W05':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="text-center max-w-md mx-auto space-y-1">
+                <h3 class="text-xl font-display font-black text-slate-900">Configure Your Primary Sector</h3>
+                <p class="text-xs text-slate-500">Tailors your diagnostic AI, spare parts catalog, and certified engineer dispatch.</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div onclick="jumpToScreen('W06')" class="p-5 rounded-2xl border-2 border-purple-600 bg-purple-50/50 cursor-pointer space-y-3">
+                  <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg"><i class="fa-solid fa-industry"></i></div>
+                  <h4 class="font-bold text-sm text-slate-900">Industrial Machinery</h4>
+                  <p class="text-xs text-slate-600">CNC Machines, Lathes, Hydraulic Presses, Boilers, and 415V Inverters.</p>
+                  <span class="inline-block px-2.5 py-0.5 rounded bg-purple-200 text-purple-800 text-[10px] font-mono font-bold">RECOMMENDED</span>
+                </div>
+                <div onclick="jumpToScreen('W06')" class="p-5 rounded-2xl border border-slate-200 hover:border-blue-600 bg-white cursor-pointer space-y-3">
+                  <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg"><i class="fa-solid fa-truck-moving"></i></div>
+                  <h4 class="font-bold text-sm text-slate-900">Commercial Fleets</h4>
+                  <p class="text-xs text-slate-600">Heavy Diesel Trucks, Delivery Vans, Electric Forklifts, Roadside SOS.</p>
+                  <span class="inline-block px-2.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono">BS-VI & EV</span>
+                </div>
+                <div onclick="jumpToScreen('W06')" class="p-5 rounded-2xl border border-slate-200 hover:border-cyan-600 bg-white cursor-pointer space-y-3">
+                  <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-lg"><i class="fa-solid fa-microchip"></i></div>
+                  <h4 class="font-bold text-sm text-slate-900">Cleanroom & Power</h4>
+                  <p class="text-xs text-slate-600">Server Room UPS, 3-Phase Transformers, SMT Lines, and Medical Chillers.</p>
+                  <span class="inline-block px-2.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono">HIGH PRECISION</span>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W06':
+          return `
+            <div class="space-y-5">
+              <!-- Quick Actions Strip -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <button onclick="jumpToScreen('W07')" class="p-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-left space-y-1 shadow-md">
+                  <div class="text-xs font-mono uppercase text-rose-200 font-bold"><i class="fa-solid fa-bolt mr-1"></i>EMERGENCY SOS</div>
+                  <div class="text-sm font-bold">Report Breakdown</div>
+                  <div class="text-[10px] text-rose-100">15m Arrival SLA</div>
+                </button>
+                <button onclick="jumpToScreen('W23')" class="p-4 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white text-left space-y-1 shadow-md">
+                  <div class="text-xs font-mono uppercase text-purple-200 font-bold"><i class="fa-solid fa-brain mr-1"></i>AI DIAGNOSTICS</div>
+                  <div class="text-sm font-bold">Digital Twin Console</div>
+                  <div class="text-[10px] text-purple-100">Acoustic Vibration FFT</div>
+                </button>
+                <button onclick="jumpToScreen('W28')" class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 text-left space-y-1">
+                  <div class="text-xs font-mono uppercase text-slate-400 font-bold"><i class="fa-solid fa-boxes-stacked mr-1"></i>SPARE PARTS</div>
+                  <div class="text-sm font-bold text-slate-900">Procure OEM Spares</div>
+                  <div class="text-[10px] text-slate-500">60m Depot Delivery</div>
+                </button>
+                <button onclick="jumpToScreen('W27')" class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 text-left space-y-1">
+                  <div class="text-xs font-mono uppercase text-slate-400 font-bold"><i class="fa-solid fa-calendar-check mr-1"></i>MAINTENANCE</div>
+                  <div class="text-sm font-bold text-slate-900">Annual AMC Desk</div>
+                  <div class="text-[10px] text-emerald-600 font-bold">Quarterly Audit Active</div>
+                </button>
+              </div>
+
+              <!-- Active Job Card -->
+              <div class="p-5 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                  <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full bg-emerald-400 pulse-live"></span>
+                    <div>
+                      <div class="text-xs font-mono text-emerald-400 font-bold">ACTIVE BREAKDOWN JOB #JOB-9821</div>
+                      <div class="text-base font-bold text-white">Siemens Sinumerik 828D — Spindle Vibration & 415V Warning</div>
+                    </div>
+                  </div>
+                  <div class="px-3 py-1.5 rounded-xl bg-black/60 border border-slate-700 font-mono text-xs flex items-center gap-2">
+                    <span class="text-slate-400">ARRIVAL OTP:</span>
+                    <span class="text-lg font-black text-amber-400 tracking-wider">8841</span>
+                  </div>
+                </div>
+
+                <!-- Stepper -->
+                <div class="grid grid-cols-5 gap-2 text-center text-[11px] font-mono">
+                  <div class="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">✓ Triage Done</div>
+                  <div class="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">✓ Dispatched</div>
+                  <div class="p-2 rounded-xl bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold">● En-Route (8m)</div>
+                  <div class="p-2 rounded-xl bg-slate-800 text-slate-500">4. In-Repair</div>
+                  <div class="p-2 rounded-xl bg-slate-800 text-slate-500">5. Handover</div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs pt-1">
+                  <div class="text-slate-300">
+                    Assigned Specialist: <span class="font-bold text-white">Ramesh K. (L2-P Ustad • 4.84★)</span> • 1.1 km away
+                  </div>
+                  <button onclick="jumpToScreen('W10')" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>Track Live GPS Radar</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Plant Health Row -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-1">
+                  <div class="flex justify-between text-xs text-slate-500 font-mono"><span>MACHINERY HEALTH</span><span class="text-purple-600 font-bold">28 ASSETS</span></div>
+                  <div class="text-2xl font-black text-slate-900">94.2%</div>
+                  <div class="text-[11px] text-emerald-600 font-semibold">27 Nominal • 1 In-Repair</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-1">
+                  <div class="flex justify-between text-xs text-slate-500 font-mono"><span>FLEET LOGISTICS</span><span class="text-blue-600 font-bold">54 TRUCKS</span></div>
+                  <div class="text-2xl font-black text-slate-900">96.8%</div>
+                  <div class="text-[11px] text-emerald-600 font-semibold">53 Nominal • 1 Scheduled PM</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-1">
+                  <div class="flex justify-between text-xs text-slate-500 font-mono"><span>CLEANROOM UPS</span><span class="text-cyan-600 font-bold">14 UNITS</span></div>
+                  <div class="text-2xl font-black text-slate-900">99.1%</div>
+                  <div class="text-[11px] text-emerald-600 font-semibold">All 14 Units Synchronized</div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W07':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-lg font-display font-black text-slate-900">Report Equipment Breakdown (Multimodal AI Studio)</h3>
+                  <p class="text-xs text-slate-500">Voice memo, acoustic noise recording, and photo analysis powered by Gemini 2.5.</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 font-mono text-xs font-bold">EMERGENCY SOS MODE</span>
+              </div>
+
+              <div class="space-y-4 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Select Affected Machine / Vehicle</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 outline-none">
+                    <option>Siemens Sinumerik 828D CNC Milling (M-101 • Bay 2)</option>
+                    <option>Haas VF-2 Vertical Machining Center (M-104)</option>
+                    <option>Tata Prima 4028.S Logistics Truck (V-304)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Describe Symptoms (Voice or Text)</label>
+                  <div class="relative">
+                    <textarea rows="3" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none font-medium" placeholder="Describe the sound, error code, or smoke..."></textarea>
+                    <button class="absolute right-3 bottom-3 px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-bold text-[11px] flex items-center gap-1.5">
+                      <i class="fa-solid fa-microphone"></i>
+                      <span>Voice Record</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Acoustic Sound Recording Box -->
+                <div class="p-4 rounded-2xl bg-purple-50 border border-purple-200 flex flex-wrap items-center justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg"><i class="fa-solid fa-file-audio"></i></div>
+                    <div>
+                      <div class="font-bold text-purple-900">Acoustic Sound Recorded: spindle_bearing_knock.wav (6.2s)</div>
+                      <div class="text-[11px] text-purple-700 font-mono">Gemini FFT Waveform Ready: 84.2 dB Spike at 2.4 kHz</div>
+                    </div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-purple-200 text-purple-900 font-mono text-[10px] font-bold">READY FOR TRIAGE</span>
+                </div>
+
+                <!-- Urgency Selector -->
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Urgency SLA Commitment</label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="p-3 rounded-xl border-2 border-rose-600 bg-rose-50/50 cursor-pointer space-y-1">
+                      <div class="font-bold text-rose-900 flex items-center justify-between">
+                        <span>Emergency Breakdown (SOS)</span>
+                        <i class="fa-solid fa-circle-check text-rose-600"></i>
+                      </div>
+                      <div class="text-[11px] text-rose-700">15-Minute Guaranteed Arrival SLA • Line Stoppage Priority</div>
+                    </div>
+                    <div class="p-3 rounded-xl border border-slate-200 bg-white cursor-pointer space-y-1">
+                      <div class="font-bold text-slate-900">Scheduled Diagnostic</div>
+                      <div class="text-[11px] text-slate-500">2-Hour Arrival Window • Preventive check</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button onclick="jumpToScreen('W06')" class="px-4 py-2.5 rounded-xl bg-slate-100 font-bold text-xs text-slate-700">Cancel</button>
+                <button onclick="jumpToScreen('W08')" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md flex items-center gap-2">
+                  <i class="fa-solid fa-brain"></i>
+                  <span>Submit to Gemini AI Triage</span>
+                </button>
+              </div>
+            </div>`;
+
+        case 'W08':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-lg font-display font-black text-slate-900">Gemini AI Diagnostic Report</h3>
+                  <p class="text-xs text-slate-500">Multimodal acoustic FFT + error code analysis • Completed in 1.4 seconds</p>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono text-xs font-bold">94.2% CONFIDENCE</span>
+              </div>
+
+              <!-- LOTO Safety Warning -->
+              <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div>
+                  <div class="text-xs font-bold text-amber-900">MANDATORY 415V LOCKOUT-TAGOUT (LOTO) REQUIRED</div>
+                  <div class="text-[11px] text-amber-800">Isolate incoming 3-phase circuit breaker #CB-4 before opening the spindle enclosure!</div>
+                </div>
+              </div>
+
+              <!-- Diagnosis Summary -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div class="text-[10px] font-mono text-slate-400">IDENTIFIED ROOT CAUSE</div>
+                  <div class="font-bold text-sm text-slate-900">Spindle Bearing Race Degradation</div>
+                  <div class="text-[11px] text-slate-500">High-frequency acoustic resonance at 2.4 kHz indicates roller fatigue.</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div class="text-[10px] font-mono text-slate-400">RECOMMENDED SPARE PART</div>
+                  <div class="font-bold text-sm text-indigo-700">SKF 7210 Angular Contact Bearing</div>
+                  <div class="text-[11px] text-slate-500">In stock at Peenya Depot (60m courier)</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div class="text-[10px] font-mono text-slate-400">ESTIMATED REPAIR COST</div>
+                  <div class="font-black text-lg text-emerald-600 font-mono">₹11,000 <span class="text-xs text-slate-400 font-normal">(± ₹1,500)</span></div>
+                  <div class="text-[11px] text-slate-500">Includes labor, OEM part & 30-day warranty</div>
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button onclick="jumpToScreen('W07')" class="px-4 py-2.5 rounded-xl bg-slate-100 font-bold text-xs text-slate-700">Re-Record Audio</button>
+                <button onclick="jumpToScreen('W09')" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md flex items-center gap-2">
+                  <span>Proceed to Select Ranked Specialist</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>`;
+
+        case 'W09':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-lg font-display font-black text-slate-900">Available Certified Specialists (40% Distance / 60% Skill Scored)</h3>
+                  <p class="text-xs text-slate-500">Ranked by sp_calculate_match_score • All exclude RULE SB-00 fatigued technicians</p>
+                </div>
+                <span class="text-xs font-mono text-emerald-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>3 Specialists Ready</span>
+              </div>
+
+              <!-- Tech List -->
+              <div class="space-y-3">
+                <div class="p-4 rounded-2xl bg-indigo-50/40 border-2 border-indigo-500 flex flex-wrap items-center justify-between gap-4">
+                  <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-bold flex items-center justify-center font-display text-base">RK</div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="font-bold text-sm text-slate-900">Ramesh K. Vishwakarma</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono text-[10px] font-bold">L2-P USTAD</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">98% MATCH</span>
+                      </div>
+                      <div class="text-xs text-slate-600 mt-0.5">
+                        Siemens & SKF Certified • 4.84 ★ (412 jobs) • <span class="font-bold text-emerald-700">1.1 km away (ETA 11 mins)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="text-right font-mono">
+                      <div class="text-base font-black text-slate-900">₹11,000</div>
+                      <div class="text-[10px] text-slate-400">100% Escrow Hold</div>
+                    </div>
+                    <button onclick="jumpToScreen('W10')" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md">
+                      Book & Dispatch (15m SLA)
+                    </button>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                  <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold flex items-center justify-center font-display text-base">SM</div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="font-bold text-sm text-slate-900">Syed Mustafa</span>
+                        <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-mono text-[10px] font-bold">L3 MASTER</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">94% MATCH</span>
+                      </div>
+                      <div class="text-xs text-slate-600 mt-0.5">
+                        High-Voltage 415V Specialist • 4.92 ★ (610 jobs) • <span class="text-slate-600">2.4 km away (ETA 18 mins)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="text-right font-mono">
+                      <div class="text-base font-black text-slate-900">₹12,500</div>
+                      <div class="text-[10px] text-slate-400">100% Escrow Hold</div>
+                    </div>
+                    <button onclick="jumpToScreen('W10')" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">
+                      Book Specialist
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W10':
+          return `
+            <div class="space-y-4">
+              <!-- Live Tracking Top Bar -->
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-emerald-500 pulse-live"></span>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900">Technician En-Route — 8 Mins to Arrival</h3>
+                    <p class="text-[11px] text-slate-500">Ramesh K. (T-9841 • Blue Hero Splendor KA-04-EK-9912)</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-center font-mono">
+                    <div class="text-[9px] text-amber-800 font-bold uppercase">Gate OTP</div>
+                    <div class="text-base font-black text-amber-900">8841</div>
+                  </div>
+                  <button class="px-3 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs"><i class="fa-solid fa-phone mr-1.5"></i>Call Tech</button>
+                </div>
+              </div>
+
+              <!-- Simulated PostGIS Vector Map Viewport -->
+              <div class="rounded-3xl bg-slate-950 text-white border border-slate-800 p-6 min-h-[400px] flex flex-col justify-between relative overflow-hidden">
+                <div class="flex justify-between items-center z-10 font-mono text-xs">
+                  <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">GPS TELEMETRY ACTIVE (38ms)</span>
+                  <span class="text-slate-400">Destination: Apex Tools Bay #2</span>
+                </div>
+
+                <div class="my-auto py-8 text-center space-y-2 z-10">
+                  <div class="w-16 h-16 mx-auto rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl shadow-2xl pulse-live">
+                    <i class="fa-solid fa-motorcycle"></i>
+                  </div>
+                  <div class="text-lg font-bold">Ramesh K. is on Peenya 1st Cross Road</div>
+                  <div class="text-xs text-slate-400 font-mono">500m Arrival Geofence Status: Approaching Outer Ring (420m away)</div>
+                </div>
+
+                <div class="flex justify-between items-center z-10 border-t border-slate-800 pt-3 text-xs text-slate-400 font-mono">
+                  <span>PostGIS: ST_DistanceSphere() = 420.4m</span>
+                  <span class="text-emerald-400">100% Escrow Held: ₹11,000</span>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W11':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-base font-display font-black text-slate-900">Job History & Past Orders Ledger</h3>
+                  <p class="text-xs text-slate-500">Complete audit log of all repairs, warranty revisited claims, and tax invoices.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs">All Jobs (42)</button>
+                  <button class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs">Warranty Active (3)</button>
+                  <button class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs">Export CSV</button>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-900 text-slate-200 font-mono text-[10px] uppercase">
+                    <tr>
+                      <th class="p-3">Job ID & Date</th>
+                      <th class="p-3">Asset Repaired</th>
+                      <th class="p-3">Specialist</th>
+                      <th class="p-3">Amount & GST</th>
+                      <th class="p-3">Warranty Status</th>
+                      <th class="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    <tr class="hover:bg-slate-50">
+                      <td class="p-3 font-mono font-bold text-blue-600">JOB-9821<div class="text-[10px] text-slate-400 font-normal">14 Nov 2026, 10:14</div></td>
+                      <td class="p-3 font-bold text-slate-900">Siemens Sinumerik 828D<div class="text-[10px] text-slate-400">Spindle Bearing 7210</div></td>
+                      <td class="p-3">Ramesh K. (L2-P)</td>
+                      <td class="p-3 font-mono">₹11,000<div class="text-[10px] text-emerald-600">18% GST (₹1,980 ITC)</div></td>
+                      <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">28 DAYS LEFT</span></td>
+                      <td class="p-3 text-right"><button onclick="jumpToScreen('W12')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-mono text-[10px]">Details</button></td>
+                    </tr>
+                    <tr class="hover:bg-slate-50">
+                      <td class="p-3 font-mono font-bold text-blue-600">JOB-9740<div class="text-[10px] text-slate-400 font-normal">02 Nov 2026, 14:30</div></td>
+                      <td class="p-3 font-bold text-slate-900">Tata Prima 4028.S (V-304)<div class="text-[10px] text-slate-400">DEF Doser Ultrasonic Clean</div></td>
+                      <td class="p-3">Syed M. (L3)</td>
+                      <td class="p-3 font-mono">₹8,400</td>
+                      <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">16 DAYS LEFT</span></td>
+                      <td class="p-3 text-right"><button onclick="jumpToScreen('W12')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-mono text-[10px]">Details</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>`;
+
+        case 'W12':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <span class="px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-mono text-[10px] font-bold">JOB COMPLETED • CERTIFIED HANDOVER</span>
+                  <h3 class="text-base font-display font-black text-slate-900 mt-1">Job Details & Cryptographic Service Dossier #JOB-9821</h3>
+                </div>
+                <button class="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs"><i class="fa-solid fa-file-pdf mr-1.5"></i>Download GST Tax Invoice</button>
+              </div>
+
+              <!-- Side-by-side Evidence -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 rounded-2xl bg-rose-50/60 border border-rose-200 space-y-2">
+                  <div class="flex justify-between items-center text-xs font-bold text-rose-900">
+                    <span>1. BEFORE REPAIR EVIDENCE</span>
+                    <span class="font-mono text-[10px]">10:14 IST</span>
+                  </div>
+                  <div class="p-3 rounded-xl bg-black text-rose-300 font-mono text-xs space-y-1">
+                    <div>Acoustic Spike: 84.2 dB at 2.4 kHz</div>
+                    <div>Photo: Roller pit marks verified on inner race</div>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-2">
+                  <div class="flex justify-between items-center text-xs font-bold text-emerald-900">
+                    <span>2. AFTER REPAIR HANDOVER</span>
+                    <span class="font-mono text-[10px]">11:22 IST</span>
+                  </div>
+                  <div class="p-3 rounded-xl bg-black text-emerald-300 font-mono text-xs space-y-1">
+                    <div>Nominal Vibration: 61.0 dB (ISO 10816 Pass)</div>
+                    <div>OEM Part: SKF 7210 Bearing (QR: SKF-8812)</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono flex flex-wrap items-center justify-between gap-2">
+                <div>SHA-256 Hash: <span class="text-indigo-600 font-bold">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span></div>
+                <span class="text-emerald-600 font-bold">TAMPER-PROOF VERIFIED</span>
+              </div>
+            </div>`;
+
+        case 'W13':
+          return `
+            <div class="max-w-xl mx-auto p-7 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="text-center space-y-1">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-mono text-[10px] font-bold uppercase">DOUBLE-BLIND REVIEW (CORE-07)</span>
+                <h3 class="text-xl font-display font-black text-slate-900">Rate Specialist Ramesh K.</h3>
+                <p class="text-xs text-slate-500">Your review is encrypted in the vault and revealed only after both parties submit or 48 hours pass.</p>
+              </div>
+
+              <!-- Star Rating -->
+              <div class="text-center space-y-2 py-2">
+                <div class="flex justify-center gap-2 text-2xl text-amber-400">
+                  <i class="fa-solid fa-star cursor-pointer"></i>
+                  <i class="fa-solid fa-star cursor-pointer"></i>
+                  <i class="fa-solid fa-star cursor-pointer"></i>
+                  <i class="fa-solid fa-star cursor-pointer"></i>
+                  <i class="fa-solid fa-star cursor-pointer"></i>
+                </div>
+                <div class="text-xs font-bold text-slate-700">5.0 — Outstanding Technical Skill & Punctuality</div>
+              </div>
+
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Feedback for Specialist</label>
+                  <textarea rows="3" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none" placeholder="Explain what went well..."></textarea>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div class="font-bold text-slate-800">Factory Floor Safety Tag</div>
+                  <label class="flex items-center gap-2 text-slate-600 cursor-pointer pt-1">
+                    <input type="checkbox" checked class="accent-indigo-600" />
+                    <span>Technician followed mandatory 415V LOTO PPE protocols</span>
+                  </label>
+                </div>
+              </div>
+
+              <button onclick="jumpToScreen('W06')" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md">
+                Submit Sealed Blind Review (CORE-07)
+              </button>
+            </div>`;
+
+        case 'W14':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-base font-display font-black text-slate-900">Industrial CNC & Factory Machinery Inventory (28 Assets)</h3>
+                  <p class="text-xs text-slate-500">Real-time health telemetry gauges and direct Digital Twin integrations.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="text" placeholder="Search machines..." class="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs outline-none" />
+                  <button onclick="jumpToScreen('W16')" class="px-3.5 py-1.5 rounded-xl bg-purple-600 text-white font-bold text-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i><span>Add Machine</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Machines Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div onclick="jumpToScreen('W15')" class="p-4 rounded-2xl border border-slate-200 hover:border-purple-500 bg-white cursor-pointer space-y-3 transition-all">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <div class="text-sm font-bold text-slate-900">Siemens Sinumerik 828D</div>
+                      <div class="text-[11px] text-slate-400 font-mono">ID: M-101 • Bay 2</div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">98% HEALTH</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-500" style="width: 98%"></div></div>
+                  <div class="text-[11px] text-slate-500 flex justify-between">
+                    <span>Operating Hours: 3,420h</span>
+                    <span class="text-purple-600 font-bold">Digital Twin →</span>
+                  </div>
+                </div>
+
+                <div onclick="jumpToScreen('W15')" class="p-4 rounded-2xl border border-amber-300 bg-amber-50/20 cursor-pointer space-y-3 transition-all">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <div class="text-sm font-bold text-slate-900">Haas VF-2 Machining Center</div>
+                      <div class="text-[11px] text-slate-400 font-mono">ID: M-104 • Bay 1</div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono text-[10px] font-bold">74% WARNING</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden"><div class="h-full bg-amber-500" style="width: 74%"></div></div>
+                  <div class="text-[11px] text-amber-700 flex justify-between font-semibold">
+                    <span>Spindle Vibration Alert (80 dB)</span>
+                    <span class="text-rose-600 font-bold">Book PM →</span>
+                  </div>
+                </div>
+
+                <div onclick="jumpToScreen('W15')" class="p-4 rounded-2xl border border-slate-200 hover:border-purple-500 bg-white cursor-pointer space-y-3 transition-all">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <div class="text-sm font-bold text-slate-900">LMW Smarturn CNC Lathe</div>
+                      <div class="text-[11px] text-slate-400 font-mono">ID: M-108 • Bay 3</div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">92% HEALTH</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden"><div class="h-full bg-emerald-500" style="width: 92%"></div></div>
+                  <div class="text-[11px] text-slate-500 flex justify-between">
+                    <span>Operating Hours: 1,840h</span>
+                    <span class="text-purple-600 font-bold">Digital Twin →</span>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W15':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <span class="text-[10px] font-mono text-purple-600 font-bold">ASSET DOSSIER • PEENYA BAY #2</span>
+                  <h3 class="text-base font-display font-black text-slate-900 mt-0.5">Siemens Sinumerik 828D CNC Milling Machine (M-101)</h3>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="jumpToScreen('W23')" class="px-3.5 py-1.5 rounded-xl bg-purple-600 text-white font-bold text-xs"><i class="fa-solid fa-brain mr-1.5"></i>Open Digital Twin</button>
+                  <button onclick="jumpToScreen('W07')" class="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white font-bold text-xs"><i class="fa-solid fa-bolt mr-1.5"></i>Report Breakdown</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div class="text-[10px] text-slate-400">ELECTRICAL SPECIFICATION</div>
+                  <div class="font-bold text-slate-900">415V AC • 3-Phase • 15 kW Motor</div>
+                  <div class="text-slate-500">Max Spindle: 12,000 RPM</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div class="text-[10px] text-slate-400">MAINTENANCE & WARRANTY</div>
+                  <div class="font-bold text-emerald-600">30-Day Warranty Active (28 Days)</div>
+                  <div class="text-slate-500">AMC Tier: Pro Enterprise 24/7</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                  <div class="text-[10px] text-slate-400">LAST REPAIR HANDOVER</div>
+                  <div class="font-bold text-slate-900">14 Nov 2026 (Job #JOB-9821)</div>
+                  <div class="text-slate-500">Replaced SKF 7210 Bearing</div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W16':
+          return `
+            <div class="max-w-2xl mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div>
+                <h3 class="text-lg font-display font-black text-slate-900">Add New Industrial Machine</h3>
+                <p class="text-xs text-slate-500">Scan QR code, enter OEM serial number, or upload machine nameplate photo.</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">OEM Manufacturer</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-bold outline-none">
+                    <option>Siemens AG</option>
+                    <option>Fanuc Robotics</option>
+                    <option>Haas Automation</option>
+                    <option>Mazak Corporation</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Serial / Asset Number</label>
+                  <input type="text" placeholder="e.g. SN-882104-BLR" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono outline-none" />
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Plant Location / Bay</label>
+                  <input type="text" value="Peenya Plant #1 • Bay 3" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 outline-none" />
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Voltage Rating</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 outline-none">
+                    <option>415V 3-Phase AC (Standard)</option>
+                    <option>230V Single-Phase AC</option>
+                    <option>440V Heavy Duty Industrial</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2">
+                <button onclick="jumpToScreen('W14')" class="px-4 py-2 rounded-xl bg-slate-100 font-bold text-xs text-slate-700">Cancel</button>
+                <button onclick="jumpToScreen('W14')" class="px-5 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-sm">Save & Register Asset</button>
+              </div>
+            </div>`;
+
+        case 'W17':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-base font-display font-black text-slate-900">Commercial Fleet & EV Logistics Directory (54 Fleets)</h3>
+                  <p class="text-xs text-slate-500">Heavy commercial trucks, electric delivery vans, and industrial forklifts.</p>
+                </div>
+                <button onclick="jumpToScreen('W19')" class="px-3.5 py-1.5 rounded-xl bg-blue-600 text-white font-bold text-xs"><i class="fa-solid fa-plus mr-1"></i>Add Vehicle</button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div onclick="jumpToScreen('W18')" class="p-4 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white cursor-pointer space-y-2">
+                  <div class="flex justify-between items-start">
+                    <span class="font-bold text-sm text-slate-900">Tata Prima 4028.S (Heavy Diesel)</span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">96% HEALTH</span>
+                  </div>
+                  <div class="text-xs text-slate-500">Reg: KA-01-AF-2041 • DEF Tank: 82%</div>
+                  <div class="text-[11px] text-blue-600 font-bold">OBD-II Telemetry Clean →</div>
+                </div>
+                <div onclick="jumpToScreen('W18')" class="p-4 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white cursor-pointer space-y-2">
+                  <div class="flex justify-between items-start">
+                    <span class="font-bold text-sm text-slate-900">Mahindra Treo Zor EV (Forklift)</span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">99% HEALTH</span>
+                  </div>
+                  <div class="text-xs text-slate-500">Reg: KA-04-EV-9012 • Battery SoC: 88%</div>
+                  <div class="text-[11px] text-blue-600 font-bold">Thermal Cycles Nominal →</div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W18':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                  <span class="text-[10px] font-mono text-blue-600 font-bold">VEHICLE TELEMETRY • WHITEFIELD DEPOT</span>
+                  <h3 class="text-base font-display font-black text-slate-900">Tata Prima 4028.S (KA-01-AF-2041)</h3>
+                </div>
+                <button onclick="jumpToScreen('W07')" class="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white font-bold text-xs">Roadside SOS</button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs font-mono">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-slate-400 text-[10px]">OBD-II DTC FAULT CODES</div>
+                  <div class="text-base font-black text-emerald-600">0 ACTIVE CODES</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-slate-400 text-[10px]">DEF AD-BLUE LEVEL</div>
+                  <div class="text-base font-black text-blue-600">82% NOMINAL</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-slate-400 text-[10px]">DRIVER SAFETY SCORE</div>
+                  <div class="text-base font-black text-indigo-600">94 / 100</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-slate-400 text-[10px]">LAST REPAIR WARRANTY</div>
+                  <div class="text-base font-black text-purple-600">16 DAYS LEFT</div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W19':
+          return `
+            <div class="max-w-2xl mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div>
+                <h3 class="text-lg font-display font-black text-slate-900">Add Fleet Vehicle (Vahan Lookup)</h3>
+                <p class="text-xs text-slate-500">Auto-decode vehicle chassis and registration documents.</p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Registration Number</label>
+                  <input type="text" placeholder="e.g. KA-01-AF-2041" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono font-bold outline-none" />
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Vehicle Category</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 outline-none">
+                    <option>Heavy Goods Commercial Vehicle (HGV)</option>
+                    <option>Electric Commercial Forklift</option>
+                    <option>Light Commercial Vehicle (LCV)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex justify-end gap-2 pt-2">
+                <button onclick="jumpToScreen('W17')" class="px-4 py-2 rounded-xl bg-slate-100 font-bold text-xs text-slate-700">Cancel</button>
+                <button onclick="jumpToScreen('W17')" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs">Save Vehicle</button>
+              </div>
+            </div>`;
+
+        case 'W20':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-base font-display font-black text-slate-900">Commercial Electronics & Cleanroom Power (14 Units)</h3>
+                  <p class="text-xs text-slate-500">Server room UPS, 3-Phase transformers, and SMT PCB production lines.</p>
+                </div>
+                <button onclick="jumpToScreen('W22')" class="px-3.5 py-1.5 rounded-xl bg-cyan-600 text-white font-bold text-xs"><i class="fa-solid fa-plus mr-1"></i>Add Device</button>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div onclick="jumpToScreen('W21')" class="p-4 rounded-2xl border border-slate-200 hover:border-cyan-500 bg-white cursor-pointer space-y-2">
+                  <div class="flex justify-between items-start">
+                    <span class="font-bold text-sm text-slate-900">Emerson Liebert 80 kVA UPS</span>
+                    <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">97% HEALTH</span>
+                  </div>
+                  <div class="text-xs text-slate-500">E-City Server Farm #1 • Battery Bank: 100%</div>
+                  <div class="text-[11px] text-cyan-600 font-bold">Capacitor Ripple Nominal →</div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W21':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                  <span class="text-[10px] font-mono text-cyan-600 font-bold">POWER TELEMETRY • E-CITY</span>
+                  <h3 class="text-base font-display font-black text-slate-900">Emerson Liebert 80 kVA Online UPS (D-502)</h3>
+                </div>
+                <button onclick="jumpToScreen('W07')" class="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white font-bold text-xs">Report Fault</button>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-slate-400 text-[10px]">CAPACITOR RIPPLE VOLTAGE</div>
+                  <div class="text-base font-black text-emerald-600">0.8V (THRESHOLD 2.5V)</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-slate-400 text-[10px]">BATTERY BACKUP RUNTIME</div>
+                  <div class="text-base font-black text-indigo-600">42 MINS @ 65% LOAD</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-slate-400 text-[10px]">TOTAL HARMONIC DISTORTION</div>
+                  <div class="text-base font-black text-purple-600">THD: 2.1% (PASS)</div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W22':
+          return `
+            <div class="max-w-2xl mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-lg font-display font-black text-slate-900">Add Commercial Power Device</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Device Model / Brand</label>
+                  <input type="text" placeholder="e.g. Emerson Liebert 80 kVA" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-bold outline-none" />
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Power Rating (kVA / kW)</label>
+                  <input type="text" value="80 kVA" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono outline-none" />
+                </div>
+              </div>
+              <div class="flex justify-end gap-2 pt-2">
+                <button onclick="jumpToScreen('W20')" class="px-4 py-2 rounded-xl bg-slate-100 font-bold text-xs text-slate-700">Cancel</button>
+                <button onclick="jumpToScreen('W20')" class="px-5 py-2.5 rounded-xl bg-cyan-600 text-white font-bold text-xs">Save Device</button>
+              </div>
+            </div>`;
+
+        case 'W23':
+          return `
+            <div class="p-6 rounded-3xl bg-slate-950 text-white border border-slate-800 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-emerald-400 pulse-live"></span>
+                  <div>
+                    <span class="text-xs font-mono text-purple-400 font-bold">DIGITAL TWIN TELEMETRY ACTIVE (60 FPS)</span>
+                    <h3 class="text-base font-display font-black text-white">Siemens Sinumerik 828D Spindle & Axis Model</h3>
+                  </div>
+                </div>
+                <button onclick="jumpToScreen('W07')" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs">Emergency SOS</button>
+              </div>
+
+              <!-- Component Health Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div class="p-3.5 rounded-2xl bg-slate-900 border border-purple-500/40 space-y-1">
+                  <div class="text-[10px] text-slate-400">MAIN SPINDLE</div>
+                  <div class="text-lg font-black text-emerald-400">98% NOMINAL</div>
+                  <div class="text-[10px] text-slate-500">61.0 dB Vibration</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-1">
+                  <div class="text-[10px] text-slate-400">X/Y/Z SERVO DRIVE</div>
+                  <div class="text-lg font-black text-emerald-400">96% NOMINAL</div>
+                  <div class="text-[10px] text-slate-500">Positioning Error: 2µm</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-1">
+                  <div class="text-[10px] text-slate-400">HYDRAULIC CHUCK</div>
+                  <div class="text-lg font-black text-emerald-400">94% NOMINAL</div>
+                  <div class="text-[10px] text-slate-500">Pressure: 32 Bar</div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-1">
+                  <div class="text-[10px] text-slate-400">415V INVERTER</div>
+                  <div class="text-lg font-black text-emerald-400">99% NOMINAL</div>
+                  <div class="text-[10px] text-slate-500">Bus Voltage: 560V DC</div>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-black/80 border border-slate-800 text-xs font-mono flex justify-between">
+                <span>AI Prediction: Next estimated maintenance window in 480 operating hours.</span>
+                <span class="text-emerald-400">Physics Loss = 0.0014 (Optimal)</span>
+              </div>
+            </div>`;
+
+        case 'W24':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-base font-display font-black text-slate-900">Micro-Insurance, 30-Day Warranty & AMC Hub</h3>
+                  <p class="text-xs text-slate-500">Coverage safeguards across all registered plant assets.</p>
+                </div>
+                <button onclick="jumpToScreen('W25')" class="px-3.5 py-1.5 rounded-xl bg-blue-600 text-white font-bold text-xs">File Revisit Claim</button>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div class="text-xs font-mono font-bold text-emerald-600">30-DAY REPAIR WARRANTIES</div>
+                  <div class="text-2xl font-black text-slate-900">3 ACTIVE</div>
+                  <div class="text-xs text-slate-500">Zero-cost warranty revisit if same fault recurs.</div>
+                  <button onclick="jumpToScreen('W26')" class="w-full py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-800">Track Days Left</button>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div class="text-xs font-mono font-bold text-blue-600">₹15 MICRO-INSURANCE POOL</div>
+                  <div class="text-2xl font-black text-slate-900">₹1,00,000</div>
+                  <div class="text-xs text-slate-500">Coverage against collateral accidental breakdown.</div>
+                  <button onclick="jumpToScreen('W25')" class="w-full py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-800">View Policy</button>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div class="text-xs font-mono font-bold text-purple-600">COMPREHENSIVE AMC</div>
+                  <div class="text-2xl font-black text-slate-900">PRO TIER</div>
+                  <div class="text-xs text-slate-500">Guaranteed 15m response + quarterly audits.</div>
+                  <button onclick="jumpToScreen('W27')" class="w-full py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-800">Manage AMC</button>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W25':
+          return `
+            <div class="max-w-2xl mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-lg font-display font-black text-slate-900">File Zero-Cost Warranty Revisit Claim</h3>
+              <p class="text-xs text-slate-500">If your repaired equipment experiences recurring fault within 30 days, we dispatch a senior specialist at ₹0 fee.</p>
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Select Covered Past Job</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-bold outline-none">
+                    <option>Job #JOB-9821: Siemens Sinumerik 828D Spindle (28 Days Left)</option>
+                    <option>Job #JOB-9740: Tata Prima DEF Injector (16 Days Left)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Describe Recurrence</label>
+                  <textarea rows="3" class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 outline-none" placeholder="Explain the recurring noise or vibration..."></textarea>
+                </div>
+              </div>
+              <div class="flex justify-end gap-2 pt-2">
+                <button onclick="jumpToScreen('W24')" class="px-4 py-2 rounded-xl bg-slate-100 font-bold text-xs text-slate-700">Cancel</button>
+                <button onclick="jumpToScreen('W26')" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs">Submit Revisit Claim (₹0 Fee)</button>
+              </div>
+            </div>`;
+
+        case 'W26':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-base font-display font-black text-slate-900">30-Day Repair Warranty Tracker</h3>
+              <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-900 text-slate-200 font-mono text-[10px] uppercase">
+                    <tr>
+                      <th class="p-3">Job ID</th>
+                      <th class="p-3">Machine & Part</th>
+                      <th class="p-3">Warranty Expiry</th>
+                      <th class="p-3">Remaining Time</th>
+                      <th class="p-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    <tr class="hover:bg-slate-50">
+                      <td class="p-3 font-mono font-bold text-blue-600">JOB-9821</td>
+                      <td class="p-3 font-bold">Siemens Sinumerik 828D (SKF 7210 Bearing)</td>
+                      <td class="p-3 font-mono">12 Dec 2026</td>
+                      <td class="p-3 font-mono text-emerald-600 font-bold">28 Days Left</td>
+                      <td class="p-3 text-right"><button onclick="jumpToScreen('W25')" class="px-2.5 py-1 rounded bg-slate-900 text-white font-mono text-[10px]">Claim Revisit</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>`;
+
+        case 'W27':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-base font-display font-black text-slate-900">Annual Maintenance Contracts (AMC) Desk</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-2xl border-2 border-purple-600 bg-purple-50/40 space-y-2">
+                  <span class="px-2 py-0.5 rounded bg-purple-200 text-purple-800 font-mono text-[10px] font-bold">ACTIVE PLAN</span>
+                  <div class="text-lg font-bold text-slate-900">Enterprise 24/7 SLA</div>
+                  <div class="text-2xl font-black text-purple-700 font-mono">₹65,000<span class="text-xs font-normal text-slate-500">/year</span></div>
+                  <ul class="text-xs text-slate-600 space-y-1 pt-1">
+                    <li>✓ 15-Minute Emergency Response</li>
+                    <li>✓ Dedicated Cluster Lead Engineer</li>
+                    <li>✓ Quarterly Ultrasonic & Thermography</li>
+                  </ul>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W28':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-base font-display font-black text-slate-900">OEM Spare Parts Marketplace (18% GST ITC Reconciled)</h3>
+                  <p class="text-xs text-slate-500">Genuine bearings, contactors, belts & drives with 60m delivery from Peenya/Whitefield hubs.</p>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="jumpToScreen('W30')" class="px-3.5 py-1.5 rounded-xl bg-blue-600 text-white font-bold text-xs"><i class="fa-solid fa-cart-shopping mr-1.5"></i>Cart (2 items)</button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div onclick="jumpToScreen('W29')" class="p-4 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white cursor-pointer space-y-2">
+                  <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold">OEM GENUINE</span>
+                  <div class="text-sm font-bold text-slate-900">SKF 7210 Angular Contact Spindle Bearing</div>
+                  <div class="text-base font-black text-slate-900 font-mono">₹3,850</div>
+                  <div class="text-[11px] text-slate-500">Peenya Depot • 60m Courier ETA</div>
+                  <button class="w-full py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs">Inspect & Check Fitment</button>
+                </div>
+
+                <div onclick="jumpToScreen('W29')" class="p-4 rounded-2xl border border-slate-200 hover:border-blue-500 bg-white cursor-pointer space-y-2">
+                  <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-mono text-[10px] font-bold">REFURBISHED GRADE A+</span>
+                  <div class="text-sm font-bold text-slate-900">Danfoss VLT 15 kW Frequency Inverter</div>
+                  <div class="text-base font-black text-slate-900 font-mono">₹18,500 <span class="text-xs line-through text-slate-400">₹32,000</span></div>
+                  <div class="text-[11px] text-slate-500">Whitefield Hub • Tested with 6m warranty</div>
+                  <button class="w-full py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs">Inspect & Check Fitment</button>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W29':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-5">
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                <div class="md:col-span-4 rounded-2xl bg-slate-50 border border-slate-200 p-6 flex flex-col justify-center items-center text-center">
+                  <i class="fa-solid fa-gear text-6xl text-slate-400 mb-3"></i>
+                  <div class="font-bold text-sm text-slate-900">SKF 7210 Angular Contact</div>
+                  <div class="text-xs font-mono text-emerald-600 font-bold mt-1">OEM QR SEAL VERIFIED</div>
+                </div>
+
+                <div class="md:col-span-8 space-y-3">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="text-lg font-bold text-slate-900">SKF 7210 B-2RS Angular Contact Spindle Bearing (50x90x20mm)</h3>
+                      <div class="text-xs text-slate-500 font-mono">Part Number: 7210-B-2RS-TVP-P4A</div>
+                    </div>
+                    <div class="text-xl font-black font-mono text-slate-900">₹3,850</div>
+                  </div>
+
+                  <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium">
+                    <i class="fa-solid fa-circle-check mr-1.5"></i>Machine Fitment Confirmed: 100% compatible with your Siemens Sinumerik 828D (M-101)
+                  </div>
+
+                  <div class="flex gap-2 pt-2">
+                    <button onclick="jumpToScreen('W30')" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md">Add to Cart</button>
+                    <button onclick="jumpToScreen('W31')" class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">Buy Now (Express SOS Runner)</button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W30':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-display font-black text-slate-900">Procurement Cart (1 Item)</h3>
+                <span class="text-xs font-mono text-slate-500">Plant: Peenya Plant #1</span>
+              </div>
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex justify-between items-center">
+                <div>
+                  <div class="font-bold text-sm text-slate-900">SKF 7210 Angular Contact Bearing</div>
+                  <div class="text-xs text-slate-500">Qty: 1 • OEM Genuine</div>
+                </div>
+                <div class="text-right font-mono font-bold text-slate-900">₹3,850</div>
+              </div>
+              <div class="flex justify-between items-center text-xs font-mono pt-2">
+                <span>18% GST Input Tax Credit: ₹693.00</span>
+                <span class="text-base font-black text-slate-900">Total: ₹4,543.00</span>
+              </div>
+              <button onclick="jumpToScreen('W31')" class="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md">Proceed to Checkout</button>
+            </div>`;
+
+        case 'W31':
+          return `
+            <div class="max-w-2xl mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-lg font-display font-black text-slate-900">Enterprise Multi-Plant Checkout</h3>
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Delivery Destination</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-bold outline-none">
+                    <option>Apex Precision Tools — Peenya Plant #1 Gate 2 (Bay 2)</option>
+                    <option>Whitefield Depot Receiving Bay</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Purchase Order (PO) Number</label>
+                  <input type="text" value="PO-2026-8812" class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-mono outline-none" />
+                </div>
+              </div>
+              <button onclick="jumpToScreen('W32')" class="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md">Proceed to Escrow Payment</button>
+            </div>`;
+
+        case 'W32':
+          return `
+            <div class="max-w-md mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-4 text-center">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-display font-black text-slate-900">100% Escrow Protection</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Funds are held in secure escrow until you inspect the repaired machine and provide the completion OTP.</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-left font-mono text-xs space-y-1">
+                <div class="flex justify-between"><span>Base Amount:</span><span>₹11,000.00</span></div>
+                <div class="flex justify-between"><span>18% GST:</span><span>₹1,980.00</span></div>
+                <div class="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1"><span>Total Escrow Deposit:</span><span>₹12,980.00</span></div>
+              </div>
+              <button onclick="jumpToScreen('W06')" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md">
+                Authorize Escrow Deposit (Razorpay)
+              </button>
+            </div>`;
+
+        case 'W33':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-base font-display font-black text-slate-900">Uptime Pre-Funded Corporate Wallet</h3>
+              <div class="p-5 rounded-2xl bg-slate-900 text-white space-y-2">
+                <div class="text-xs font-mono text-slate-400">AVAILABLE CORPORATE BALANCE</div>
+                <div class="text-3xl font-black font-mono text-emerald-400">₹48,500.00</div>
+                <div class="text-[11px] text-slate-400">Auto-Refill Threshold: ₹15,000</div>
+              </div>
+            </div>`;
+
+        case 'W34':
+          return `
+            <div class="max-w-md mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-4 text-center">
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono text-[10px] font-bold uppercase">ACTIVE SUBSCRIPTION</span>
+              <h3 class="text-xl font-display font-black text-slate-900">Uptime Pro Pass (₹999/mo)</h3>
+              <p class="text-xs text-slate-500">Active until 31 Dec 2026 • Renews automatically</p>
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs space-y-2">
+                <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i><span>₹0 Platform Booking Fees on all jobs (Saved ₹14,200)</span></div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i><span>Guaranteed 15-Minute Emergency Dispatch SLA</span></div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i><span>Includes 5 Free Digital Twin Telemetry Slots</span></div>
+              </div>
+            </div>`;
+
+        case 'W35':
+          return `
+            <div class="p-6 rounded-3xl bg-slate-950 text-white border border-slate-800 space-y-4">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-3 h-3 rounded-full bg-emerald-400 pulse-live"></span>
+                  <h3 class="text-base font-display font-black text-white">Remote Video Consultation Studio (Agora AR)</h3>
+                </div>
+                <span class="px-2.5 py-0.5 rounded bg-slate-800 font-mono text-[10px]">WAVE 3 TELE-REPAIR</span>
+              </div>
+              <div class="rounded-2xl bg-black border border-slate-800 p-8 min-h-[320px] flex flex-col justify-between items-center text-center">
+                <div class="w-16 h-16 rounded-full bg-blue-600/30 text-blue-400 flex items-center justify-center text-2xl"><i class="fa-solid fa-video"></i></div>
+                <div>
+                  <div class="text-base font-bold text-white">Expert Consultation Chamber</div>
+                  <div class="text-xs text-slate-400 max-w-sm mt-1">Live camera stream with bidirectional AR annotation overlays. Senior engineers guide your plant technicians in real time.</div>
+                </div>
+                <div class="text-xs font-mono text-emerald-400">Ready to initiate session (₹999/30 mins)</div>
+              </div>
+            </div>`;
+
+        case 'W36':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-display font-black text-slate-900">Field Repair Wiki & 415V Schematics Directory</h3>
+                <input type="text" placeholder="Search schematics or error codes..." class="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs outline-none" />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div onclick="jumpToScreen('W37')" class="p-4 rounded-2xl border border-slate-200 hover:border-blue-500 cursor-pointer space-y-2">
+                  <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-mono text-[10px] font-bold">415V SCHEMATIC</span>
+                  <div class="text-sm font-bold text-slate-900">Siemens Sinumerik 828D Spindle Encoder Pinout & LOTO</div>
+                  <div class="text-xs text-slate-500">Verified by L3 Master Gurudas M. • +50 Upvotes</div>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W37':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <div class="border-b border-slate-100 pb-3">
+                <span class="text-xs font-mono text-purple-600 font-bold">WIKI ARTICLE #W-904</span>
+                <h3 class="text-base font-display font-black text-slate-900">Siemens Sinumerik 828D Spindle Drive 415V Wiring Schematic</h3>
+              </div>
+              <div class="p-4 rounded-2xl bg-slate-950 text-sky-300 font-mono text-xs space-y-1">
+                <div>[SCHEMATIC PINOUT DIAGRAM]</div>
+                <div>Pin 1: +5V DC | Pin 2: Ground | Pin 3: A+ Channel | Pin 4: B+ Channel</div>
+                <div class="text-amber-400 font-bold">[MANDATORY LOTO]: Isolate 415V 3-phase incoming breaker before probing encoder pins!</div>
+              </div>
+            </div>`;
+
+        case 'W38':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-base font-display font-black text-slate-900">Plant Notifications & Alerts</h3>
+              <div class="space-y-2 text-xs">
+                <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex justify-between">
+                  <span>Technician Ramesh K. has arrived at Gate 2 (Provide OTP 8841)</span>
+                  <span class="font-mono text-slate-400">10m ago</span>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 flex justify-between">
+                  <span>AI Warning: Spindle vibration on Haas VF-2 crossed 80 dB threshold</span>
+                  <span class="font-mono text-slate-400">1h ago</span>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W39':
+          return `
+            <div class="max-w-2xl mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-lg font-display font-black text-slate-900">Enterprise Factory Owner Profile</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium">
+                <div><span class="text-slate-400 block font-mono">COMPANY:</span>Apex Precision Tools Pvt Ltd</div>
+                <div><span class="text-slate-400 block font-mono">GSTIN:</span>29AAACA1234A1Z5 (18% ITC)</div>
+                <div><span class="text-slate-400 block font-mono">FACILITY:</span>Peenya Industrial Cluster #4</div>
+                <div><span class="text-slate-400 block font-mono">MSME REG:</span>UDYAM-KR-03-0019281</div>
+              </div>
+            </div>`;
+
+        case 'W40':
+          return `
+            <div class="max-w-2xl mx-auto p-6 rounded-3xl bg-white border border-slate-200 space-y-4">
+              <h3 class="text-lg font-display font-black text-slate-900">Settings & Regional Language</h3>
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-mono font-bold uppercase text-slate-500 mb-1">Select Interface Language (Bhashini AI)</label>
+                  <select class="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 font-bold outline-none">
+                    <option>English (Default)</option>
+                    <option>Kannada (ಕನ್ನಡ)</option>
+                    <option>Hindi (हिंदी)</option>
+                    <option>Tamil (தமிழ்)</option>
+                    <option>Telugu (తెలుగు)</option>
+                  </select>
+                </div>
+              </div>
+            </div>`;
+
+        case 'W41':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-3 text-xs text-slate-600 leading-relaxed">
+              <h3 class="text-base font-display font-black text-slate-900">Terms of Service & Escrow Charter</h3>
+              <p>1. 15-Minute Emergency Response SLA guarantee applies to industrial zones within 15 km of certified cluster depots.</p>
+              <p>2. 100% Escrow Protection: Client funds are held securely until digital signature and OTP verification by the factory owner.</p>
+              <p>3. 30-Day Warranty: Any recurrence of the same diagnosed failure is resolved at ₹0 technician fee.</p>
+            </div>`;
+
+        case 'W42':
+          return `
+            <div class="p-6 rounded-3xl bg-white border border-slate-200 space-y-3 text-xs text-slate-600 leading-relaxed">
+              <h3 class="text-base font-display font-black text-slate-900">Privacy Policy & DPDP Act 2023 Compliance</h3>
+              <p>UPTIME complies with the Digital Personal Data Protection Act 2023. All machine telemetry is encrypted in transit and at rest.</p>
+              <p>Raw acoustic sound clips and diagnostic photos are purged 30 days after job completion.</p>
+            </div>`;
+
+        case 'W43':
+          return `
+            <div class="max-w-md mx-auto p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-4">
+              <div class="text-5xl font-black font-display text-blue-600">404</div>
+              <h3 class="text-lg font-display font-black text-slate-900">Page Not Found</h3>
+              <p class="text-xs text-slate-500">The requested factory workstation page does not exist or has moved.</p>
+              <button onclick="jumpToScreen('W06')" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-xs">Return to Dashboard</button>
+            </div>`;
+
+        case 'W44':
+          return `
+            <div class="max-w-md mx-auto p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-4">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-wifi"></i>
+              </div>
+              <h3 class="text-lg font-display font-black text-slate-900">You are Offline</h3>
+              <p class="text-xs text-slate-500">Plant telemetry is being cached locally. Queued actions will sync automatically once internet reconnects.</p>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs text-slate-700">
+                Emergency 24/7 Telephone Hotline: 1800-415-UPTIME
+              </div>
+            </div>`;
+
+        default:
+          return `<div class="p-8 text-center font-mono">Screen Not Found</div>`;
+      }
+    }
+    """
+
+print("Helper JS compiled.")

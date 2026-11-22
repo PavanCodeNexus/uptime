@@ -9,6 +9,7 @@ import JobsPage from './pages/JobsPage';
 import JobWorkPage from './pages/JobWorkPage';
 import ProfilePage from './pages/ProfilePage';
 import VerificationPage from './pages/VerificationPage';
+import FigmaStudioPage from './pages/FigmaStudioPage';
 
 function NotFound() {
   return (
@@ -42,6 +43,8 @@ export default function App() {
         <Route path="/earnings" element={<EarningsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/verification" element={<VerificationPage />} />
+        <Route path="/studio" element={<FigmaStudioPage />} />
+        <Route path="/catalog" element={<FigmaStudioPage />} />
       </Route>
       <Route
         path="/status"

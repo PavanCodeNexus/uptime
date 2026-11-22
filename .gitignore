@@ -84,3 +84,5 @@ Desktop.ini
 *.bak
 *.swp
 *~
+__pycache__/
+*.pyc
