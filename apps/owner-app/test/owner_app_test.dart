@@ -4,15 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:uptime_owner_app/app.dart';
 import 'package:uptime_owner_app/core/utils/format_utils.dart';
 import 'package:uptime_owner_app/features/providers/owner_providers.dart';
-import 'package:uptime_owner_app/features/screens/owner_44_screens_catalog.dart';
 
 void main() {
   group('UPTIME Owner App Unit & Widget Tests', () {
-    test('Complete 44-Screen Owner App catalog has all 44 screens and Clean White default theme', () {
-      expect(kOwner44Screens.length, 44);
-      expect(kOwner44Screens.first.code, 'S01');
-      expect(kOwner44Screens.last.code, 'S44');
-
+    test('Clean White default theme & default Peenya facility state', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
       expect(container.read(themeModeProvider), ThemeMode.light);
@@ -25,7 +20,7 @@ void main() {
       expect(FormatUtils.formatInr(100000), '₹1,00,000');
     });
 
-    test('Restricted technician is absent from matching results', () async {
+    test('Fatigue-restricted technician is absent from matching results', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -35,7 +30,7 @@ void main() {
       expect(ranked.any((t) => t.fullName.contains('Suresh Kumar')), false);
     });
 
-    testWidgets('Owner login screen displays UPTIME tagline and signs in with OTP 123456',
+    testWidgets('Owner login signs in with OTP 123456 and shows production dashboard without wireframe labels',
         (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
@@ -55,6 +50,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Machine, Vehicle or Device Down?'), findsOneWidget);
+      expect(find.text('44 Screens'), findsNothing);
+      expect(find.text('S01'), findsNothing);
     });
   });
 }
